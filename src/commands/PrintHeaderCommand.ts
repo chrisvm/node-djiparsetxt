@@ -5,6 +5,7 @@ import { Parser } from 'binary-parser';
 
 export class PrintHeaderCommand implements ICommand {
 	private header_parser: any;
+	private record_parser: any;
 
 	constructor() 
 	{
@@ -16,6 +17,15 @@ export class PrintHeaderCommand implements ICommand {
 				type: 'uint8',
 				length: 88
 			});
+
+		this.record_parser = new Parser()
+			.uint8('type')
+			.uint8('length')
+			.array('data', {
+				type: 'uint8',
+				length: 'length'
+			})
+			.uint8('marker');
 	}
 
 	public exec(service_man: ServiceManager): void {
@@ -39,6 +49,11 @@ export class PrintHeaderCommand implements ICommand {
 				console.log(`    file size = ${file_size} B`);
 				console.log(`    records area size = ${records_area_size} B`);
 				console.log(`    details area size = ${details_area_size} B`);
+				console.log(`    version number string = '${header.version}'`);
+
+				// get records buffer
+				const records_buff = file.buffer.slice(100, records_area_size);
+				console.log(this.record_parser.parse(records_buff));
 			});
 		}
 	}
