@@ -1,5 +1,5 @@
 import {CliArguments} from './CliArguments';
-import {BaseService} from './services/IService';
+import {BaseService} from './services/BaseService';
 import {FilesService} from './services/FilesService';
 
 export class ServiceManager {
