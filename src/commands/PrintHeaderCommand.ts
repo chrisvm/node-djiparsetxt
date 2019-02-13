@@ -1,59 +1,23 @@
 import { ICommand } from "./ICommand";
 import { ServiceManager } from "../ServiceManager";
-import { FilesService, IFile } from "../services/FilesService";
-import { Parser } from 'binary-parser';
+import { FilesService } from "../services/FilesService";
+import { FileInfoService } from '../services/FileInfoService';
 
 export class PrintHeaderCommand implements ICommand {
-	private header_parser: any;
-	private record_parser: any;
-
-	constructor() 
-	{
-		this.header_parser = new Parser()
-			.uint32le('header_record_size_lo')
-			.uint32le('header_record_size_hi')
-			.uint32le('file_version')
-			.array('unused', {
-				type: 'uint8',
-				length: 88
-			});
-
-		this.record_parser = new Parser()
-			.uint8('type')
-			.uint8('length')
-			.array('data', {
-				type: 'uint8',
-				length: 'length'
-			})
-			.uint8('marker');
-	}
-
 	public exec(service_man: ServiceManager): void {
-		
-		const files_service = service_man.get_service("files") as FilesService;
-		
+		const files_service = service_man.get_service('files') as FilesService;
+		const file_info_service = service_man.get_service('file_info') as FileInfoService;
+
 		if (files_service) {
-			files_service.files((file) => {
-				// get first 100 bytes and parse them.
-				const header_buff = file.buffer.slice(0, 100);
-				const header = this.header_parser.parse(header_buff);
-				
-				// calculate details
-				const file_size = file.buffer.length;
-				const records_area_size = header.header_record_size_lo + 		
-					(header.header_record_size_hi << 32) - 100;
-				const details_area_size = file_size - records_area_size + 100;
+			files_service.files(file => {
+				const file_info = file_info_service.get_info(file.buffer);
 
-				// show details 
+				// show details
 				console.log(`file "${file.path}"`);
-				console.log(`    file size = ${file_size} B`);
-				console.log(`    records area size = ${records_area_size} B`);
-				console.log(`    details area size = ${details_area_size} B`);
-				console.log(`    version number string = '${header.version}'`);
-
-				// get records buffer
-				const records_buff = file.buffer.slice(100, records_area_size);
-				console.log(this.record_parser.parse(records_buff));
+				console.log(`    file size = ${file_info.file_size} B`);
+				console.log(`    records area size = ${file_info.records_size} B`);
+				console.log(`    details area size = ${file_info.details_size} B`);
+				console.log(`    version number string = '${file_info.version}'`);
 			});
 		}
 	}

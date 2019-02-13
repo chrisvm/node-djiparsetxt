@@ -1,6 +1,8 @@
 import {CliArguments} from './CliArguments';
-import {BaseService} from './services/BaseService';
+import BaseService from './services/BaseService';
 import {FilesService} from './services/FilesService';
+import {BinaryParserService} from './services/BinaryParserService';
+import {FileInfoService} from './services/FileInfoService';
 
 export class ServiceManager {
   private argv_m: CliArguments;
@@ -10,8 +12,11 @@ export class ServiceManager {
   {
     this.argv_m = argv;
     this.services_m = {};
+    // todo: add lazy loading to services
     [
-      new FilesService(this)
+      new FilesService(this),
+      new BinaryParserService(this),
+      new FileInfoService(this)
     ].forEach((val: BaseService) => this.services_m[val.name] = val);
   }
   

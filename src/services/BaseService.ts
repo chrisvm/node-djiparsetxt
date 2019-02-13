@@ -1,6 +1,6 @@
 import { ServiceManager } from "../ServiceManager";
 
-export abstract class BaseService
+export default abstract class BaseService
 {
   protected service_man: ServiceManager;
 
