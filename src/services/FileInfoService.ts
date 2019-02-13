@@ -4,7 +4,7 @@ import {
 	ParserTypes
 } from "./BinaryParserService";
 
-interface FileInfo
+interface HeaderInfo
 {
   file_size: number;
   records_size: number;
@@ -12,10 +12,23 @@ interface FileInfo
   version: number;
 }
 
+interface RecordsInfo
+{
+  records_size: number;
+  version: number;
+  record_count: number;
+}
+
+interface FileInfo
+{
+  header_info: HeaderInfo;
+  records_info: RecordsInfo;
+}
+
 export class FileInfoService extends BaseService {
   public name: string = 'file_info';
   
-  get_info(buffer: Buffer): FileInfo
+  public get_header_info(buffer: Buffer): HeaderInfo
   {
     const parser_service = this.service_man.get_service(
       "parsers"
@@ -42,12 +55,57 @@ export class FileInfoService extends BaseService {
       details_size: details_area_size,
       version: header.file_version
     };
+  }
 
-    // // get records buffer
-    // const record_parser = parser_service.get_parser(
-    //   ParserTypes.BaseRecord
-    // );
-    // const records_buff = buffer.slice(100, records_area_size);
-    // console.log(record_parser.parse(records_buff));
+  public get_records_info(buffer: Buffer): RecordsInfo
+  {
+    return this._get_records_info(buffer);
+  }
+
+  public get_file_info(buffer: Buffer): FileInfo
+  {
+    const header_info = this.get_header_info(buffer);
+    const records_info = this._get_records_info(buffer, header_info);
+    return {header_info, records_info};
+  }
+
+  private _get_records_info(buffer: Buffer, header_info?: HeaderInfo): RecordsInfo
+  {
+    if (header_info == undefined) {
+      header_info = this.get_header_info(buffer);
+    }
+
+    const records_buff = buffer.slice(100, header_info.records_size);
+    const records = this.parse_records(records_buff);
+
+    return {
+      version: header_info.version,
+      records_size: header_info.records_size,
+      record_count: records.length
+    };
+  }
+
+  private parse_records(buffer: Buffer): any[]
+  {
+    const parser_service = this.service_man.get_service(
+      "parsers"
+    ) as BinaryParserService;
+
+    const record_parser = parser_service.get_parser(
+      ParserTypes.BaseRecord
+    );
+
+    const records = [];
+    while (buffer.length > 0) {
+      let record = record_parser.parse(buffer);
+      console.log(record);
+      records.push(record);
+      if (record.length + 3 == buffer.length) break;
+      buffer = buffer.slice(record.length + 3);
+      console.log(buffer.length);
+      console.log(buffer);
+    }
+
+    return records;
   }
 }

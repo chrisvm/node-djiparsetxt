@@ -1,5 +1,4 @@
-import { PrintHeaderCommand } from "./commands/PrintHeaderCommand";
-import { PrintRecordsCommand } from "./commands/PrintRecordsCommand";
+import { PrintInfoCommand as PrintInfoCommand } from "./commands/PrintInfoCommand";
 import { ICommand } from "./commands/ICommand";
 import { ServiceManager } from "./ServiceManager";
 
@@ -10,8 +9,7 @@ class CommandManager {
 	constructor(service_man: ServiceManager) {
 		this.service_man = service_man;
 		this.commands = {
-			print_header: new PrintHeaderCommand(),
-			print_records: new PrintRecordsCommand()
+			print_info: new PrintInfoCommand()
 		};
 	}
 

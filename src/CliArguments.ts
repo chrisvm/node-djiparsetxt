@@ -1,5 +1,11 @@
 import * as minimist from 'minimist';
 
+interface OptionDescription
+{
+  short_name: string;
+  long_name: string;
+  description: string;
+}
 
 export class CliArguments {
   
@@ -32,11 +38,16 @@ export class CliArguments {
     console.log('Usage: node-djiparsetext FILE [FILE...] [OPTIONS]\n');
   }
 
-  private static options_descriptions = [
+  private static options_descriptions: OptionDescription[] = [
     {
       short_name: 'h',
       long_name: 'header',
       description: 'Print header info to stdout, ignoring the rest of the file.'
+    },
+    {
+      short_name: 'r',
+      long_name: 'records',
+      description: 'Print records info to stdout, ignoring the rest of the file.'
     }
   ];
 
