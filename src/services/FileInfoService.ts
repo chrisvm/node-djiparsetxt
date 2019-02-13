@@ -7,6 +7,7 @@ import {
 interface HeaderInfo
 {
   file_size: number;
+  header_size: number;
   records_size: number;
   details_size: number;
   version: number;
@@ -43,11 +44,10 @@ export class FileInfoService extends BaseService {
 
     // calculate details
     const file_size = buffer.length;
-    const records_area_size =
-      header.header_record_size_lo +
-      (header.header_record_size_hi << 32) -
-      100;
-    const details_area_size = file_size - records_area_size + 100;
+    const header_records_area_size = header.header_record_size_lo |
+      (header.header_record_size_hi << 32);
+    const records_area_size = header_records_area_size - 100;
+    const details_area_size = file_size - header_records_area_size;
     
     return {
       file_size: file_size,
@@ -75,7 +75,7 @@ export class FileInfoService extends BaseService {
       header_info = this.get_header_info(buffer);
     }
 
-    const records_buff = buffer.slice(100, header_info.records_size);
+    const records_buff = buffer.slice(100, header_info.records_size + 100);
     const records = this.parse_records(records_buff);
 
     return {
