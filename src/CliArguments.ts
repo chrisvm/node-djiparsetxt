@@ -53,6 +53,10 @@ export class CliArguments {
     return this.argv.header == true || this.argv.h == true;
   }
 
+  public get print_records(): boolean {
+    return this.argv.records == true || this.argv.r == true;
+  }
+  
   public get file_paths(): string[] {
     return this.argv._;
   }
