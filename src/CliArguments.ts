@@ -5,9 +5,9 @@ export class CliArguments {
   
   private argv: minimist.ParsedArgs;
 
-  constructor() 
+  constructor(args: string[])
   {
-    this.argv = minimist(process.argv.slice(2));
+    this.argv = minimist(args);
   }
 
   public assert_args(): boolean 
