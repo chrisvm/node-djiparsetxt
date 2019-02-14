@@ -4,7 +4,8 @@ import { FilesService } from "../services/FilesService";
 import { FileInfoService } from '../services/FileInfoService';
 
 export class PrintInfoCommand implements ICommand {
-	public exec(service_man: ServiceManager): void {
+	public exec(service_man: ServiceManager): void 
+	{
 		const files_service = service_man.get_service('files') as FilesService;
 		const file_info_service = service_man.get_service('file_info') as FileInfoService;
 
@@ -27,8 +28,21 @@ export class PrintInfoCommand implements ICommand {
 					console.log(`    records area size = ${stats.records_area_size} B`);
 					console.log(`    record count = ${stats.record_count} Records`);
 					console.log(`    invalid records = ${stats.invalid_records}`);
+					console.log(`    Records in File`);
+					console.log(`    =======================================`);
+					this.print_type_count_table(stats.type_count, '        ');
 				}
 			});
+		}
+	}
+	
+	private print_type_count_table(type_count: { [type: number]: number; }, indent: string): void 
+	{
+		for (const key in type_count) {
+			let hex_rep = parseInt(key).toString(16);
+			if (hex_rep.length == 1) hex_rep = '0' + hex_rep;
+			// todo: add typename inference to table
+			console.log(`${indent}0x${hex_rep} (TYPE_NAME) = ${type_count[key]}`);
 		}
 	}
 }

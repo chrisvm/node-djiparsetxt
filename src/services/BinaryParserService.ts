@@ -4,7 +4,8 @@ import { Parser } from 'binary-parser';
 export enum ParserTypes 
 {
   Header = 'header',
-  BaseRecord = 'base_record'
+  BaseRecord = 'base_record',
+  StartRecord = 'start_record'
 }
 
 interface ParserTableEntry
@@ -42,7 +43,15 @@ export class BinaryParserService extends BaseService {
           })
           .uint8('marker');
       }
-    } 
+    },
+    start_record: {
+      parser: null,
+      factory: () => {
+        return new Parser()
+          .uint8('type')
+          .uint8('length');
+      }
+    }  
   };
   
   public get_parser(type: ParserTypes): any 

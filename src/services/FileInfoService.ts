@@ -35,6 +35,16 @@ interface RecordCache
   stats: RecordStats;
 }
 
+function is_jpeg_soi (buffer: Buffer, offset: number): boolean
+{
+  return buffer.readUInt8(offset) == 0xFF && buffer.readUInt8(offset + 1) == 0xD8;
+}
+
+function is_jpeg_eoi (buffer: Buffer, offset: number): boolean
+{
+  return buffer.readUInt8(offset) == 0xFF && buffer.readUInt8(offset + 1) == 0xD9;
+}
+
 export class FileInfoService extends BaseService {
   public name: string = 'file_info';
   
@@ -89,13 +99,14 @@ export class FileInfoService extends BaseService {
       header_info = this.get_header_info(buffer);
     }
 
-    const records_buff = buffer.slice(100, header_info.records_size + 100);
-    const records = this.get_record_cache(records_buff);
+    const records_buff = buffer.slice(100);
+    let limit = header_info.records_size;
+    const records = this.get_record_cache(records_buff, limit);
     records.stats.version = header_info.version;
     return records;
   }
 
-  private get_record_cache(buffer: Buffer): RecordCache
+  private get_record_cache(buffer: Buffer, limit: number): RecordCache
   {
     const parser_service = this.service_man.get_service(
       "parsers"
@@ -103,6 +114,9 @@ export class FileInfoService extends BaseService {
 
     const record_parser = parser_service.get_parser(
       ParserTypes.BaseRecord
+    );
+    const record_start_parser = parser_service.get_parser(
+      ParserTypes.StartRecord
     );
 
     const stats: RecordCache = {
@@ -116,14 +130,35 @@ export class FileInfoService extends BaseService {
       }
     };
 
-    while (buffer.length > 0) {
-      let record = record_parser.parse(buffer);
-      this.calc_stats(stats, record);
-      buffer = buffer.slice(record.length + 3);
-      if (record.length + 3 > buffer.length) {
-        //console.log(buffer);
-        break;
+    let start = 0;
+    while (start < limit) {
+      const rec_start = record_start_parser.parse(buffer.slice(start));
+
+      let record;
+      if (rec_start.type == RecordTypes.JPEG) {
+        // check for starting zeros
+        const zero_watermark_lo = buffer.readUInt8(start + 2);
+        const zero_watermark_hi = buffer.readUInt8(start + 3);
+
+        if ((zero_watermark_hi | zero_watermark_lo) != 0) {
+          throw Error('No zero watermark while parsing jpeg record');
+        }
+
+        if (!is_jpeg_soi(buffer, start + 4)) {
+          record = {
+            type: RecordTypes.JPEG,
+            length: rec_start.length,
+            data: []
+          };
+          start += 4;
+        } else {
+          // todo: handle jpeg record with jpegs in them
+        }     
+      } else {
+        record = record_parser.parse(buffer.slice(start));
+        start += record.length + 3;
       }
+      this.calc_stats(stats, record);
     }
 
     return stats;
@@ -134,7 +169,7 @@ export class FileInfoService extends BaseService {
     cache.records.push(record);
     cache.stats.record_count += 1;
     
-    if (record.marker != 0xFF) {
+    if (record.type != RecordTypes.JPEG && record.marker != 0xFF) {
       cache.stats.invalid_records += 1;
       return;
     }
