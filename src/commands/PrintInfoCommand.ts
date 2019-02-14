@@ -32,6 +32,14 @@ export class PrintInfoCommand implements ICommand {
 					console.log(`    =======================================`);
 					this.print_type_count_table(stats.type_count, '        ');
 				}
+
+				if (service_man.argv.details) {
+					console.log('Details:');
+					const details = file_info_service.get_details(file.buffer);
+					for (const key in details) {
+						console.log(`    ${key} = ${details[key]}`);
+					}
+				}
 			});
 		}
 	}

@@ -42,12 +42,17 @@ export class CliArguments {
     {
       short_name: 'h',
       long_name: 'header',
-      description: 'Print header info to stdout, ignoring the rest of the file.'
+      description: 'Print header info to stdout.'
     },
     {
       short_name: 'r',
       long_name: 'records',
-      description: 'Print records info to stdout, ignoring the rest of the file.'
+      description: 'Print records info to stdout.'
+    },
+    {
+      short_name: 'd',
+      long_name: 'details',
+      description: 'Print the details section to stdout.'
     }
   ];
 
@@ -70,5 +75,9 @@ export class CliArguments {
   
   public get file_paths(): string[] {
     return this.argv._;
+  }
+
+  public get details() {
+    return this.argv.details == true || this.argv.d == true;
   }
 }

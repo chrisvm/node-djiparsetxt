@@ -2,7 +2,8 @@ import BaseService from './BaseService';
 import {RecordTypes} from './RecordTypes';
 import {
 	BinaryParserService,
-	ParserTypes
+  ParserTypes,
+  bignum_convert_buffer
 } from "./BinaryParserService";
 
 interface HeaderInfo
@@ -46,6 +47,7 @@ function is_jpeg_eoi (buffer: Buffer, offset: number): boolean
 }
 
 export class FileInfoService extends BaseService {
+	
   public name: string = 'file_info';
   
   public get_header_info(buffer: Buffer): HeaderInfo
@@ -88,6 +90,22 @@ export class FileInfoService extends BaseService {
     return {header_info, records_info: record_stats};
   }
 
+  public get_details(buffer: Buffer): any 
+  {
+    const header_info = this.get_header_info(buffer);
+    const details_start = header_info.header_size + header_info.records_size;
+    const details_buf = buffer.slice(details_start);
+    const parser_service = this.service_man.get_service(
+      "parsers"
+    ) as BinaryParserService;
+    const details_parser = parser_service.get_parser(
+      ParserTypes.Details
+    );
+    const details = details_parser.parse(details_buf);
+    details.timestamp = bignum_convert_buffer(details.timestamp); 
+    return details;
+  }
+  
   /**
    * Parses the 
    * @param buffer File buffer to parse.
