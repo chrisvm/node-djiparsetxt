@@ -1,5 +1,5 @@
+#!/usr/bin/env node
 import {main_entry} from './main_entry';
-
 
 // main function
 (function main () {

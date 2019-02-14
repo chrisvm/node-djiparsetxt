@@ -20,16 +20,17 @@ export class CliArguments {
   {
     const argv = this.argv;
 
+    if (argv.help == true || argv.h == true) {
+      CliArguments.print_help();
+      return true;
+    }
+    
     // if argument list empty (no filenames given)
     if (argv._.length == 0) {
       CliArguments.print_usage();
       return true;
     }
 
-    if (argv.help == true || argv.h == true) {
-      CliArguments.print_help();
-      return true;
-    }
     return false;
   }
 
