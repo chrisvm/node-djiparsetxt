@@ -23,9 +23,10 @@ export class PrintInfoCommand implements ICommand {
 
 				if (service_man.argv.print_records) {
 					console.log('Records Info:');
-					const records_info = file_info_service.get_records_info(file.buffer);
-					console.log(`    records area size = ${records_info.records_size} B`);
-					console.log(`    record count = ${records_info.record_count} Records`);
+					const stats = file_info_service.get_records_info(file.buffer);
+					console.log(`    records area size = ${stats.records_area_size} B`);
+					console.log(`    record count = ${stats.record_count} Records`);
+					console.log(`    invalid records = ${stats.invalid_records}`);
 				}
 			});
 		}
