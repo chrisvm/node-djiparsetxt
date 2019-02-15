@@ -19,4 +19,9 @@ export function main_entry(args: string[])
     command_man.run("print_info");
     return;
   }
+
+  if (argv.unscramble) {
+    command_man.run('unscramble');
+    return;
+  }
 }
