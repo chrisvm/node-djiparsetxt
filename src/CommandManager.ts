@@ -1,4 +1,5 @@
-import { PrintInfoCommand as PrintInfoCommand } from "./commands/PrintInfoCommand";
+import { PrintInfoCommand } from "./commands/PrintInfoCommand";
+import { UnscrambleCommand } from './commands/UnscrambleCommand';
 import { ICommand } from "./commands/ICommand";
 import { ServiceManager } from "./ServiceManager";
 
@@ -8,9 +9,12 @@ class CommandManager {
 
 	constructor(service_man: ServiceManager) {
 		this.service_man = service_man;
-		this.commands = {
-			print_info: new PrintInfoCommand()
-		};
+		this.commands = {};
+		// todo: add lazy loading to 
+		[
+			new PrintInfoCommand(),
+			new UnscrambleCommand()
+		].forEach((val: ICommand) => this.commands[val.name] = val);
 	}
 
 	public run(name: string) {

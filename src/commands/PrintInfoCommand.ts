@@ -4,6 +4,9 @@ import { FilesService } from "../services/FilesService";
 import { FileInfoService } from '../services/FileInfoService';
 
 export class PrintInfoCommand implements ICommand {
+	
+	public name: string = 'print_info';
+
 	public exec(service_man: ServiceManager): void 
 	{
 		const files_service = service_man.get_service('files') as FilesService;
