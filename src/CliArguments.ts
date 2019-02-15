@@ -44,7 +44,7 @@ export class CliArguments {
     {
       short_name: 'u',
       long_name: 'unscramble',
-      description: 'Create a copy of the file with the records unscrabled.'
+      description: 'Create a copy of the file with the records unscrambled.'
     },
     {
       short_name: 'h',
