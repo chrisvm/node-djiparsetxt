@@ -10,7 +10,8 @@ export class PrintInfoCommand implements ICommand {
 	public exec(service_man: ServiceManager): void 
 	{
 		const files_service = service_man.get_service('files') as FilesService;
-		const file_info_service = service_man.get_service('file_info') as FileInfoService;
+		const file_info_service = service_man.get_service('file_info') as 
+			FileInfoService;
 
 		if (files_service) {
 			files_service.files(file => {

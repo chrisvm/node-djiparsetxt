@@ -32,8 +32,7 @@ export class BinaryParserService extends BaseService {
           .uint32le('header_record_size_lo')
           .uint32le('header_record_size_hi')
           .uint32le('file_version')
-          .array('unused', {
-            type: 'uint8',
+          .buffer('unused', {
             length: 88
           });
       }
@@ -44,8 +43,7 @@ export class BinaryParserService extends BaseService {
         return new Parser()
           .uint8('type')
           .uint8('length')
-          .array('data', {
-            type: 'uint8',
+          .buffer('data', {
             length: 'length'
           })
           .uint8('marker');
