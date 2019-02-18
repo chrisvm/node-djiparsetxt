@@ -60,14 +60,6 @@ export class ServiceManager {
     return service.instance;
   }
 
-	public get_service(name: string): BaseService | null {
-		const service = this.services[name];
-		if (service) {
-			return service;
-		}
-		return null;
-	}
-
 	public get argv() {
 		return this.argv_m;
 	}
