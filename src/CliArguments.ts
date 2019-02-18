@@ -94,7 +94,8 @@ export class CliArguments {
   }
 
   public get output(): string | null {
-    return this.argv.output;
+		if (this.argv.output) return this.argv.output;
+		return this.argv.o;
   }
 
   public get unscramble(): boolean {
