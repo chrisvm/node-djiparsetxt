@@ -28,6 +28,7 @@ export interface IRecord
 }
 
 export class FileInfoService extends BaseService {
+
 	public name: string = "file_info";
 
 	public get_header_info(buffer: Buffer): HeaderInfo {
@@ -54,7 +55,7 @@ export class FileInfoService extends BaseService {
 			version: header.file_version
 		};
 	}
-
+	
 	public get_records_info(buffer: Buffer): RecordStats {
 		const file_parsing_service = this.service_man.get_service(
 			"file_parsing"

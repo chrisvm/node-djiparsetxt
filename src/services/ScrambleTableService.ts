@@ -34,7 +34,8 @@ export class ScrambleTableService extends BaseService {
 
 		for (let write_offset = 1; write_offset < buf.length; write_offset++) {
 			const val =
-				buf.readUInt8(write_offset) ^ scramble_bytes[write_offset - (1 % 8)];
+				buf.readUInt8(write_offset) ^
+				scramble_bytes[write_offset - (1 % 8)];
 			unscrambled_buf.writeUInt8(val, write_offset);
 		}
 

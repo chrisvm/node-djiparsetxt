@@ -8,6 +8,4 @@ export default abstract class BaseService
   {
     this.service_man = service_man;
   }
-
-  public abstract name: string;
 }

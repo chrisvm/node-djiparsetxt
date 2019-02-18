@@ -22,7 +22,6 @@ export function bignum_convert_buffer (buffer: any): BigNum
 }
 
 export class BinaryParserService extends BaseService {
-  public name: string = 'parsers';
 
   private parser_table: {[type: string]: ParserTableEntry} = {
     header: {

@@ -10,8 +10,9 @@ export class FilesService extends BaseService {
 	private files_m: IFile[] = [];
 	private initFiles: boolean = true;
 
-	public name: string = "files";
-
+	public static type_name: string = "files";
+	public name: string = FilesService.type_name;
+	
 	public files(cb: (file: IFile) => void) {
 		if (this.initFiles) {
 			const argv = this.service_man.argv;
