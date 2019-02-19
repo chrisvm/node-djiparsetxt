@@ -4,7 +4,7 @@ import { get_scramble_table } from "./ScrambleTable";
 import { IRecord } from "./FileInfoService";
 
 export class ScrambleTableService extends BaseService {
-	public name: string = "scramble_table";
+
 	private _scramble_table: number[][] = [];
 
 	public get scramble_table() {

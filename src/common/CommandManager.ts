@@ -1,11 +1,12 @@
 import { PrintInfoCommand } from "../commands/PrintInfoCommand";
 import { UnscrambleCommand } from '../commands/UnscrambleCommand';
+import { ShowTypeCommand } from '../commands/ShowTypeCommand';
 import { ICommand } from "../commands/ICommand";
 import { ServiceManager } from "./ServiceManager";
 import { ILazyLoadingEntry } from './lazy_loading';
 
 class CommandManager {
-	
+
 	private commands: { [name: string]: ILazyLoadingEntry<ICommand> };
 	private service_man: ServiceManager;
 
@@ -19,6 +20,10 @@ class CommandManager {
 			unscramble: {
 				instance: null,
 				factory: () => new UnscrambleCommand()
+			},
+			show_type: {
+				instance: null,
+				factory: () => new ShowTypeCommand()
 			}
 		};
 	}

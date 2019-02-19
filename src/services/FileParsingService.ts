@@ -1,4 +1,5 @@
 import BaseService from "./BaseService";
+import * as _ from 'lodash';
 import { RecordTypes } from "./RecordTypes";
 import { BinaryParserService, ParserTypes } from "./BinaryParserService";
 import { FileInfoService, HeaderInfo, IRecord } from "./FileInfoService";
@@ -49,6 +50,31 @@ export class FileParsingService extends BaseService {
 		const records = this.get_record_cache(records_buff, limit);
 		records.stats.version = header_info.version;
 		return records;
+	}
+
+	public filter_records(records: RecordCache, type: RecordTypes): IRecord[]
+	{
+		const new_cache: IRecord[] = [];
+		records.records.forEach((val) => {
+			if (val.type == type) {
+				new_cache.push(val);
+			}
+		});
+		return new_cache;
+	}
+
+	public parse_record_by_type(record: IRecord, record_type: RecordTypes): any 
+	{
+		const parser_service = this.service_man.get_service(
+			"parsers"
+		) as BinaryParserService;
+		
+		switch (record_type) {
+			case RecordTypes.OSD:
+				return parser_service.get_parser(ParserTypes.OsdRecord).parse(record.data);
+			default:
+				throw new Error(`record type '${record_type}' not recognized`);
+		}
 	}
 
 	private get_record_cache(buffer: Buffer, limit: number): RecordCache {
