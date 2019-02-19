@@ -7,7 +7,8 @@ export enum ParserTypes
   Header = 'header',
   BaseRecord = 'base_record',
   StartRecord = 'start_record',
-  Details = 'details'
+	Details = 'details',
+	OsdRecord = 'osd_record'
 }
 
 interface ParserTableEntry
@@ -94,8 +95,64 @@ export class BinaryParserService extends BaseService {
           .uint32le('photo_count')
           .uint32le('video_time');
         // todo: finish implementing parser for diff versions
-      }
-    }
+			},
+		},
+		osd_record: {
+			parser: null,
+			factory: () => {
+				return new Parser()
+					.doublele('longitude')
+					.doublele('latitude')
+					.int16le('height')
+					.int16le('x_speed')
+					.int16le('y_speed')
+					.int16le('z_speed')
+					.int16le('pitch')
+					.int16le('roll')
+					.int16le('yaw')
+					.bit1('rc_state')
+					.bit7('fly_state')
+					.uint8('fly_command')
+					.bit3('go_home_status')
+					.bit1('is_swave_work')
+					.bit1('is_motor_up')
+					.bit2('ground_or_sky')
+					.bit1('can_ioc_work')
+					.bit1('unknown')
+					.bit2('mode_channel')
+					.bit1('is_imu_preheated')
+					.bit1('unknown')
+					.bit2('voltage_warning')
+					.bit1('is_vision_used')
+					.bit2('battery_type')
+					.bit4('gps_level')
+					.bit1('wave_error')
+					.bit1('compass_error')
+					.bit1('is_accelerator_over_range')
+					.bit1('is_vibrating')
+					.bit1('is_barometer_dead_in_air')
+					.bit1('is_motor_blocked')
+					.bit1('is_not_enough_force')
+					.bit1('is_propeller_catapult')
+					.bit1('is_go_home_height_modified')
+					.bit1('is_out_of_limit')
+					.uint8('gps_num')
+					.uint8('flight_action')
+					.uint8('motor_start_failed_cause')
+					.bit3('unknown')
+					.bit1('waipoint_limit_mode')
+					.bit4('non_gps_cause')
+					.uint8('battery')
+					.uint8('swave_height')
+					.uint16le('fly_time')
+					.uint8('motor_revolution')
+					.uint16('unknown')
+					.uint8('flyc_version')
+					.uint8('drone_type')
+					.uint8('imu_init_fail_reason');
+					// todo: deal with file versions
+			}
+		}
   };
   
   public get_parser(type: ParserTypes): any 
