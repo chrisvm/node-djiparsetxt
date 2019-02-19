@@ -1,5 +1,5 @@
 import BaseService from "./BaseService";
-import * as _ from 'lodash';
+import * as _ from "lodash";
 import { RecordTypes } from "./RecordTypes";
 import { BinaryParserService, ParserTypes } from "./BinaryParserService";
 import { FileInfoService, HeaderInfo, IRecord } from "./FileInfoService";
@@ -38,7 +38,10 @@ export class FileParsingService extends BaseService {
 	 * @param buffer File buffer to parse.
 	 * @param header_info The parsed values from the header part of the file.
 	 */
-	public parse_records(buffer: Buffer, header_info?: HeaderInfo): RecordCache {
+	public parse_records(
+		buffer: Buffer,
+		header_info?: HeaderInfo
+	): RecordCache {
 		if (header_info == undefined) {
 			const file_info_service = this.service_man.get_service(
 				"file_info"
@@ -53,10 +56,9 @@ export class FileParsingService extends BaseService {
 		return records;
 	}
 
-	public filter_records(records: RecordCache, type: RecordTypes): IRecord[]
-	{
+	public filter_records(records: RecordCache, type: RecordTypes): IRecord[] {
 		const new_cache: IRecord[] = [];
-		records.records.forEach((val) => {
+		records.records.forEach(val => {
 			if (val.type == type) {
 				new_cache.push(val);
 			}
@@ -64,24 +66,15 @@ export class FileParsingService extends BaseService {
 		return new_cache;
 	}
 
-	public parse_record_by_type(record: IRecord, record_type: RecordTypes): any 
-	{
+	public parse_record_by_type(
+		record: IRecord,
+		record_type: RecordTypes
+	): any {
 		const parser_service = this.service_man.get_service(
 			"parsers"
 		) as BinaryParserService;
-		
-		switch (record_type) {
-			case RecordTypes.OSD:
-				return parser_service.get_parser(ParserTypes.OsdRecord).parse(record.data);
-			case RecordTypes.CUSTOM:
-				return parser_service.get_parser(ParserTypes.CustomRecord).parse(record.data);
-			case RecordTypes.RC:
-				return parser_service.get_parser(ParserTypes.RcRecord).parse(record.data);
-			case RecordTypes.GIMBAL:
-				return parser_service.get_parser(ParserTypes.GimbalRecord).parse(record.data);
-			default:
-				throw new Error(`record type '${record_type}' not recognized`);
-		}
+
+		return parser_service.get_record_parser(record_type).parse(record.data);
 	}
 
 	private get_record_cache(buffer: Buffer, limit: number): RecordCache {
