@@ -7,7 +7,6 @@ import { FileInfoService } from '../services/FileInfoService';
 import { RecordTypes } from '../services/RecordTypes';
 
 export class UnscrambleCommand implements ICommand {
-  public name: string = 'unscramble';
 
   public exec(service_man: ServiceManager): void
   {
@@ -41,6 +40,8 @@ export class UnscrambleCommand implements ICommand {
 				const record = records_cache.records[record_index++];
 				unscrambled_buf.writeUInt8(record.type, offset++);
 				unscrambled_buf.writeUInt8(record.length, offset++);
+
+				// jpeg records dont have scrambling, treat accordingly
 				if (record.type != RecordTypes.JPEG) {
 					record.data.copy(unscrambled_buf, offset);
 					offset += record.length;
