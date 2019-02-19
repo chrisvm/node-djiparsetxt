@@ -11,7 +11,8 @@ export enum ParserTypes
   StartRecord = 'start_record',
 	Details = 'details',
 	OsdRecord = 'osd_record',
-	CustomRecord = 'custom_record'
+	CustomRecord = 'custom_record',
+	RcRecord = 'rc_record'
 }
 
 export function bignum_convert_buffer (buffer: any): BigNum
@@ -168,6 +169,31 @@ export class BinaryParserService extends BaseService {
 				};
 
 				return dummy;
+			}
+		},
+		rc_record: {
+			instance: null,
+			factory: () => {
+				// todo: implement data transformations
+				return new Parser()
+					.int16le('aileron', {formatter: (val: any) => (val - 1024) / 0.066})
+					.int16le('elevator', {formatter: (val: any) => (val - 1024) / 0.066})
+					.int16le('throttle', {formatter: (val: any) => (val - 1024) / 0.066})
+					.int16le('rudder', {formatter: (val: any) => (val - 1024) / 0.066})
+					.int16le('gimbal', {formatter: (val: any) => (val - 1024) / 0.066})
+					.bit2('unknown')
+					.bit5('wheel_offset')
+					.bit1('unknown')					
+					.bit2('unknown')
+					.bit2('mode')
+					.bit1('go_home')
+					.bit3('unknown')
+					.bit3('unknown')
+					.bit1('custom2')
+					.bit1('custom1')
+					.bit1('playback')
+					.bit1('shutter')
+					.bit1('record');
 			}
 		}
   };

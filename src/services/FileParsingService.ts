@@ -75,6 +75,8 @@ export class FileParsingService extends BaseService {
 				return parser_service.get_parser(ParserTypes.OsdRecord).parse(record.data);
 			case RecordTypes.CUSTOM:
 				return parser_service.get_parser(ParserTypes.CustomRecord).parse(record.data);
+			case RecordTypes.RC:
+				return parser_service.get_parser(ParserTypes.RcRecord).parse(record.data);
 			default:
 				throw new Error(`record type '${record_type}' not recognized`);
 		}
