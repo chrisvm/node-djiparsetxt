@@ -10,7 +10,8 @@ export enum ParserTypes
   BaseRecord = 'base_record',
   StartRecord = 'start_record',
 	Details = 'details',
-	OsdRecord = 'osd_record'
+	OsdRecord = 'osd_record',
+	CustomRecord = 'custom_record'
 }
 
 export function bignum_convert_buffer (buffer: any): BigNum
@@ -56,7 +57,7 @@ export class BinaryParserService extends BaseService {
     details: {
       instance: null,
       factory: () => {
-        return new Parser()
+				return new Parser()
           .buffer('city_part', {
             length: 20,
             formatter: (dat) =>(dat as Buffer).toString('ascii')
@@ -89,7 +90,7 @@ export class BinaryParserService extends BaseService {
           .floatle('max_hor_speed')
           .floatle('max_vert_speed')
           .uint32le('photo_count')
-          .uint32le('video_time');
+					.uint32le('video_time');
         // todo: finish implementing parser for diff versions
 			},
 		},
@@ -147,6 +148,16 @@ export class BinaryParserService extends BaseService {
 					.uint8('drone_type')
 					.uint8('imu_init_fail_reason');
 					// todo: deal with file versions
+			}
+		},
+		custom_record: {
+			instance: null,
+			factory: () => {
+				return new Parser()
+				.uint16('unknown')
+				.floatle('hspeed')
+				.floatle('distance')
+				.buffer('updateTime', {length: 8});
 			}
 		}
   };

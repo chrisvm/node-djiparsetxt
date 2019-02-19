@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { RecordTypes } from "./RecordTypes";
 import { BinaryParserService, ParserTypes } from "./BinaryParserService";
 import { FileInfoService, HeaderInfo, IRecord } from "./FileInfoService";
+import { Parser } from "binary-parser";
 
 function is_jpeg_soi(buffer: Buffer, offset: number): boolean {
 	return (
@@ -72,6 +73,8 @@ export class FileParsingService extends BaseService {
 		switch (record_type) {
 			case RecordTypes.OSD:
 				return parser_service.get_parser(ParserTypes.OsdRecord).parse(record.data);
+			case RecordTypes.CUSTOM:
+				return parser_service.get_parser(ParserTypes.CustomRecord).parse(record.data);
 			default:
 				throw new Error(`record type '${record_type}' not recognized`);
 		}
