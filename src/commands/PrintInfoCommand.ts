@@ -1,5 +1,5 @@
 import { ICommand } from "./ICommand";
-import { ServiceManager } from "../ServiceManager";
+import { ServiceManager } from "../common/ServiceManager";
 import { FilesService } from "../services/FilesService";
 import { FileInfoService } from '../services/FileInfoService';
 

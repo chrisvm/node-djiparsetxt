@@ -1,4 +1,4 @@
-import { ServiceManager } from "../ServiceManager";
+import { ServiceManager } from "../common/ServiceManager";
 
 export default abstract class BaseService
 {

@@ -3,8 +3,9 @@ import * as minimist from 'minimist';
 interface OptionDescription
 {
   short_name: string;
-  long_name: string;
-  description: string;
+	long_name: string;
+	description: string;
+	param_name?: string;
 }
 
 export class CliArguments {
@@ -65,7 +66,13 @@ export class CliArguments {
       short_name: 'o',
       long_name: 'output',
       description: 'Path to use for output files.'
-    }
+		},
+		{
+			short_name: 's',
+			long_name: 'show-type',
+			description: 'Show the records of the given type',
+			param_name: 'type'
+		}
   ];
 
   public static print_help(): void
@@ -73,6 +80,10 @@ export class CliArguments {
     CliArguments.print_usage();
     console.log('Options:');
     for (const option of CliArguments.options_descriptions) {
+			if (option.param_name) {
+				console.log(`    --${option.long_name} ${option.param_name}, -${option.short_name} ${option.param_name}: ${option.description}`);
+				continue;
+			}
       console.log(`    --${option.long_name}, -${option.short_name}: ${option.description}`);
     }
   }
@@ -100,5 +111,9 @@ export class CliArguments {
 
   public get unscramble(): boolean {
     return this.argv.unscramble || this.argv.u;
-  }
+	}
+	
+	public get show_record(): number | null {
+		return this.argv.show_type || this.argv.s;
+	}
 }

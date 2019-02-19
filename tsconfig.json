@@ -60,7 +60,7 @@
     "src/main.ts"
   ],
   "include": [
-    "src/*"
+    "src/*", "src/common/ServiceManager.ts", "src/common/CommandManager.ts", "src/common/CliArguments.ts"
   ],
   "exclude": [
     "tests/*",

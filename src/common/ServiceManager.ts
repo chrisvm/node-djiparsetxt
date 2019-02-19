@@ -1,22 +1,16 @@
 import { CliArguments } from "./CliArguments";
-import BaseService from "./services/BaseService";
-import { FilesService } from "./services/FilesService";
-import { BinaryParserService } from "./services/BinaryParserService";
-import { FileInfoService } from "./services/FileInfoService";
-import { ScrambleTableService } from "./services/ScrambleTableService";
-import { FileParsingService } from "./services/FileParsingService";
-
-// entry into the lazy loading table
-interface IServiceLLEntry
-{
-  instance: BaseService | null, 
-  factory: () => BaseService
-}
+import BaseService from "../services/BaseService";
+import { FilesService } from "../services/FilesService";
+import { BinaryParserService } from "../services/BinaryParserService";
+import { FileInfoService } from "../services/FileInfoService";
+import { ScrambleTableService } from "../services/ScrambleTableService";
+import { FileParsingService } from "../services/FileParsingService";
+import { ILazyLoadingEntry } from './lazy_loading';
 
 export class ServiceManager {
 
   private argv_m: CliArguments;
-  private services: {[name: string]: IServiceLLEntry};
+  private services: {[name: string]: ILazyLoadingEntry<BaseService>};
 
   constructor(argv: CliArguments) 
   {

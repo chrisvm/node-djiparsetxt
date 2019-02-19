@@ -1,15 +1,11 @@
-import { PrintInfoCommand } from "./commands/PrintInfoCommand";
-import { UnscrambleCommand } from './commands/UnscrambleCommand';
-import { ICommand } from "./commands/ICommand";
+import { PrintInfoCommand } from "../commands/PrintInfoCommand";
+import { UnscrambleCommand } from '../commands/UnscrambleCommand';
+import { ICommand } from "../commands/ICommand";
 import { ServiceManager } from "./ServiceManager";
-
-interface ILazyLoadingEntry<t>
-{
-	instance: t | null;
-	factory: () => t;
-}
+import { ILazyLoadingEntry } from './lazy_loading';
 
 class CommandManager {
+	
 	private commands: { [name: string]: ILazyLoadingEntry<ICommand> };
 	private service_man: ServiceManager;
 
