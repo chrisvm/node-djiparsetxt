@@ -153,11 +153,21 @@ export class BinaryParserService extends BaseService {
 		custom_record: {
 			instance: null,
 			factory: () => {
-				return new Parser()
-				.uint16('unknown')
-				.floatle('hspeed')
-				.floatle('distance')
-				.buffer('updateTime', {length: 8});
+				const dummy: any = {};
+				
+				dummy.parser = new Parser()
+					.uint16('unknown')
+					.floatle('hspeed')
+					.floatle('distance')
+					.buffer('updateTime', {length: 8});
+				
+				dummy.parse = (buf: Buffer): any => {
+					const parsed = dummy.parser.parse(buf);
+					parsed.updateTime = bignum_convert_buffer(parsed.updateTime);
+					return parsed;
+				};
+
+				return dummy;
 			}
 		}
   };
