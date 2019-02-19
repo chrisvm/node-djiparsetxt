@@ -3,7 +3,6 @@ import { ServiceManager } from "../common/ServiceManager";
 import { FilesService } from '../services/FilesService';
 import { FileParsingService } from '../services/FileParsingService';
 import { ScrambleTableService } from '../services/ScrambleTableService';
-import { FileInfoService } from '../services/FileInfoService';
 import { RecordTypes } from "../services/RecordTypes";
 
 export class ShowTypeCommand implements ICommand {

@@ -1,5 +1,7 @@
 import BaseService from './BaseService';
 import { Parser } from 'binary-parser';
+import { ILazyLoadingEntry } from '../common/lazy_loading';
+
 import * as BigNum from 'bignum';
 
 export enum ParserTypes 
@@ -11,12 +13,6 @@ export enum ParserTypes
 	OsdRecord = 'osd_record'
 }
 
-interface ParserTableEntry
-{
-  parser: any;
-  factory: () => any;
-}
-
 export function bignum_convert_buffer (buffer: any): BigNum
 {
   return BigNum.fromBuffer(buffer as Buffer, {endian: 'little', size: 8});
@@ -24,9 +20,9 @@ export function bignum_convert_buffer (buffer: any): BigNum
 
 export class BinaryParserService extends BaseService {
 
-  private parser_table: {[type: string]: ParserTableEntry} = {
+  private parser_table: {[type: string]: ILazyLoadingEntry<any>} = {
     header: {
-      parser: null,
+      instance: null,
       factory: () => {
         return new Parser()
           .uint32le('header_record_size_lo')
@@ -38,7 +34,7 @@ export class BinaryParserService extends BaseService {
       }
     },
     base_record: {
-      parser: null,
+      instance: null,
       factory: () => {
         return new Parser()
           .uint8('type')
@@ -50,7 +46,7 @@ export class BinaryParserService extends BaseService {
       }
     },
     start_record: {
-      parser: null,
+      instance: null,
       factory: () => {
         return new Parser()
           .uint8('type')
@@ -58,7 +54,7 @@ export class BinaryParserService extends BaseService {
       }
     },
     details: {
-      parser: null,
+      instance: null,
       factory: () => {
         return new Parser()
           .buffer('city_part', {
@@ -98,7 +94,7 @@ export class BinaryParserService extends BaseService {
 			},
 		},
 		osd_record: {
-			parser: null,
+			instance: null,
 			factory: () => {
 				return new Parser()
 					.doublele('longitude')
@@ -161,11 +157,11 @@ export class BinaryParserService extends BaseService {
       return undefined;
     }
 
-    if (this.parser_table[type].parser == null) {
+    if (this.parser_table[type].instance == null) {
       const factory = this.parser_table[type].factory;
-      this.parser_table[type].parser = factory();
+      this.parser_table[type].instance = factory();
     }
 
-    return this.parser_table[type].parser;
+    return this.parser_table[type].instance;
   }
 }
