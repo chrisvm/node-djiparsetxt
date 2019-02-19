@@ -2,6 +2,7 @@ import { ICommand } from "./ICommand";
 import { ServiceManager } from "../common/ServiceManager";
 import { FilesService } from "../services/FilesService";
 import { FileInfoService } from '../services/FileInfoService';
+import { RecordTypes } from "../services/RecordTypes";
 
 export class PrintInfoCommand implements ICommand {
 
@@ -51,8 +52,7 @@ export class PrintInfoCommand implements ICommand {
 		for (const key in type_count) {
 			let hex_rep = parseInt(key).toString(16);
 			if (hex_rep.length == 1) hex_rep = '0' + hex_rep;
-			// todo: add typename inference to table
-			console.log(`${indent}0x${hex_rep} (TYPE_NAME) = ${type_count[key]}`);
+			console.log(`${indent}0x${hex_rep} (${RecordTypes[key]}) = ${type_count[key]}`);
 		}
 	}
 }
