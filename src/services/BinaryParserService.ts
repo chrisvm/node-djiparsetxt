@@ -12,7 +12,8 @@ export enum ParserTypes
 	Details = 'details',
 	OsdRecord = 'osd_record',
 	CustomRecord = 'custom_record',
-	RcRecord = 'rc_record'
+	RcRecord = 'rc_record',
+	GimbalRecord = 'gimbal_record'
 }
 
 export function bignum_convert_buffer (buffer: any): BigNum
@@ -194,6 +195,32 @@ export class BinaryParserService extends BaseService {
 					.bit1('playback')
 					.bit1('shutter')
 					.bit1('record');
+			}
+		},
+		gimbal_record: {
+			instance: null,
+			factory: () => {
+				return new Parser()
+					.int16le('pitch', {formatter: (val: any) => val / 10})
+					.int16le('roll', {formatter: (val: any) => val / 10})
+					.int16le('yaw', {formatter: (val: any) => val / 10})
+					.bit2('mode')
+					.bit6('unknown')
+					.int8('roll_adjust', {formatter: (val: any) => val / 10})
+					.int16le('yaw_angle', {formatter: (val: any) => val / 10})
+					.bit1('is_pitch_in_limit')
+					.bit1('is_roll_in_limit')
+					.bit1('is_yaw_in_limit')
+					.bit1('is_auto_calibration')
+					.bit1('auto_calibration_results')
+					.bit1('unknown')
+					.bit1('is_stuck')
+					.bit1('unknown')
+					.bit1('is_single_click')
+					.bit1('is_triple_click')
+					.bit1('is_double_click')
+					.bit1('unknown')
+					.bit4('version');
 			}
 		}
   };
