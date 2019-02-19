@@ -22,13 +22,21 @@ export class ShowTypeCommand implements ICommand {
 			const record_type = service_man.argv.show_record as RecordTypes;
 			const records_of_type = file_parsing_service.filter_records(records_cache, record_type);
 
-			console.log(`file '${file.path}' and type = ${record_type}:`);
+			const type_name = RecordTypes[record_type];
 
-			records_of_type.forEach((record) => {
-				const unscrambled_rec = scramble_table_service.unscramble_record(record);
-				const sub_parsed = file_parsing_service.parse_record_by_type(unscrambled_rec, record_type);
-				console.log(sub_parsed);
-			});
+			if (type_name) {
+				console.log(`file '${file.path}' and type = ${type_name}:`);
+
+				records_of_type.forEach((record) => {
+					const unscrambled_rec = scramble_table_service.unscramble_record(record);
+					const sub_parsed = file_parsing_service.parse_record_by_type(unscrambled_rec, record_type);
+					console.log(sub_parsed);
+				});
+
+				return;
+			}
+
+			throw new Error(`type '${record_type}' not recognized`);
 		});
 	}
 }
