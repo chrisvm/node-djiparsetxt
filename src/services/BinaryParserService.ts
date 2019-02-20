@@ -16,7 +16,9 @@ export enum ParserTypes {
 	RcRecord = "rc_record",
 	CustomRecord = "custom_record",
 	DeformRecord = 'deform_record',
-	CenterBatteryRecord = 'center_battery_record'
+	CenterBatteryRecord = 'center_battery_record',
+	SmartBatteryRecord = 'smart_battery_record',
+	AppTipRecord = 'app_tip_record'
 }
 
 export function bignum_convert_buffer(buffer: any): BigNum {
@@ -300,7 +302,36 @@ export class BinaryParserService extends BaseService {
 					}})
 					.uint16le('temperature', {formatter: (val: any) => val / 100})
 					.uint8('conn_status');
-			}					
+			}		
+		},
+		smart_battery_record: {
+			instance: null,
+			factory: () => {
+				return new Parser()
+					.uint16le('useful_time')
+					.uint16le('go_home_time')
+					.uint16le('land_time')
+					.uint16le('go_home_battery')
+					.uint16le('landing_battery')
+					.uint32le('safe_fly_radius')
+					.floatle('volume_console')
+					.uint32le('status')
+					.uint8('go_home_status')
+					.uint8('go_home_countdown')
+					.uint16le('voltage', {formatter: (val: any) => val / 1000})
+					.uint8('battery')
+					.bit1('low_warning_go_home')
+					.bit7('low_warning')
+					.bit1('serious_low_warning_landing')
+					.bit7('serious_low_warning')
+					.uint8('voltage_percent');
+			}
+		},
+		app_tip_record: {
+			instance: null,
+			factory: () => {
+				return new Parser().string('tip', {zeroTerminated: true});
+			}
 		}
 	};
 
@@ -337,6 +368,10 @@ export class BinaryParserService extends BaseService {
 				return parser_service.get_parser(ParserTypes.DeformRecord);
 			case RecordTypes.CENTER_BATTERY:
 				return parser_service.get_parser(ParserTypes.CenterBatteryRecord);
+			case RecordTypes.SMART_BATTERY:
+				return parser_service.get_parser(ParserTypes.SmartBatteryRecord);
+			case RecordTypes.APP_TIP:
+				return parser_service.get_parser(ParserTypes.AppTipRecord);
 			default:
 				throw new Error(`record type '${record_type}' not recognized`);
 		}
