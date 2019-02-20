@@ -15,7 +15,8 @@ export enum ParserTypes {
 	GimbalRecord = "gimbal_record",
 	RcRecord = "rc_record",
 	CustomRecord = "custom_record",
-	DeformRecord = 'deform_record'
+	DeformRecord = 'deform_record',
+	CenterBatteryRecord = 'center_battery_record'
 }
 
 export function bignum_convert_buffer(buffer: any): BigNum {
@@ -270,6 +271,36 @@ export class BinaryParserService extends BaseService {
 					.bit3('deform_status')
 					.bit1('is_deform_protected');
 			}
+		},
+		center_battery_record: {
+			instance: null,
+			factory: () => {
+				return new Parser()
+					.uint8('relative_capacity')
+					.uint16le('current_pv', {formatter: (val: any) => val / 1000})
+					.uint16le('current_capacity')
+					.uint16le('full_capacity')
+					.uint8('life')
+					.uint16le('loop_num')
+					.uint32le('error_type')
+					.uint16le('current', {formatter: (val: any) => val / 1000})
+					.uint16le('voltage_cel_1', {formatter: (val: any) => val / 1000})
+					.uint16le('voltage_cel_2', {formatter: (val: any) => val / 1000})
+					.uint16le('voltage_cel_3', {formatter: (val: any) => val / 1000})
+					.uint16le('voltage_cel_4', {formatter: (val: any) => val / 1000})
+					.uint16le('voltage_cel_5', {formatter: (val: any) => val / 1000})
+					.uint16le('voltage_cel_6', {formatter: (val: any) => val / 1000})
+					.uint16le('serial_no')
+					.uint16le('product_date', {formatter: (val: any) => {
+						return {
+							year: ((val & 0xFE00) >> 9) + 1980,
+							month: (val & 0x01E0) >> 5,
+							day: (val & 0x001F)
+						};
+					}})
+					.uint16le('temperature', {formatter: (val: any) => val / 100})
+					.uint8('conn_status');
+			}					
 		}
 	};
 
@@ -304,6 +335,8 @@ export class BinaryParserService extends BaseService {
 				return parser_service.get_parser(ParserTypes.HomeRecord);
 			case RecordTypes.DEFORM:
 				return parser_service.get_parser(ParserTypes.DeformRecord);
+			case RecordTypes.CENTER_BATTERY:
+				return parser_service.get_parser(ParserTypes.CenterBatteryRecord);
 			default:
 				throw new Error(`record type '${record_type}' not recognized`);
 		}
