@@ -22,7 +22,7 @@ export class PrintInfoCommand implements ICommand {
 					console.log(`    file size = ${header_info.file_size} B`);
 					console.log(`    records area size = ${header_info.records_size} B`);
 					console.log(`    details area size = ${header_info.details_size} B`);
-					console.log(`    version number string = '${header_info.version}'`);
+					console.log("    version:", header_info.version.readUInt8(2));
 				}
 
 				if (service_man.argv.print_records) {

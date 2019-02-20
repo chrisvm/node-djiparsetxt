@@ -18,7 +18,11 @@ export enum ParserTypes {
 	DeformRecord = 'deform_record',
 	CenterBatteryRecord = 'center_battery_record',
 	SmartBatteryRecord = 'smart_battery_record',
-	AppTipRecord = 'app_tip_record'
+	AppTipRecord = 'app_tip_record',
+	AppWarnRecord = 'app_warn_record',
+	RecoverRecord = 'recover_record',
+	AppGpsRecord = 'app_gps_record',
+	FirmwareRecord = 'firmware_record'
 }
 
 export function bignum_convert_buffer(buffer: any): BigNum {
@@ -33,10 +37,8 @@ export class BinaryParserService extends BaseService {
 				return new Parser()
 					.uint32le("header_record_size_lo")
 					.uint32le("header_record_size_hi")
-					.uint32le("file_version")
-					.buffer("unused", {
-						length: 88
-					});
+					.buffer("file_version", {length: 4})
+					.skip(88);
 			}
 		},
 		base_record: {
@@ -81,7 +83,7 @@ export class BinaryParserService extends BaseService {
 					.uint8("is_new")
 					.uint8("needs_upload")
 					.uint32le("record_line_count")
-					.uint32("unknown")
+					.skip(4)
 					.buffer("timestamp", { length: 8 })
 					.doublele("longitude")
 					.doublele("latitude")
@@ -146,7 +148,7 @@ export class BinaryParserService extends BaseService {
 					.uint8("swave_height")
 					.uint16le("fly_time")
 					.uint8("motor_revolution")
-					.uint16("unknown")
+					.skip(2)
 					.uint8("flyc_version")
 					.uint8("drone_type")
 					.uint8("imu_init_fail_reason");
@@ -159,7 +161,7 @@ export class BinaryParserService extends BaseService {
 				const dummy: any = {};
 
 				dummy.parser = new Parser()
-					.uint16("unknown")
+					.skip(2)
 					.floatle("hspeed")
 					.floatle("distance")
 					.buffer("updateTime", { length: 8 });
@@ -332,6 +334,45 @@ export class BinaryParserService extends BaseService {
 			factory: () => {
 				return new Parser().string('tip', {zeroTerminated: true});
 			}
+		},
+		app_warn_record: {
+			instance: null,
+			factory: () => {
+				return new Parser().string('warn', {zeroTerminated: true});
+			}
+		},
+		recover_record: {
+			instance: null,
+			factory: () => {
+				return new Parser()
+					.uint8('drone_type')
+					.uint8('app_type')
+					.buffer('app_version', {length: 3})
+					.string('aircraft_sn', {length: 10})
+					.string('aircraft_name', {length: 24})
+					.skip(22)
+					.string('camera_sn', {length: 10})
+					.string('rc_sn', {length: 10})
+					.string('battery_sn', {length: 10});
+			}
+		},
+		app_gps_record: {
+			instance: null,
+			factory: () => {
+				return new Parser()
+					.doublele('latitude')
+					.doublele('longitde')
+					.floatle('accuracy');
+			}
+		},
+		firmware_record: {
+			instance: null,
+			factory: () => {
+				return new Parser()
+					.skip(2)
+					.buffer('version', {length: 3})
+					.skip(109);
+			}
 		}
 	};
 
@@ -372,6 +413,14 @@ export class BinaryParserService extends BaseService {
 				return parser_service.get_parser(ParserTypes.SmartBatteryRecord);
 			case RecordTypes.APP_TIP:
 				return parser_service.get_parser(ParserTypes.AppTipRecord);
+			case RecordTypes.APP_WARN:
+				return parser_service.get_parser(ParserTypes.AppWarnRecord);
+			case RecordTypes.RECOVER:
+				return parser_service.get_parser(ParserTypes.RecoverRecord);
+			case RecordTypes.APP_GPS:
+				return parser_service.get_parser(ParserTypes.AppGpsRecord);
+			case RecordTypes.FIRMWARE:
+				return parser_service.get_parser(ParserTypes.FirmwareRecord);
 			default:
 				throw new Error(`record type '${record_type}' not recognized`);
 		}

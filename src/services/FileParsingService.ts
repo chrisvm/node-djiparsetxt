@@ -19,7 +19,6 @@ function is_jpeg_eoi(buffer: Buffer, offset: number): boolean {
 
 export interface RecordStats {
 	records_area_size: number;
-	version: number;
 	record_count: number;
 	type_count: { [type: number]: number };
 	invalid_records: number;
@@ -27,6 +26,7 @@ export interface RecordStats {
 
 export interface RecordCache {
 	records: IRecord[];
+	version: Buffer;
 	stats: RecordStats;
 }
 
@@ -51,8 +51,7 @@ export class FileParsingService extends BaseService {
 
 		const records_buff = buffer.slice(100);
 		let limit = header_info.records_size;
-		const records = this.get_record_cache(records_buff, limit);
-		records.stats.version = header_info.version;
+		const records = this.get_record_cache(records_buff, limit, header_info.version);
 		return records;
 	}
 
@@ -77,7 +76,7 @@ export class FileParsingService extends BaseService {
 		return parser_service.get_record_parser(record_type).parse(record.data);
 	}
 
-	private get_record_cache(buffer: Buffer, limit: number): RecordCache {
+	private get_record_cache(buffer: Buffer, limit: number, version: Buffer): RecordCache {
 		const parser_service = this.service_man.get_service(
 			"parsers"
 		) as BinaryParserService;
@@ -87,11 +86,11 @@ export class FileParsingService extends BaseService {
 			ParserTypes.StartRecord
 		);
 
-		const stats: RecordCache = {
+		const record_cache: RecordCache = {
 			records: [],
+			version: version,
 			stats: {
 				records_area_size: buffer.length,
-				version: 0,
 				record_count: 0,
 				type_count: {},
 				invalid_records: 0
@@ -126,10 +125,11 @@ export class FileParsingService extends BaseService {
 				record = record_parser.parse(buffer.slice(start));
 				start += record.length + 3;
 			}
-			this.calc_stats(stats, record);
+
+			this.calc_stats(record_cache, record);
 		}
 
-		return stats;
+		return record_cache;
 	}
 
 	private calc_stats(cache: RecordCache, record: any) {

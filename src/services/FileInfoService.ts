@@ -12,7 +12,7 @@ export interface HeaderInfo {
 	header_size: number;
 	records_size: number;
 	details_size: number;
-	version: number;
+	version: Buffer;
 }
 
 export interface FileInfo {
