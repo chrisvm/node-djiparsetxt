@@ -1,6 +1,6 @@
 import {CliArguments} from './common/CliArguments';
 import {ServiceManager} from './common/ServiceManager';
-import {CommandManager} from './common/CommandManager';
+import {CommandManager, CommandTypes} from './common/CommandManager';
 
 export function main_entry(args: string[])
 {
@@ -16,17 +16,17 @@ export function main_entry(args: string[])
 	const command_man = new CommandManager(service_man);
 
 	if (argv.print_header || argv.print_records || argv.details) {
-		command_man.run("print_info");
+		command_man.run(CommandTypes.PrintInfo);
 		return;
 	}
 
 	if (argv.unscramble) {
-		command_man.run('unscramble');
+		command_man.run(CommandTypes.Unscramble);
 		return;
 	}
 	
 	if (argv.show_record != null) {
-		command_man.run('show_type');
+		command_man.run(CommandTypes.ShowType);
 		return;
 	}
 }

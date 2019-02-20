@@ -5,6 +5,13 @@ import { ICommand } from "../commands/ICommand";
 import { ServiceManager } from "./ServiceManager";
 import { ILazyLoadingEntry } from './lazy_loading';
 
+enum CommandTypes 
+{
+	PrintInfo = 'print_info',
+	Unscramble = 'unscramble',
+	ShowType = 'show_type',
+}
+
 class CommandManager {
 
 	private commands: { [name: string]: ILazyLoadingEntry<ICommand> };
@@ -28,12 +35,8 @@ class CommandManager {
 		};
 	}
 
-	public run(name: string) {
-		const command = this.commands[name];
-
-		if (command == null || command == undefined) {
-			throw new Error(`command '${name}' not found`);
-		}
+	public run(type: CommandTypes) {
+		const command = this.commands[type];
 
 		if (command.instance == null) {
 			command.instance = command.factory();
@@ -43,4 +46,4 @@ class CommandManager {
 	}
 }
 
-export { CommandManager };
+export { CommandManager, CommandTypes };
