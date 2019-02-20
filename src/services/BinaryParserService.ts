@@ -344,6 +344,7 @@ export class BinaryParserService extends BaseService {
 		recover_record: {
 			instance: null,
 			factory: () => {
+				// todo: implement versioning for this record
 				return new Parser()
 					.uint8('drone_type')
 					.uint8('app_type')
