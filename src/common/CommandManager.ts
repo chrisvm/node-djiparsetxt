@@ -1,6 +1,7 @@
 import { PrintInfoCommand } from "../commands/PrintInfoCommand";
 import { UnscrambleCommand } from '../commands/UnscrambleCommand';
 import { ShowTypeCommand } from '../commands/ShowTypeCommand';
+import { TransformRecordsCommand } from '../commands/TransformRecordsCommand';
 import { ICommand } from "../commands/ICommand";
 import { ServiceManager } from "./ServiceManager";
 import { ILazyLoadingEntry } from './lazy_loading';
@@ -10,6 +11,7 @@ enum CommandTypes
 	PrintInfo = 'print_info',
 	Unscramble = 'unscramble',
 	ShowType = 'show_type',
+	TransformRecords = 'transform_records',
 }
 
 class CommandManager {
@@ -31,6 +33,10 @@ class CommandManager {
 			show_type: {
 				instance: null,
 				factory: () => new ShowTypeCommand()
+			},
+			transform_records: {
+				instance: null,
+				factory: () => new TransformRecordsCommand()
 			}
 		};
 	}

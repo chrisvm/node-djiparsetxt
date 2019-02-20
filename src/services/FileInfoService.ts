@@ -1,13 +1,14 @@
 import BaseService from "./BaseService";
-import { RecordStats, FileParsingService } from "./FileParsingService";
+import { IRecordStats, FileParsingService } from "./FileParsingService";
 import {
 	BinaryParserService,
 	ParserTypes,
 	bignum_convert_buffer
 } from "./BinaryParserService";
 import { RecordTypes } from "./RecordTypes";
+import { ServiceTypes } from "../common/ServiceManager";
 
-export interface HeaderInfo {
+export interface IHeaderInfo {
 	file_size: number;
 	header_size: number;
 	records_size: number;
@@ -16,8 +17,8 @@ export interface HeaderInfo {
 }
 
 export interface FileInfo {
-	header_info: HeaderInfo;
-	records_info: RecordStats;
+	header_info: IHeaderInfo;
+	records_info: IRecordStats;
 }
 
 export interface IRecord
@@ -31,9 +32,9 @@ export class FileInfoService extends BaseService {
 
 	public name: string = "file_info";
 
-	public get_header_info(buffer: Buffer): HeaderInfo {
+	public get_header_info(buffer: Buffer): IHeaderInfo {
 		const parser_service = this.service_man.get_service(
-			"parsers"
+			ServiceTypes.Parsers
 		) as BinaryParserService;
 		const header_parser = parser_service.get_parser(ParserTypes.Header);
 
@@ -56,9 +57,9 @@ export class FileInfoService extends BaseService {
 		};
 	}
 	
-	public get_records_info(buffer: Buffer): RecordStats {
+	public get_records_info(buffer: Buffer): IRecordStats {
 		const file_parsing_service = this.service_man.get_service(
-			"file_parsing"
+			ServiceTypes.FileParsing
 		) as FileParsingService;
 
 		return file_parsing_service.parse_records(buffer).stats;
@@ -66,7 +67,7 @@ export class FileInfoService extends BaseService {
 
 	public get_file_info(buffer: Buffer): FileInfo {
 		const file_parsing_service = this.service_man.get_service(
-			"file_parsing"
+			ServiceTypes.FileParsing
 		) as FileParsingService;
 		const header_info = this.get_header_info(buffer);
 		const record_stats = file_parsing_service.parse_records(buffer, header_info)
@@ -79,7 +80,7 @@ export class FileInfoService extends BaseService {
 		const details_start = header_info.header_size + header_info.records_size;
 		const details_buf = buffer.slice(details_start);
 		const parser_service = this.service_man.get_service(
-			"parsers"
+			ServiceTypes.Parsers
 		) as BinaryParserService;
 		const details_parser = parser_service.get_parser(ParserTypes.Details);
 		const details = details_parser.parse(details_buf);

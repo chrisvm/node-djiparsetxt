@@ -1,5 +1,5 @@
 import {ICommand} from './ICommand';
-import { ServiceManager } from '../common/ServiceManager';
+import { ServiceManager, ServiceTypes } from '../common/ServiceManager';
 import { FilesService } from '../services/FilesService';
 import { FileParsingService } from '../services/FileParsingService';
 import { ScrambleTableService } from '../services/ScrambleTableService';
@@ -10,14 +10,14 @@ export class UnscrambleCommand implements ICommand {
 
   public exec(service_man: ServiceManager): void
   {
-		const files_service = service_man.get_service('files') as FilesService;
-		const file_info_service = service_man.get_service('file_info') as FileInfoService;
+		const files_service = service_man.get_service(ServiceTypes.Files) as FilesService;
+		const file_info_service = service_man.get_service(ServiceTypes.FileInfo) as FileInfoService;
     const file_parsing_service = service_man.get_service(
-      'file_parsing'
+      ServiceTypes.FileParsing
     ) as FileParsingService;
 
     const scramble_table_service = service_man.get_service(
-      'scramble_table'
+      ServiceTypes.ScrambleTable
     ) as ScrambleTableService;
 
     files_service.files(file => {

@@ -29,4 +29,6 @@ export function main_entry(args: string[])
 		command_man.run(CommandTypes.ShowType);
 		return;
 	}
+
+	command_man.run(CommandTypes.TransformRecords);
 }

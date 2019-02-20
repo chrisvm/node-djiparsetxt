@@ -4,6 +4,7 @@ import { ILazyLoadingEntry } from "../common/lazy_loading";
 
 import * as BigNum from "bignum";
 import { RecordTypes } from "./RecordTypes";
+import { ServiceTypes } from "../common/ServiceManager";
 
 export enum ParserTypes {
 	Header = "header",
@@ -392,7 +393,7 @@ export class BinaryParserService extends BaseService {
 
 	public get_record_parser(record_type: RecordTypes): any {
 		const parser_service = this.service_man.get_service(
-			"parsers"
+			ServiceTypes.Parsers
 		) as BinaryParserService;
 
 		switch (record_type) {

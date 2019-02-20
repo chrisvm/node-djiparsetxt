@@ -2,8 +2,9 @@ import BaseService from "./BaseService";
 import * as _ from "lodash";
 import { RecordTypes } from "./RecordTypes";
 import { BinaryParserService, ParserTypes } from "./BinaryParserService";
-import { FileInfoService, HeaderInfo, IRecord } from "./FileInfoService";
+import { FileInfoService, IHeaderInfo, IRecord } from "./FileInfoService";
 import { Parser } from "binary-parser";
+import { ServiceTypes } from "../common/ServiceManager";
 
 function is_jpeg_soi(buffer: Buffer, offset: number): boolean {
 	return (
@@ -17,17 +18,17 @@ function is_jpeg_eoi(buffer: Buffer, offset: number): boolean {
 	);
 }
 
-export interface RecordStats {
+export interface IRecordStats {
 	records_area_size: number;
 	record_count: number;
 	type_count: { [type: number]: number };
 	invalid_records: number;
 }
 
-export interface RecordCache {
+export interface IRecordCache {
 	records: IRecord[];
 	version: Buffer;
-	stats: RecordStats;
+	stats: IRecordStats;
 }
 
 export class FileParsingService extends BaseService {
@@ -40,11 +41,11 @@ export class FileParsingService extends BaseService {
 	 */
 	public parse_records(
 		buffer: Buffer,
-		header_info?: HeaderInfo
-	): RecordCache {
+		header_info?: IHeaderInfo
+	): IRecordCache {
 		if (header_info == undefined) {
 			const file_info_service = this.service_man.get_service(
-				"file_info"
+				ServiceTypes.FileInfo
 			) as FileInfoService;
 			header_info = file_info_service.get_header_info(buffer);
 		}
@@ -55,7 +56,7 @@ export class FileParsingService extends BaseService {
 		return records;
 	}
 
-	public filter_records(records: RecordCache, type: RecordTypes): IRecord[] {
+	public filter_records(records: IRecordCache, type: RecordTypes): IRecord[] {
 		const new_cache: IRecord[] = [];
 		records.records.forEach(val => {
 			if (val.type == type) {
@@ -70,15 +71,15 @@ export class FileParsingService extends BaseService {
 		record_type: RecordTypes
 	): any {
 		const parser_service = this.service_man.get_service(
-			"parsers"
+			ServiceTypes.Parsers
 		) as BinaryParserService;
 
 		return parser_service.get_record_parser(record_type).parse(record.data);
 	}
 
-	private get_record_cache(buffer: Buffer, limit: number, version: Buffer): RecordCache {
+	private get_record_cache(buffer: Buffer, limit: number, version: Buffer): IRecordCache {
 		const parser_service = this.service_man.get_service(
-			"parsers"
+			ServiceTypes.Parsers
 		) as BinaryParserService;
 
 		const record_parser = parser_service.get_parser(ParserTypes.BaseRecord);
@@ -86,7 +87,7 @@ export class FileParsingService extends BaseService {
 			ParserTypes.StartRecord
 		);
 
-		const record_cache: RecordCache = {
+		const record_cache: IRecordCache = {
 			records: [],
 			version: version,
 			stats: {
@@ -132,7 +133,7 @@ export class FileParsingService extends BaseService {
 		return record_cache;
 	}
 
-	private calc_stats(cache: RecordCache, record: any) {
+	private calc_stats(cache: IRecordCache, record: any) {
 		cache.records.push(record);
 		cache.stats.record_count += 1;
 

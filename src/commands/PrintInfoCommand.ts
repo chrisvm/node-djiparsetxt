@@ -1,5 +1,5 @@
 import { ICommand } from "./ICommand";
-import { ServiceManager } from "../common/ServiceManager";
+import { ServiceManager, ServiceTypes } from "../common/ServiceManager";
 import { FilesService } from "../services/FilesService";
 import { FileInfoService } from '../services/FileInfoService';
 import { RecordTypes } from "../services/RecordTypes";
@@ -8,8 +8,8 @@ export class PrintInfoCommand implements ICommand {
 
 	public exec(service_man: ServiceManager): void 
 	{
-		const files_service = service_man.get_service('files') as FilesService;
-		const file_info_service = service_man.get_service('file_info') as 
+		const files_service = service_man.get_service(ServiceTypes.Files) as FilesService;
+		const file_info_service = service_man.get_service(ServiceTypes.FileInfo) as 
 			FileInfoService;
 
 		if (files_service) {
