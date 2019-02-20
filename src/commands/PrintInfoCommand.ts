@@ -18,7 +18,7 @@ export class PrintInfoCommand implements ICommand {
 				console.log(`file "${file.path}"`);
 				if (service_man.argv.print_header) {
 					const header_info = file_info_service.get_header_info(file.buffer);
-					console.log('Header Info:');
+					console.log('  Header Info:');
 					console.log(`    file size = ${header_info.file_size} B`);
 					console.log(`    records area size = ${header_info.records_size} B`);
 					console.log(`    details area size = ${header_info.details_size} B`);
@@ -26,18 +26,17 @@ export class PrintInfoCommand implements ICommand {
 				}
 
 				if (service_man.argv.print_records) {
-					console.log('Records Info:');
+					console.log('  Records Info:');
 					const stats = file_info_service.get_records_info(file.buffer);
 					console.log(`    records area size = ${stats.records_area_size} B`);
 					console.log(`    record count = ${stats.record_count} Records`);
 					console.log(`    invalid records = ${stats.invalid_records}`);
-					console.log(`    Records in File`);
-					console.log(`    =======================================`);
-					this.print_type_count_table(stats.type_count, '        ');
+					console.log(`    Records in File:`);
+					this.print_type_count_table(stats.type_count, '      ');
 				}
 
 				if (service_man.argv.details) {
-					console.log('Details:');
+					console.log('  Details:');
 					const details = file_info_service.get_details(file.buffer);
 					for (const key in details) {
 						console.log(`    ${key} = ${details[key]}`);
@@ -49,10 +48,21 @@ export class PrintInfoCommand implements ICommand {
 	
 	private print_type_count_table(type_count: { [type: number]: number; }, indent: string): void 
 	{
+		const max_width = Object.keys(type_count).reduce((acc, val) => {
+			const name = RecordTypes[parseInt(val)];
+			if (name == undefined) return acc;
+			return Math.max(acc, name.length);
+		}, 0);
+
+		// hacky way of aligning
 		for (const key in type_count) {
 			let hex_rep = parseInt(key).toString(16);
 			if (hex_rep.length == 1) hex_rep = '0' + hex_rep;
-			console.log(`${indent}0x${hex_rep} (${RecordTypes[key]}) = ${type_count[key]}`);
+			let part = `(${RecordTypes[key]})`;
+			if (max_width - (part.length - 2) != 0) {
+				part += ' '.repeat(max_width - part.length + 2);
+			}
+			console.log(`${indent}0x${hex_rep}`, part, `= ${type_count[key]}`);
 		}
 	}
 }
