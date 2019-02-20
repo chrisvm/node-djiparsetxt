@@ -361,7 +361,7 @@ export class BinaryParserService extends BaseService {
 			factory: () => {
 				return new Parser()
 					.doublele('latitude')
-					.doublele('longitde')
+					.doublele('longitude')
 					.floatle('accuracy');
 			}
 		},
