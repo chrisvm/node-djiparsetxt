@@ -5,6 +5,7 @@ import { ScrambleTableService } from './ScrambleTableService';
 import { IRecord } from './FileInfoService';
 import * as _ from 'lodash';
 import { BinaryParserService } from './BinaryParserService';
+import { RecordTypes } from './RecordTypes';
 
 export class CacheTransformService extends BaseService {
 	
@@ -15,7 +16,7 @@ export class CacheTransformService extends BaseService {
 		) as ScrambleTableService;
 		
 		const rows = this.cache_as_rows(records_cache);
-		console.log(rows);
+		console.log(rows.length);
 
 		return Buffer.from("Method not implemented.");
 	}
@@ -34,12 +35,13 @@ export class CacheTransformService extends BaseService {
 
 			const record = records[consumed];
 
+			// ignore the records for which we don't know the format
 			if (parser_service.parser_record_mapping(record.type) == null) {
 				consumed++;
 				continue;
 			}
 			
-			if (row[record.type] == null) {
+			if (record.type != RecordTypes.OSD) {
 				row[record.type] = record;
 				consumed++;
 				continue;
