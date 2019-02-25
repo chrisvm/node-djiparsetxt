@@ -16,14 +16,14 @@ export enum ParserTypes {
 	GimbalRecord = "gimbal_record",
 	RcRecord = "rc_record",
 	CustomRecord = "custom_record",
-	DeformRecord = 'deform_record',
-	CenterBatteryRecord = 'center_battery_record',
-	SmartBatteryRecord = 'smart_battery_record',
-	AppTipRecord = 'app_tip_record',
-	AppWarnRecord = 'app_warn_record',
-	RecoverRecord = 'recover_record',
-	AppGpsRecord = 'app_gps_record',
-	FirmwareRecord = 'firmware_record'
+	DeformRecord = "deform_record",
+	CenterBatteryRecord = "center_battery_record",
+	SmartBatteryRecord = "smart_battery_record",
+	AppTipRecord = "app_tip_record",
+	AppWarnRecord = "app_warn_record",
+	RecoverRecord = "recover_record",
+	AppGpsRecord = "app_gps_record",
+	FirmwareRecord = "firmware_record"
 }
 
 export function bignum_convert_buffer(buffer: any): BigNum {
@@ -38,7 +38,7 @@ export class BinaryParserService extends BaseService {
 				return new Parser()
 					.uint32le("header_record_size_lo")
 					.uint32le("header_record_size_hi")
-					.buffer("file_version", {length: 4})
+					.buffer("file_version", { length: 4 })
 					.skip(88);
 			}
 		},
@@ -169,9 +169,7 @@ export class BinaryParserService extends BaseService {
 
 				dummy.parse = (buf: Buffer): any => {
 					const parsed = dummy.parser.parse(buf);
-					parsed.updateTime = bignum_convert_buffer(
-						parsed.updateTime
-					);
+					parsed.updateTime = bignum_convert_buffer(parsed.updateTime);
 					return parsed;
 				};
 
@@ -271,75 +269,77 @@ export class BinaryParserService extends BaseService {
 			instance: null,
 			factory: () => {
 				return new Parser()
-					.bit2('unknown')
-					.bit2('deform_mode')
-					.bit3('deform_status')
-					.bit1('is_deform_protected');
+					.bit2("unknown")
+					.bit2("deform_mode")
+					.bit3("deform_status")
+					.bit1("is_deform_protected");
 			}
 		},
 		center_battery_record: {
 			instance: null,
 			factory: () => {
 				return new Parser()
-					.uint8('relative_capacity')
-					.uint16le('current_pv', {formatter: (val: any) => val / 1000})
-					.uint16le('current_capacity')
-					.uint16le('full_capacity')
-					.uint8('life')
-					.uint16le('loop_num')
-					.uint32le('error_type')
-					.uint16le('current', {formatter: (val: any) => val / 1000})
-					.uint16le('voltage_cel_1', {formatter: (val: any) => val / 1000})
-					.uint16le('voltage_cel_2', {formatter: (val: any) => val / 1000})
-					.uint16le('voltage_cel_3', {formatter: (val: any) => val / 1000})
-					.uint16le('voltage_cel_4', {formatter: (val: any) => val / 1000})
-					.uint16le('voltage_cel_5', {formatter: (val: any) => val / 1000})
-					.uint16le('voltage_cel_6', {formatter: (val: any) => val / 1000})
-					.uint16le('serial_no')
-					.uint16le('product_date', {formatter: (val: any) => {
-						return {
-							year: ((val & 0xFE00) >> 9) + 1980,
-							month: (val & 0x01E0) >> 5,
-							day: (val & 0x001F)
-						};
-					}})
-					.uint16le('temperature', {formatter: (val: any) => val / 100})
-					.uint8('conn_status');
-			}		
+					.uint8("relative_capacity")
+					.uint16le("current_pv", { formatter: (val: any) => val / 1000 })
+					.uint16le("current_capacity")
+					.uint16le("full_capacity")
+					.uint8("life")
+					.uint16le("loop_num")
+					.uint32le("error_type")
+					.uint16le("current", { formatter: (val: any) => val / 1000 })
+					.uint16le("voltage_cel_1", { formatter: (val: any) => val / 1000 })
+					.uint16le("voltage_cel_2", { formatter: (val: any) => val / 1000 })
+					.uint16le("voltage_cel_3", { formatter: (val: any) => val / 1000 })
+					.uint16le("voltage_cel_4", { formatter: (val: any) => val / 1000 })
+					.uint16le("voltage_cel_5", { formatter: (val: any) => val / 1000 })
+					.uint16le("voltage_cel_6", { formatter: (val: any) => val / 1000 })
+					.uint16le("serial_no")
+					.uint16le("product_date", {
+						formatter: (val: any) => {
+							return {
+								year: ((val & 0xfe00) >> 9) + 1980,
+								month: (val & 0x01e0) >> 5,
+								day: val & 0x001f
+							};
+						}
+					})
+					.uint16le("temperature", { formatter: (val: any) => val / 100 })
+					.uint8("conn_status");
+			}
 		},
 		smart_battery_record: {
 			instance: null,
 			factory: () => {
 				return new Parser()
-					.uint16le('useful_time')
-					.uint16le('go_home_time')
-					.uint16le('land_time')
-					.uint16le('go_home_battery')
-					.uint16le('landing_battery')
-					.uint32le('safe_fly_radius')
-					.floatle('volume_console')
-					.uint32le('status')
-					.uint8('go_home_status')
-					.uint8('go_home_countdown')
-					.uint16le('voltage', {formatter: (val: any) => val / 1000})
-					.uint8('battery')
-					.bit1('low_warning_go_home')
-					.bit7('low_warning')
-					.bit1('serious_low_warning_landing')
-					.bit7('serious_low_warning')
-					.uint8('voltage_percent');
+					.uint16le("useful_time")
+					.uint16le("go_home_time")
+					.uint16le("land_time")
+					.uint16le("go_home_battery")
+					.uint16le("landing_battery")
+					.uint32le("safe_fly_radius")
+					.floatle("volume_console")
+					.uint32le("status")
+					.uint8("go_home_status")
+					.uint8("go_home_countdown")
+					.uint16le("voltage", { formatter: (val: any) => val / 1000 })
+					.uint8("battery")
+					.bit1("low_warning_go_home")
+					.bit7("low_warning")
+					.bit1("serious_low_warning_landing")
+					.bit7("serious_low_warning")
+					.uint8("voltage_percent");
 			}
 		},
 		app_tip_record: {
 			instance: null,
 			factory: () => {
-				return new Parser().string('tip', {zeroTerminated: true});
+				return new Parser().string("tip", { zeroTerminated: true });
 			}
 		},
 		app_warn_record: {
 			instance: null,
 			factory: () => {
-				return new Parser().string('warn', {zeroTerminated: true});
+				return new Parser().string("warn", { zeroTerminated: true });
 			}
 		},
 		recover_record: {
@@ -347,24 +347,24 @@ export class BinaryParserService extends BaseService {
 			factory: () => {
 				// todo: implement versioning for this record
 				return new Parser()
-					.uint8('drone_type')
-					.uint8('app_type')
-					.buffer('app_version', {length: 3})
-					.string('aircraft_sn', {length: 10})
-					.string('aircraft_name', {length: 24})
+					.uint8("drone_type")
+					.uint8("app_type")
+					.buffer("app_version", { length: 3 })
+					.string("aircraft_sn", { length: 10 })
+					.string("aircraft_name", { length: 24 })
 					.skip(22)
-					.string('camera_sn', {length: 10})
-					.string('rc_sn', {length: 10})
-					.string('battery_sn', {length: 10});
+					.string("camera_sn", { length: 10 })
+					.string("rc_sn", { length: 10 })
+					.string("battery_sn", { length: 10 });
 			}
 		},
 		app_gps_record: {
 			instance: null,
 			factory: () => {
 				return new Parser()
-					.doublele('latitude')
-					.doublele('longitude')
-					.floatle('accuracy');
+					.doublele("latitude")
+					.doublele("longitude")
+					.floatle("accuracy");
 			}
 		},
 		firmware_record: {
@@ -372,7 +372,7 @@ export class BinaryParserService extends BaseService {
 			factory: () => {
 				return new Parser()
 					.skip(2)
-					.buffer('version', {length: 3})
+					.buffer("version", { length: 3 })
 					.skip(109);
 			}
 		}
@@ -401,12 +401,11 @@ export class BinaryParserService extends BaseService {
 		if (parser_type == null) {
 			throw new Error(`record type '${record_type}' not recognized`);
 		}
-		
+
 		return parser_service.get_parser(parser_type);
 	}
 
-	public parser_record_mapping(record_type: RecordTypes): ParserTypes | null
-	{
+	public parser_record_mapping(record_type: RecordTypes): ParserTypes | null {
 		switch (record_type) {
 			case RecordTypes.OSD:
 				return ParserTypes.OsdRecord;
