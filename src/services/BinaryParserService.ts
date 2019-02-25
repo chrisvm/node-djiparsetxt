@@ -396,35 +396,46 @@ export class BinaryParserService extends BaseService {
 			ServiceTypes.Parsers
 		) as BinaryParserService;
 
+		const parser_type = this.parser_record_mapping(record_type);
+
+		if (parser_type == null) {
+			throw new Error(`record type '${record_type}' not recognized`);
+		}
+		
+		return parser_service.get_parser(parser_type);
+	}
+
+	public parser_record_mapping(record_type: RecordTypes): ParserTypes | null
+	{
 		switch (record_type) {
 			case RecordTypes.OSD:
-				return parser_service.get_parser(ParserTypes.OsdRecord);
+				return ParserTypes.OsdRecord;
 			case RecordTypes.CUSTOM:
-				return parser_service.get_parser(ParserTypes.CustomRecord);
+				return ParserTypes.CustomRecord;
 			case RecordTypes.RC:
-				return parser_service.get_parser(ParserTypes.RcRecord);
+				return ParserTypes.RcRecord;
 			case RecordTypes.GIMBAL:
-				return parser_service.get_parser(ParserTypes.GimbalRecord);
+				return ParserTypes.GimbalRecord;
 			case RecordTypes.HOME:
-				return parser_service.get_parser(ParserTypes.HomeRecord);
+				return ParserTypes.HomeRecord;
 			case RecordTypes.DEFORM:
-				return parser_service.get_parser(ParserTypes.DeformRecord);
+				return ParserTypes.DeformRecord;
 			case RecordTypes.CENTER_BATTERY:
-				return parser_service.get_parser(ParserTypes.CenterBatteryRecord);
+				return ParserTypes.CenterBatteryRecord;
 			case RecordTypes.SMART_BATTERY:
-				return parser_service.get_parser(ParserTypes.SmartBatteryRecord);
+				return ParserTypes.SmartBatteryRecord;
 			case RecordTypes.APP_TIP:
-				return parser_service.get_parser(ParserTypes.AppTipRecord);
+				return ParserTypes.AppTipRecord;
 			case RecordTypes.APP_WARN:
-				return parser_service.get_parser(ParserTypes.AppWarnRecord);
+				return ParserTypes.AppWarnRecord;
 			case RecordTypes.RECOVER:
-				return parser_service.get_parser(ParserTypes.RecoverRecord);
+				return ParserTypes.RecoverRecord;
 			case RecordTypes.APP_GPS:
-				return parser_service.get_parser(ParserTypes.AppGpsRecord);
+				return ParserTypes.AppGpsRecord;
 			case RecordTypes.FIRMWARE:
-				return parser_service.get_parser(ParserTypes.FirmwareRecord);
+				return ParserTypes.FirmwareRecord;
 			default:
-				throw new Error(`record type '${record_type}' not recognized`);
+				return null;
 		}
 	}
 }

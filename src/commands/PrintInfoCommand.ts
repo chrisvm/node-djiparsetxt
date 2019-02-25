@@ -1,6 +1,7 @@
 import { ICommand } from "./ICommand";
 import { ServiceManager, ServiceTypes } from "../common/ServiceManager";
 import { FilesService } from "../services/FilesService";
+import { FileParsingService } from '../services/FileParsingService';
 import { FileInfoService } from '../services/FileInfoService';
 import { RecordTypes } from "../services/RecordTypes";
 
@@ -11,6 +12,7 @@ export class PrintInfoCommand implements ICommand {
 		const files_service = service_man.get_service(ServiceTypes.Files) as FilesService;
 		const file_info_service = service_man.get_service(ServiceTypes.FileInfo) as 
 			FileInfoService;
+		const file_parsing_service = service_man.get_service(ServiceTypes.FileParsing) as FileParsingService;
 
 		if (files_service) {
 			files_service.files(file => {
@@ -24,10 +26,12 @@ export class PrintInfoCommand implements ICommand {
 					console.log(`    details area size = ${header_info.details_size} B`);
 					console.log("    version:", header_info.version.readUInt8(2));
 				}
-
+				
+				let records = null;
 				if (service_man.argv.print_records) {
 					console.log('  Records Info:');
-					const stats = file_info_service.get_records_info(file.buffer);
+					records = file_parsing_service.parse_records(file.buffer);
+					const stats = records.stats;
 					console.log(`    records area size = ${stats.records_area_size} B`);
 					console.log(`    record count = ${stats.record_count} Records`);
 					console.log(`    invalid records = ${stats.invalid_records}`);
@@ -41,6 +45,14 @@ export class PrintInfoCommand implements ICommand {
 					for (const key in details) {
 						console.log(`    ${key} = ${details[key]}`);
 					}
+				}
+
+				if (service_man.argv.distrib) {
+					if (records == null) {
+						records = file_parsing_service.parse_records(file.buffer);
+					}
+					console.log('  Record Distribution:');
+					console.log(records.records.map((val) => val.type));
 				}
 			});
 		}
