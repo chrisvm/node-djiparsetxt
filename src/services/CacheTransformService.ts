@@ -1,5 +1,5 @@
 import BaseService from './BaseService'
-import { IRecordCache } from './FileParsingService';
+import { IRecordCache, FileParsingService } from './FileParsingService';
 import { ServiceTypes } from '../common/ServiceManager';
 import { ScrambleTableService } from './ScrambleTableService';
 import { IRecord } from './FileInfoService';
@@ -15,10 +15,21 @@ export class CacheTransformService extends BaseService {
       ServiceTypes.ScrambleTable
 		) as ScrambleTableService;
 		
-		const rows = this.cache_as_rows(records_cache);
-		console.log(rows.length);
+		const file_parsing_service = this.service_man.get_service(
+      ServiceTypes.FileParsing
+		) as FileParsingService;
 
-		return Buffer.from("Method not implemented.");
+		const scrambled_rows = this.cache_as_rows(records_cache);
+		
+		const unscrambled_rows = _.map(scrambled_rows, (row) => {
+			const new_row = [];
+			_.forEach(row, (record) => {
+				const unscrambled = scramble_table_service.unscramble_record(record);
+				new_row.push(file_parsing_service.parse_record_by_type(unscrambled, record.type));
+			});
+		});
+		console.log(unscrambled_rows);
+		return Buffer.from(JSON.stringify(unscrambled_rows));
 	}
 	
 	private cache_as_rows(records_cache: IRecordCache): IRecord[][]
