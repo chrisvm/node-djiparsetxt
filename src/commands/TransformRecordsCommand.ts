@@ -16,10 +16,17 @@ export class TransformRecordsCommand implements ICommand {
 			ServiceTypes.CacheTransform
 		) as CacheTransformService;
 		
+
+		const output: {files: {[path: string]: any[][]}} = {
+			files: {}
+		};
+
 		files_service.files(file => {
 			const records_cache = file_parsing_service.parse_records(file.buffer);
 			const output_buf = cache_trans_service.transform(records_cache);
-			process.stdout.write(output_buf);
+			output.files[file.path] = output_buf;
 		});
+
+		console.log(JSON.stringify(output));
 	}
 }

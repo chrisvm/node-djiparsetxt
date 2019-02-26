@@ -9,7 +9,7 @@ import { RecordTypes } from './RecordTypes';
 
 export class CacheTransformService extends BaseService {
 	
-	public transform(records_cache: IRecordCache): Buffer 
+	public transform(records_cache: IRecordCache): any[][]
 	{
 		const scramble_table_service = this.service_man.get_service(
       ServiceTypes.ScrambleTable
@@ -30,7 +30,7 @@ export class CacheTransformService extends BaseService {
 			return new_row;
 		});
 
-		return Buffer.from(JSON.stringify(unscrambled_rows));
+		return unscrambled_rows;
 	}
 	
 	private cache_as_rows(records_cache: IRecordCache): IRecord[][]
