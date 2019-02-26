@@ -22,13 +22,14 @@ export class CacheTransformService extends BaseService {
 		const scrambled_rows = this.cache_as_rows(records_cache);
 		
 		const unscrambled_rows = _.map(scrambled_rows, (row) => {
-			const new_row = [];
+			const new_row: any[] = [];
 			_.forEach(row, (record) => {
 				const unscrambled = scramble_table_service.unscramble_record(record);
 				new_row.push(file_parsing_service.parse_record_by_type(unscrambled, record.type));
 			});
+			return new_row;
 		});
-		console.log(unscrambled_rows);
+
 		return Buffer.from(JSON.stringify(unscrambled_rows));
 	}
 	
