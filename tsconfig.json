@@ -13,7 +13,7 @@
     /* Generates corresponding '.d.ts' file. */
     "sourceMap": true,
     /* Generates corresponding '.map' file. */
-    // "outFile": "./",                       /* Concatenate and emit output to single file. */
+    //"outFile": "./dist/node-djiparsetxt.js",                       /* Concatenate and emit output to single file. */
     "outDir": "./dist",
     /* Redirect output structure to the directory. */
     // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
@@ -57,7 +57,7 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
   "files": [
-    "src/main.ts"
+    "src/node-djiparsetxt.ts"
   ],
   "include": [
     "src/*", "src/common/ServiceManager.ts", "src/common/CommandManager.ts", "src/common/CliArguments.ts"
@@ -65,5 +65,5 @@
   "exclude": [
     "tests/*",
     "node_modules",
-  ]
+	]
 }
