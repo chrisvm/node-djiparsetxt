@@ -2,7 +2,7 @@ import BaseService from "./BaseService";
 import { Parser } from "binary-parser";
 import { ILazyLoadingEntry } from "../common/lazy_loading";
 
-import * as BigNum from "bignum";
+import bignum from "bignum";
 import { RecordTypes } from "./RecordTypes";
 import { ServiceTypes } from "../common/ServiceManager";
 
@@ -26,8 +26,8 @@ export enum ParserTypes {
 	FirmwareRecord = "firmware_record"
 }
 
-export function bignum_convert_buffer(buffer: any): BigNum {
-	return BigNum.fromBuffer(buffer as Buffer, { endian: "little", size: 8 });
+export function bignum_convert_buffer(buffer: any): bignum {
+	return bignum.fromBuffer(buffer as Buffer, { endian: "little", size: 8 });
 }
 
 export class BinaryParserService extends BaseService {
