@@ -15,7 +15,7 @@ export function main_entry(args: string[])
 	const service_man = new ServiceManager(argv);
 	const command_man = new CommandManager(service_man);
 
-	if (argv.print_header || argv.print_records || argv.details) {
+	if (argv.print_header || argv.print_records || argv.details || argv.distrib) {
 		command_man.run(CommandTypes.PrintInfo);
 		return;
 	}

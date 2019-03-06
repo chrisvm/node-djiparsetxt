@@ -1,10 +1,12 @@
 {
-  "name": "node-djiparsetxt",
-  "version": "0.0.1",
-  "description": "command-line application that reads a DJI '.txt' file and outputs a csv.",
-  "main": "main.js",
+  "name": "@cvelez/node-djiparsetxt",
+  "version": "0.0.2",
+  "description": "command-line application that reads a DJI '.txt' file and outputs a json.",
+	"main": "dist/node-djiparsetxt.js",
+	"types": "dist/node-djiparsetxt.d.ts",
   "scripts": {
-    "test": "echo \"No tests setup\""
+		"test": "echo \"No tests setup\"",
+		"build": "tsc"
   },
   "author": "cvelez <christian.velez55@gmail.com>",
   "license": "ISC",
@@ -21,5 +23,10 @@
   "devDependencies": {
     "@types/minimist": "^1.2.0",
     "@types/node": "^11.9.0"
-  }
+	},
+	"keywords": [
+		"dji",
+		"djiparsetxt",
+		"drone"
+	]
 }

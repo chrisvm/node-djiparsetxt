@@ -70,8 +70,13 @@ export class CliArguments {
 		{
 			short_name: 's',
 			long_name: 'show-type',
-			description: 'Show the records of the given type',
+			description: 'Show the records of the given type.',
 			param_name: 'type'
+		},
+		{
+			short_name: 'd',
+			long_name: 'distribution',
+			description: 'Print the record types as they appear in the file.'
 		}
   ];
 
@@ -115,5 +120,9 @@ export class CliArguments {
 	
 	public get show_record(): number | null {
 		return this.argv.show_type || this.argv.s;
+	}
+
+	public get distrib(): boolean {
+		return this.argv.distribution || this.argv.d;
 	}
 }

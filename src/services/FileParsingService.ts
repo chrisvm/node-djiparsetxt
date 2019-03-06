@@ -3,7 +3,6 @@ import * as _ from "lodash";
 import { RecordTypes } from "./RecordTypes";
 import { BinaryParserService, ParserTypes } from "./BinaryParserService";
 import { FileInfoService, IHeaderInfo, IRecord } from "./FileInfoService";
-import { Parser } from "binary-parser";
 import { ServiceTypes } from "../common/ServiceManager";
 
 function is_jpeg_soi(buffer: Buffer, offset: number): boolean {
