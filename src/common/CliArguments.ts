@@ -11,11 +11,26 @@ interface OptionDescription
 export class CliArguments {
   
   private argv: minimist.ParsedArgs;
+	private _isEmpty: boolean;
 
   constructor(args: string[])
   {
-    this.argv = minimist(args);
+		this._isEmpty = false;
+		if (args.length == 0) {
+			this._isEmpty = true;
+		}
+
+		this.argv = minimist(args);
   }
+
+	public static CreateEmpty(): CliArguments
+	{
+		return new CliArguments([]);
+	}
+
+	public get isEmpty(): boolean {
+		return this.isEmpty;
+	}
 
   public assert_args(): boolean 
   {

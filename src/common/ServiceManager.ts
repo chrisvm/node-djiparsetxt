@@ -25,7 +25,8 @@ export class ServiceManager {
 
   constructor(argv: CliArguments) 
   {
-    this.argv_m = argv;
+		this.argv_m = argv;
+
     this.services = {
       'files': {
         instance: null,
