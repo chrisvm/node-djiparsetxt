@@ -14,7 +14,7 @@
     "sourceMap": true,
     /* Generates corresponding '.map' file. */
     //"outFile": "./dist/node-djiparsetxt.js",                       /* Concatenate and emit output to single file. */
-    "outDir": "./dist",
+    "outDir": "dist",
     /* Redirect output structure to the directory. */
     // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "removeComments": true,                /* Do not emit comments to output. */
@@ -64,6 +64,7 @@
   ],
   "exclude": [
     "tests/*",
-    "node_modules",
+		"node_modules",
+		"dist"
 	]
 }
