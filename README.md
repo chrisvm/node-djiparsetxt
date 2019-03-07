@@ -28,7 +28,7 @@ Example to create a json file from a text log:
 ## From a script
 
 `node-djiparsetxt` supports usage as a library to integrate it to a bigger 
-workflow or the create batch processing of log files.
+workflow or to create batch processing of log files.
 
 Example script that prints preformatted json file from a log file:
 
