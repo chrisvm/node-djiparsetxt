@@ -18,7 +18,11 @@
     "binary-parser": "^1.3.2",
     "lodash": "^4.17.11",
     "minimist": "^1.2.0"
-  },
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/chrisvm/node-djiparsetxt"
+	},
   "devDependencies": {
 		"typescript": "^3.3.3",
 		"@types/bignum": "0.0.29",
