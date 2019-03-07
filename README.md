@@ -1,8 +1,8 @@
 node-djiparsetxt
 ================
 
-![npm](https://img.shields.io/npm/v/@cvelez/node-djiparsetxt.svg)
-![NPM](https://img.shields.io/npm/l/@cvelez/node-djiparsetxt.svg)
+![npm](https://img.shields.io/npm/v/node-djiparsetxt.svg)
+![NPM](https://img.shields.io/npm/l/node-djiparsetxt.svg)
 
 Decrypts and parse DJI logs and outputs csv files, along other things. Based on 
 [`djiparsetxt`](http://djilogs.live555.com/).
@@ -56,3 +56,6 @@ Parse a given buffer and return an object of type `ParsedOutput`.
 - *`name`*: `string`: Name to use on the return object for the buffer given.
 - *`buf`*: `Buffer`: Buffer instance of the file to parse.
 
+#### Returns
+
+An instance of type `ParsedOutput` with the parsed files.
