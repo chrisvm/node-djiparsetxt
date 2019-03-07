@@ -53,7 +53,7 @@ if (require.main == module) {
 	main();
 }
 
-type ParsedOutput = {files: {[name: string]: any[][]}};
+export type ParsedOutput = {files: {[name: string]: any[][]}};
 
 export function parse_file(name: string, buf: Buffer): ParsedOutput
 {

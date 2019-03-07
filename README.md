@@ -16,13 +16,14 @@ The main use case for is through a terminal to create json version of logs.
 
 The cli's format is:
 
-`node-djiparsetxt FILE [FILE...] [OPTIONS]`
+		node-djiparsetxt FILE [FILE...] [OPTIONS]
 
-type `node-djiparsetxt --help` for more info on options.
+Type `node-djiparsetxt --help` for more info on options.
+
 
 Example to create a json file from a text log:
 
-`node-djiparsetxt log1.txt > log1.json`
+		node-djiparsetxt log1.txt > log1.json
 
 ## From a script
 
@@ -42,3 +43,16 @@ fs.readFile(file_path, (err, data) => {
 	console.log(JSON.stringify(djiparsetxt.parse_file(file_path, data), null, 4));
 });
 ```
+
+`node-djiparsetxt` Module
+=========================
+
+`parse_file(name: string, buf: Buffer): ParsedOutput`
+
+Parse a given buffer and return an object of type `ParsedOutput`.
+
+#### Parameters
+
+- *`name`*: `string`: Name to use on the return object for the buffer given.
+- *`buf`*: `Buffer`: Buffer instance of the file to parse.
+
