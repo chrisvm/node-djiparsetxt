@@ -1,13 +1,12 @@
 #!/usr/bin/env node
-import {CliArguments} from './common/CliArguments';
-import { FileParsingService } from "./services/FileParsingService";
+import { CliArguments } from "./common/CliArguments";
+import { CommandManager, CommandTypes } from "./common/CommandManager";
+import { ServiceManager, ServiceTypes } from "./common/ServiceManager";
 import { CacheTransformService } from "./services/CacheTransformService";
-import {ServiceManager, ServiceTypes} from './common/ServiceManager';
-import {CommandManager, CommandTypes} from './common/CommandManager';
+import { FileParsingService } from "./services/FileParsingService";
 
-function process_args(args: string[])
-{
-  const argv = new CliArguments(args);
+function execute_cli(args: string[]) {
+	const argv = new CliArguments(args);
 
 	// assert cli args
 	if (argv.assert_args()) {
@@ -15,63 +14,61 @@ function process_args(args: string[])
 	}
 
 	// create managers
-	const service_man = new ServiceManager(argv);
-	const command_man = new CommandManager(service_man);
+	const serviceMan = new ServiceManager(argv);
+	const commandMan = new CommandManager(serviceMan);
 
 	if (argv.print_header || argv.print_records || argv.details || argv.distrib) {
-		command_man.run(CommandTypes.PrintInfo);
+		commandMan.run(CommandTypes.PrintInfo);
 		return;
 	}
 
 	if (argv.unscramble) {
-		command_man.run(CommandTypes.Unscramble);
-		return;
-	}
-	
-	if (argv.show_record != null) {
-		command_man.run(CommandTypes.ShowType);
+		commandMan.run(CommandTypes.Unscramble);
 		return;
 	}
 
-	command_man.run(CommandTypes.TransformRecords);
+	if (argv.show_record != null) {
+		commandMan.run(CommandTypes.ShowType);
+		return;
+	}
+
+	commandMan.run(CommandTypes.TransformRecords);
 }
 
 // main function
-function main () 
-{
-	const process_name = 'node-djiparsetxt';
+function main() {
+	const processName = "node-djiparsetxt";
 	const args = process.argv.slice(2);
 	try {
-		process_args(args);
-	}
-	catch (e) {
-		console.log(`${process_name}: ${e}`);
+		execute_cli(args);
+	} catch (e) {
+		console.log(`${processName}: ${e}`);
 	}
 }
 
-if (require.main == module) {
+if (require.main === module) {
 	main();
 }
 
-export type ParsedOutput = {files: {[name: string]: any[][]}};
+export interface IParsedOutput { files: { [name: string]: any[][] } }
 
-export function parse_file(name: string, buf: Buffer): ParsedOutput
-{
-	const service_man = new ServiceManager(CliArguments.CreateEmpty());
-	const file_parsing_service = service_man.get_service(
-		ServiceTypes.FileParsing
-	) as FileParsingService;
-	
-	const cache_trans_service = service_man.get_service(
-		ServiceTypes.CacheTransform
-	) as CacheTransformService;
+export function parse_file(name: string, buf: Buffer): IParsedOutput {
+	const serviceMan = new ServiceManager(CliArguments.CreateEmpty());
+	const fileParsingService = serviceMan.get_service<FileParsingService>(
+		ServiceTypes.FileParsing,
+	);
 
-	const output: ParsedOutput = {
-		files: {}
+	const cacheTransService = serviceMan.get_service<CacheTransformService>(
+		ServiceTypes.CacheTransform,
+	);
+
+	const output: IParsedOutput = {
+		files: {},
 	};
 
-	const records_cache = file_parsing_service.parse_records(buf);
-	const output_buf = cache_trans_service.transform(records_cache);
-	output.files[name] = output_buf;
+	const recordsCache = fileParsingService.parse_records(buf);
+	const outputBuf = cacheTransService.transform(recordsCache);
+	output.files[name] = outputBuf;
+
 	return output;
 }

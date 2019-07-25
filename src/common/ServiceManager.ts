@@ -55,7 +55,7 @@ export class ServiceManager {
     };
   }
   
-  public get_service(type: ServiceTypes): BaseService
+  public get_service<T extends BaseService>(type: ServiceTypes): T
   {
     const service = this.services[type];
     
@@ -67,7 +67,7 @@ export class ServiceManager {
       service.instance = service.factory();
     }
 
-    return service.instance;
+    return service.instance as T;
   }
 
 	public get argv() {
