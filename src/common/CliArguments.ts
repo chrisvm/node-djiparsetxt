@@ -42,6 +42,10 @@ export class CliArguments {
 		return this.argv.show_type || this.argv.s;
 	}
 
+	public get pretty_print(): boolean {
+		return this.argv.pretty || this.argv.p;
+	}
+
 	public get distrib(): boolean {
 		return this.argv.distribution || this.argv.d;
 	}
@@ -56,7 +60,9 @@ export class CliArguments {
 
 	public static print_help(): void {
 		CliArguments.print_usage();
+
 		console.log("Options:");
+
 		for (const option of CliArguments.optionsDescriptions) {
 			if (option.param_name) {
 				console.log(`    --${option.long_name} ${option.param_name},` +
@@ -104,6 +110,11 @@ export class CliArguments {
 			short_name: "d",
 			long_name: "distribution",
 			description: "Print the record types as they appear in the file.",
+		},
+		{
+			short_name: "p",
+			long_name: "--pretty",
+			description: "Pretty print the json output.",
 		},
 	];
 

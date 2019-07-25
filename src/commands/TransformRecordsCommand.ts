@@ -15,16 +15,15 @@ export class TransformRecordsCommand implements ICommand {
 			ServiceTypes.CacheTransform,
 		);
 
-		const output: {files: {[path: string]: any[][]}} = {
-			files: {},
-		};
-
 		filesService.forEachFile((file) => {
 			const recordsCache = fileParsingService.parse_records(file.buffer);
 			const outputBuf = cacheTransService.transform(recordsCache);
-			output.files[file.path] = outputBuf;
-		});
 
-		console.log(JSON.stringify(output));
+			if (serviceMan.argv.pretty_print) {
+				console.log(JSON.stringify(outputBuf, null, 2));
+			} else {
+				console.log(JSON.stringify(outputBuf));
+			}
+		});
 	}
 }

@@ -16,10 +16,10 @@ enum CommandTypes {
 class CommandManager {
 
 	private commands: { [name: string]: ILazyLoadingEntry<ICommand> };
-	private service_man: ServiceManager;
+	private serviceMan: ServiceManager;
 
-	constructor(service_man: ServiceManager) {
-		this.service_man = service_man;
+	constructor(serviceMan: ServiceManager) {
+		this.serviceMan = serviceMan;
 		this.commands = {
 			print_info: {
 				instance: null,
@@ -40,14 +40,14 @@ class CommandManager {
 		};
 	}
 
-	public run(type: CommandTypes) {
+	public run(type: CommandTypes): void {
 		const command = this.commands[type];
 
 		if (command.instance == null) {
 			command.instance = command.factory();
 		}
 
-		command.instance.exec(this.service_man);
+		command.instance.exec(this.serviceMan);
 	}
 }
 
