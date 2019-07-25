@@ -19,7 +19,7 @@ export class TransformRecordsCommand implements ICommand {
 			files: {},
 		};
 
-		filesService.files((file) => {
+		filesService.forEachFile((file) => {
 			const recordsCache = fileParsingService.parse_records(file.buffer);
 			const outputBuf = cacheTransService.transform(recordsCache);
 			output.files[file.path] = outputBuf;

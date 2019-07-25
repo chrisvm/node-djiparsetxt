@@ -35,25 +35,23 @@ function execute_cli(args: string[]) {
 	commandMan.run(CommandTypes.TransformRecords);
 }
 
-// main function
-function main() {
-	const processName = "node-djiparsetxt";
-	const args = process.argv.slice(2);
+// this is what runs when called as a tool
+if (require.main === module) {
 	try {
+		const args = process.argv.slice(2);
 		execute_cli(args);
 	} catch (e) {
+		const processName = "node-djiparsetxt";
 		console.log(`${processName}: ${e}`);
 	}
 }
 
-if (require.main === module) {
-	main();
-}
-
+// public api when used as a module
 export interface IParsedOutput { files: { [name: string]: any[][] }; }
 
 export function parse_file(name: string, buf: Buffer): IParsedOutput {
 	const serviceMan = new ServiceManager(CliArguments.CreateEmpty());
+
 	const fileParsingService = serviceMan.get_service<FileParsingService>(
 		ServiceTypes.FileParsing,
 	);

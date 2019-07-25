@@ -13,7 +13,7 @@ export class PrintInfoCommand implements ICommand {
 		const fileParsingService = serviceMan.get_service<FileParsingService>(ServiceTypes.FileParsing);
 
 		if (filesService) {
-			filesService.files((file) => {
+			filesService.forEachFile((file) => {
 				// show header details
 				console.log(`file "${file.path}"`);
 				if (serviceMan.argv.print_header) {

@@ -17,7 +17,7 @@ export class UnscrambleCommand implements ICommand {
 			ServiceTypes.ScrambleTable,
 		);
 
-		filesService.files((file) => {
+		filesService.forEachFile((file) => {
 			const recordHeader = fileInfoService.get_header_info(file.buffer);
 			const recordsCache = fileParsingService.parse_records(file.buffer);
 

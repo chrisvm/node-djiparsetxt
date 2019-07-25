@@ -13,13 +13,16 @@ export class FilesService extends BaseService {
 	private filesM: IFile[] = [];
 	private initFiles: boolean = true;
 
-	public files(cb: (file: IFile) => void) {
+	public forEachFile(cb: (file: IFile) => void) {
+		// check if we have read the files from disk
 		if (this.initFiles) {
 			const argv = this.serviceMan.argv;
-			argv.file_paths.forEach((filePath) => {
+
+			for (const filePath of argv.file_paths) {
 				const fileBuffer = fs.readFileSync(filePath);
 				this.filesM.push({ path: filePath, buffer: fileBuffer });
-			});
+			}
+
 			this.initFiles = false;
 		}
 
