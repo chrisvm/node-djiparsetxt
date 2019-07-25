@@ -1,67 +1,65 @@
-import BaseService from './BaseService'
-import { IRecordCache, FileParsingService } from './FileParsingService';
-import { ServiceTypes } from '../common/ServiceManager';
-import { ScrambleTableService } from './ScrambleTableService';
-import { IRecord } from './FileInfoService';
-import * as _ from 'lodash';
-import { BinaryParserService } from './BinaryParserService';
-import { RecordTypes } from './RecordTypes';
+import * as _ from "lodash";
+import { ServiceTypes } from "../common/ServiceManager";
+import BaseService from "./BaseService";
+import { BinaryParserService } from "./BinaryParserService";
+import { IRecord } from "./FileInfoService";
+import { FileParsingService, IRecordCache } from "./FileParsingService";
+import { RecordTypes } from "./RecordTypes";
+import { ScrambleTableService } from "./ScrambleTableService";
 
 export class CacheTransformService extends BaseService {
-	
-	public transform(records_cache: IRecordCache): any[][]
-	{
-		const scramble_table_service = this.service_man.get_service(
-      ServiceTypes.ScrambleTable
-		) as ScrambleTableService;
-		
-		const file_parsing_service = this.service_man.get_service(
-      ServiceTypes.FileParsing
-		) as FileParsingService;
 
-		const scrambled_rows = this.cache_as_rows(records_cache);
-		
-		const unscrambled_rows = _.map(scrambled_rows, (row) => {
-			const new_row: any[] = [];
+	public transform(recordsCache: IRecordCache): any[][] {
+		const scrambleTableService = this.serviceMan.get_service<ScrambleTableService>(
+			ServiceTypes.ScrambleTable,
+		);
+
+		const fileParsingService = this.serviceMan.get_service<FileParsingService>(
+			ServiceTypes.FileParsing,
+		);
+
+		const scrambledRows = this.cache_as_rows(recordsCache);
+
+		const unscrambledRows = _.map(scrambledRows, (row) => {
+			const newRow: any[] = [];
 			_.forEach(row, (record) => {
-				const unscrambled = scramble_table_service.unscramble_record(record);
-				new_row.push(file_parsing_service.parse_record_by_type(unscrambled, record.type));
+				const unscrambled = scrambleTableService.unscramble_record(record);
+				newRow.push(fileParsingService.parse_record_by_type(unscrambled, record.type));
 			});
-			return new_row;
+			return newRow;
 		});
 
-		return unscrambled_rows;
+		return unscrambledRows;
 	}
-	
-	private cache_as_rows(records_cache: IRecordCache): IRecord[][]
-	{
-		const parser_service = this.service_man.get_service(ServiceTypes.Parsers) as BinaryParserService;
-		
+
+	private cache_as_rows(recordsCache: IRecordCache): IRecord[][] {
+		const parserService = this.serviceMan.get_service(ServiceTypes.Parsers) as BinaryParserService;
+
 		const rows: IRecord[][] = [];
-		const records = records_cache.records;
+		const records = recordsCache.records;
 
 		let consumed = 0;
 		let row: {[type: number]: IRecord} = {};
-		
+
 		while (consumed < records.length) {
 
 			const record = records[consumed];
 
 			// ignore the records for which we don't know the format
-			if (parser_service.parser_record_mapping(record.type) == null) {
+			if (parserService.parser_record_mapping(record.type) === null) {
 				consumed++;
 				continue;
 			}
-			
-			if (record.type != RecordTypes.OSD) {
+
+			if (record.type !== RecordTypes.OSD) {
 				row[record.type] = record;
 				consumed++;
 				continue;
 			}
-			
-			const row_arr: IRecord[] = [];
-			_.forEach(row, (val) => row_arr.push(val));
-			rows.push(row_arr);
+
+			const rowArr: IRecord[] = [];
+			_.forEach(row, (val) => rowArr.push(val));
+			rows.push(rowArr);
 
 			row = {};
 			row[record.type] = record;

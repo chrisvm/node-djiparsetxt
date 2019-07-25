@@ -6,7 +6,9 @@
     "jsRules": {},
     "rules": {
         "indent": [true, "tabs"],
-        "no-console": [false]
+        "no-console": [false],
+        "object-literal-sort-keys": false,
+        "no-bitwise": false
     },
     "rulesDirectory": []
 }

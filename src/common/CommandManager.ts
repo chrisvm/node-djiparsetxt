@@ -1,17 +1,16 @@
-import { PrintInfoCommand } from "../commands/PrintInfoCommand";
-import { UnscrambleCommand } from '../commands/UnscrambleCommand';
-import { ShowTypeCommand } from '../commands/ShowTypeCommand';
-import { TransformRecordsCommand } from '../commands/TransformRecordsCommand';
 import { ICommand } from "../commands/ICommand";
+import { PrintInfoCommand } from "../commands/PrintInfoCommand";
+import { ShowTypeCommand } from "../commands/ShowTypeCommand";
+import { TransformRecordsCommand } from "../commands/TransformRecordsCommand";
+import { UnscrambleCommand } from "../commands/UnscrambleCommand";
+import { ILazyLoadingEntry } from "./lazy_loading";
 import { ServiceManager } from "./ServiceManager";
-import { ILazyLoadingEntry } from './lazy_loading';
 
-enum CommandTypes 
-{
-	PrintInfo = 'print_info',
-	Unscramble = 'unscramble',
-	ShowType = 'show_type',
-	TransformRecords = 'transform_records',
+enum CommandTypes {
+	PrintInfo = "print_info",
+	Unscramble = "unscramble",
+	ShowType = "show_type",
+	TransformRecords = "transform_records",
 }
 
 class CommandManager {
@@ -24,20 +23,20 @@ class CommandManager {
 		this.commands = {
 			print_info: {
 				instance: null,
-				factory: () => new PrintInfoCommand()
+				factory: () => new PrintInfoCommand(),
 			},
 			unscramble: {
 				instance: null,
-				factory: () => new UnscrambleCommand()
+				factory: () => new UnscrambleCommand(),
 			},
 			show_type: {
 				instance: null,
-				factory: () => new ShowTypeCommand()
+				factory: () => new ShowTypeCommand(),
 			},
 			transform_records: {
 				instance: null,
-				factory: () => new TransformRecordsCommand()
-			}
+				factory: () => new TransformRecordsCommand(),
+			},
 		};
 	}
 
@@ -48,7 +47,7 @@ class CommandManager {
 			command.instance = command.factory();
 		}
 
-		command.instance.exec(this.service_man);	
+		command.instance.exec(this.service_man);
 	}
 }
 

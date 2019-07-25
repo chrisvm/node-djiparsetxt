@@ -1,12 +1,12 @@
+import { ServiceTypes } from "../common/ServiceManager";
 import BaseService from "./BaseService";
-import { IRecordStats, FileParsingService } from "./FileParsingService";
 import {
+	bignum_convert_buffer,
 	BinaryParserService,
 	ParserTypes,
-	bignum_convert_buffer
 } from "./BinaryParserService";
+import { FileParsingService, IRecordStats } from "./FileParsingService";
 import { RecordTypes } from "./RecordTypes";
-import { ServiceTypes } from "../common/ServiceManager";
 
 export interface IHeaderInfo {
 	file_size: number;
@@ -16,16 +16,15 @@ export interface IHeaderInfo {
 	version: Buffer;
 }
 
-export interface FileInfo {
+export interface IFileInfo {
 	header_info: IHeaderInfo;
 	records_info: IRecordStats;
 }
 
-export interface IRecord
-{
-  type: RecordTypes;
-  length: number;
-  data: Buffer;
+export interface IRecord {
+	type: RecordTypes;
+	length: number;
+	data: Buffer;
 }
 
 export class FileInfoService extends BaseService {
@@ -33,57 +32,57 @@ export class FileInfoService extends BaseService {
 	public name: string = "file_info";
 
 	public get_header_info(buffer: Buffer): IHeaderInfo {
-		const parser_service = this.service_man.get_service(
-			ServiceTypes.Parsers
+		const parserService = this.serviceMan.get_service(
+			ServiceTypes.Parsers,
 		) as BinaryParserService;
-		const header_parser = parser_service.get_parser(ParserTypes.Header);
+		const headerParser = parserService.get_parser(ParserTypes.Header);
 
 		// get first 100 bytes and parse them.
-		const header_buff = buffer.slice(0, 100);
-		const header = header_parser.parse(header_buff);
+		const headerBuff = buffer.slice(0, 100);
+		const header = headerParser.parse(headerBuff);
 
 		// calculate details
-		const file_size = buffer.length;
-		const header_records_area_size = header.header_record_size_lo;
-		const records_area_size = header_records_area_size - 100;
-		const details_area_size = file_size - header_records_area_size;
+		const fileSize = buffer.length;
+		const headerRecordsAreaSize = header.header_record_size_lo;
+		const recordsAreaSize = headerRecordsAreaSize - 100;
+		const detailsAreaSize = fileSize - headerRecordsAreaSize;
 
 		return {
-			file_size: file_size,
+			file_size: fileSize,
 			header_size: 100,
-			records_size: records_area_size,
-			details_size: details_area_size,
-			version: header.file_version
+			records_size: recordsAreaSize,
+			details_size: detailsAreaSize,
+			version: header.file_version,
 		};
 	}
-	
+
 	public get_records_info(buffer: Buffer): IRecordStats {
-		const file_parsing_service = this.service_man.get_service(
-			ServiceTypes.FileParsing
+		const fileParsingService = this.serviceMan.get_service(
+			ServiceTypes.FileParsing,
 		) as FileParsingService;
 
-		return file_parsing_service.parse_records(buffer).stats;
+		return fileParsingService.parse_records(buffer).stats;
 	}
 
-	public get_file_info(buffer: Buffer): FileInfo {
-		const file_parsing_service = this.service_man.get_service(
-			ServiceTypes.FileParsing
+	public get_file_info(buffer: Buffer): IFileInfo {
+		const fileParsingService = this.serviceMan.get_service(
+			ServiceTypes.FileParsing,
 		) as FileParsingService;
-		const header_info = this.get_header_info(buffer);
-		const record_stats = file_parsing_service.parse_records(buffer, header_info)
+		const headerInfo = this.get_header_info(buffer);
+		const recordStats = fileParsingService.parse_records(buffer, headerInfo)
 			.stats;
-		return { header_info, records_info: record_stats };
+		return { header_info: headerInfo, records_info: recordStats };
 	}
 
 	public get_details(buffer: Buffer): any {
-		const header_info = this.get_header_info(buffer);
-		const details_start = header_info.header_size + header_info.records_size;
-		const details_buf = buffer.slice(details_start);
-		const parser_service = this.service_man.get_service(
-			ServiceTypes.Parsers
+		const headerInfo = this.get_header_info(buffer);
+		const detailsStart = headerInfo.header_size + headerInfo.records_size;
+		const detailsBuf = buffer.slice(detailsStart);
+		const parserService = this.serviceMan.get_service(
+			ServiceTypes.Parsers,
 		) as BinaryParserService;
-		const details_parser = parser_service.get_parser(ParserTypes.Details);
-		const details = details_parser.parse(details_buf);
+		const detailsParser = parserService.get_parser(ParserTypes.Details);
+		const details = detailsParser.parse(detailsBuf);
 		details.timestamp = bignum_convert_buffer(details.timestamp);
 		return details;
 	}

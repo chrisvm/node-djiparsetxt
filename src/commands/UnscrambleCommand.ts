@@ -1,67 +1,64 @@
-import {ICommand} from './ICommand';
-import { ServiceManager, ServiceTypes } from '../common/ServiceManager';
-import { FilesService } from '../services/FilesService';
-import { FileParsingService } from '../services/FileParsingService';
-import { ScrambleTableService } from '../services/ScrambleTableService';
-import { FileInfoService } from '../services/FileInfoService';
-import { RecordTypes } from '../services/RecordTypes';
+import { ServiceManager, ServiceTypes } from "../common/ServiceManager";
+import { FileInfoService } from "../services/FileInfoService";
+import { FileParsingService } from "../services/FileParsingService";
+import { FilesService } from "../services/FilesService";
+import { RecordTypes } from "../services/RecordTypes";
+import { ScrambleTableService } from "../services/ScrambleTableService";
+import { ICommand } from "./ICommand";
 
 export class UnscrambleCommand implements ICommand {
 
-  public exec(service_man: ServiceManager): void
-  {
-		const files_service = service_man.get_service(ServiceTypes.Files) as FilesService;
-		const file_info_service = service_man.get_service(ServiceTypes.FileInfo) as FileInfoService;
-    const file_parsing_service = service_man.get_service(
-      ServiceTypes.FileParsing
-    ) as FileParsingService;
+	public exec(serviceMan: ServiceManager): void {
+		const filesService = serviceMan.get_service<FilesService>(ServiceTypes.Files);
+		const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
+		const fileParsingService = serviceMan.get_service<FileParsingService>(ServiceTypes.FileParsing);
 
-    const scramble_table_service = service_man.get_service(
-      ServiceTypes.ScrambleTable
-    ) as ScrambleTableService;
+		const scrambleTableService = serviceMan.get_service<ScrambleTableService>(
+			ServiceTypes.ScrambleTable,
+		);
 
-    files_service.files(file => {
-			const record_header = file_info_service.get_header_info(file.buffer);
-      const records_cache = file_parsing_service.parse_records(file.buffer);
-			
-			records_cache.records = records_cache.records.map((val) => {
-				if (val.type == RecordTypes.JPEG) return val;
-        return scramble_table_service.unscramble_record(val);
-      });
+		filesService.files((file) => {
+			const recordHeader = fileInfoService.get_header_info(file.buffer);
+			const recordsCache = fileParsingService.parse_records(file.buffer);
 
-			const unscrambled_buf = new Buffer(file.buffer.length);
-			file.buffer.copy(unscrambled_buf, 0, 0, 100);
-			
+			recordsCache.records = recordsCache.records.map((val) => {
+				if (val.type === RecordTypes.JPEG) { return val; }
+				return scrambleTableService.unscramble_record(val);
+			});
+
+			const unscrambledBuf = new Buffer(file.buffer.length);
+			file.buffer.copy(unscrambledBuf, 0, 0, 100);
+
 			let offset = 100;
-			let record_index = 0;
-			const records_header_size = record_header.records_size + 
-				record_header.header_size;
-			while (offset < records_header_size) {
-				const record = records_cache.records[record_index++];
-				unscrambled_buf.writeUInt8(record.type, offset++);
-				unscrambled_buf.writeUInt8(record.length, offset++);
+			let recordIndex = 0;
+			const recordsHeaderSize = recordHeader.records_size + recordHeader.header_size;
+
+			while (offset < recordsHeaderSize) {
+				const record = recordsCache.records[recordIndex++];
+				unscrambledBuf.writeUInt8(record.type, offset++);
+				unscrambledBuf.writeUInt8(record.length, offset++);
 
 				// jpeg records dont have scrambling, treat accordingly
-				if (record.type != RecordTypes.JPEG) {
-					record.data.copy(unscrambled_buf, offset);
+				if (record.type !== RecordTypes.JPEG) {
+					record.data.copy(unscrambledBuf, offset);
 					offset += record.length;
-					unscrambled_buf.writeUInt8(0xFF, offset++);
+					unscrambledBuf.writeUInt8(0xFF, offset++);
 				} else {
-					unscrambled_buf.writeUInt8(0, offset++);
-					unscrambled_buf.writeUInt8(0, offset++);
+					unscrambledBuf.writeUInt8(0, offset++);
+					unscrambledBuf.writeUInt8(0, offset++);
 					// todo: deal with jpeg images
 				}
 			}
 
-			file.buffer.copy(unscrambled_buf, offset, offset);
+			file.buffer.copy(unscrambledBuf, offset, offset);
 
-			let out_file = file.path + '.unscrambled';
-			
-			if (service_man.argv.output != null) {
-				out_file = service_man.argv.output;
+			let outFile = file.path + ".unscrambled";
+
+			if (serviceMan.argv.output != null) {
+				outFile = serviceMan.argv.output;
 			}
 
-			files_service.write_file(out_file, unscrambled_buf);
-    });
-  }
+			filesService.write_file(outFile, unscrambledBuf);
+		});
+	}
 }

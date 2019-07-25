@@ -1,137 +1,139 @@
 import minimist from "minimist";
 
-interface OptionDescription {
-  short_name: string;
-  long_name: string;
-  description: string;
-  param_name?: string;
+interface IOptionDescription {
+	short_name: string;
+	long_name: string;
+	description: string;
+	param_name?: string;
 }
 
 export class CliArguments {
 
-  private argv: minimist.ParsedArgs;
-  private _isEmpty: boolean;
+	public get isEmpty(): boolean {
+		return this.isEmpty;
+	}
 
-  constructor(args: string[]) {
-    this._isEmpty = false;
-    if (args.length == 0) {
-      this._isEmpty = true;
-    }
+	public get print_header(): boolean {
+		return this.argv.header || this.argv.h;
+	}
 
-    this.argv = minimist(args);
-  }
+	public get print_records(): boolean {
+		return this.argv.records || this.argv.r;
+	}
 
-  public static CreateEmpty(): CliArguments {
-    return new CliArguments([]);
-  }
+	public get file_paths(): string[] {
+		return this.argv._;
+	}
 
-  public get isEmpty(): boolean {
-    return this.isEmpty;
-  }
+	public get details(): boolean {
+		return this.argv.details || this.argv.d;
+	}
 
-  public assert_args(): boolean {
-    const argv = this.argv;
+	public get output(): string | null {
+		if (this.argv.output) { return this.argv.output; }
+		return this.argv.o;
+	}
 
-    if (argv.help == true || argv.h == true) {
-      CliArguments.print_help();
-      return true;
-    }
+	public get unscramble(): boolean {
+		return this.argv.unscramble || this.argv.u;
+	}
 
-    // if argument list empty (no filenames given)
-    if (argv._.length == 0) {
-      console.log(`node-djiparsetxt: No files given`);
-      CliArguments.print_usage();
-      return true;
-    }
+	public get show_record(): number | null {
+		return this.argv.show_type || this.argv.s;
+	}
 
-    return false;
-  }
+	public get distrib(): boolean {
+		return this.argv.distribution || this.argv.d;
+	}
 
-  public static print_usage(): void {
-    console.log('Usage: node-djiparsetext FILE [FILE...] [OPTIONS]\n');
-  }
+	public static CreateEmpty(): CliArguments {
+		return new CliArguments([]);
+	}
 
-  private static options_descriptions: OptionDescription[] = [
-    {
-      short_name: 'u',
-      long_name: 'unscramble',
-      description: 'Create a copy of the file with the records unscrambled.'
-    },
-    {
-      short_name: 'h',
-      long_name: 'header',
-      description: 'Print header info to stdout.'
-    },
-    {
-      short_name: 'r',
-      long_name: 'records',
-      description: 'Print records info to stdout.'
-    },
-    {
-      short_name: 'd',
-      long_name: 'details',
-      description: 'Print the details section to stdout.'
-    },
-    {
-      short_name: 'o',
-      long_name: 'output',
-      description: 'Path to use for output files.'
-    },
-    {
-      short_name: 's',
-      long_name: 'show-type',
-      description: 'Show the records of the given type.',
-      param_name: 'type'
-    },
-    {
-      short_name: 'd',
-      long_name: 'distribution',
-      description: 'Print the record types as they appear in the file.'
-    }
-  ];
+	public static print_usage(): void {
+		console.log("Usage: node-djiparsetext FILE [FILE...] [OPTIONS]\n");
+	}
 
-  public static print_help(): void {
-    CliArguments.print_usage();
-    console.log('Options:');
-    for (const option of CliArguments.options_descriptions) {
-      if (option.param_name) {
-        console.log(`    --${option.long_name} ${option.param_name}, -${option.short_name} ${option.param_name}: ${option.description}`);
-        continue;
-      }
-      console.log(`    --${option.long_name}, -${option.short_name}: ${option.description}`);
-    }
-  }
+	public static print_help(): void {
+		CliArguments.print_usage();
+		console.log("Options:");
+		for (const option of CliArguments.optionsDescriptions) {
+			if (option.param_name) {
+				console.log(`    --${option.long_name} ${option.param_name},` +
+					` -${option.short_name} ${option.param_name}: ${option.description}`);
+				continue;
+			}
+			console.log(`    --${option.long_name}, -${option.short_name}:` +
+				` ${option.description}`);
+		}
+	}
 
-  public get print_header(): boolean {
-    return this.argv.header || this.argv.h;
-  }
+	private static optionsDescriptions: IOptionDescription[] = [
+		{
+			short_name: "u",
+			long_name: "unscramble",
+			description: "Create a copy of the file with the records unscrambled.",
+		},
+		{
+			short_name: "h",
+			long_name: "header",
+			description: "Print header info to stdout.",
+		},
+		{
+			short_name: "r",
+			long_name: "records",
+			description: "Print records info to stdout.",
+		},
+		{
+			short_name: "d",
+			long_name: "details",
+			description: "Print the details section to stdout.",
+		},
+		{
+			short_name: "o",
+			long_name: "output",
+			description: "Path to use for output files.",
+		},
+		{
+			short_name: "s",
+			long_name: "show-type",
+			description: "Show the records of the given type.",
+			param_name: "type",
+		},
+		{
+			short_name: "d",
+			long_name: "distribution",
+			description: "Print the record types as they appear in the file.",
+		},
+	];
 
-  public get print_records(): boolean {
-    return this.argv.records || this.argv.r;
-  }
+	private argv: minimist.ParsedArgs;
+	private _isEmpty: boolean;
 
-  public get file_paths(): string[] {
-    return this.argv._;
-  }
+	constructor(args: string[]) {
+		this._isEmpty = false;
+		if (args.length === 0) {
+			this._isEmpty = true;
+		}
 
-  public get details(): boolean {
-    return this.argv.details || this.argv.d;
-  }
+		this.argv = minimist(args);
+	}
 
-  public get output(): string | null {
-    if (this.argv.output) return this.argv.output;
-    return this.argv.o;
-  }
+	public assert_args(): boolean {
+		const argv = this.argv;
 
-  public get unscramble(): boolean {
-    return this.argv.unscramble || this.argv.u;
-  }
+		if (argv.help === true || argv.h === true) {
+			CliArguments.print_help();
+			return true;
+		}
 
-  public get show_record(): number | null {
-    return this.argv.show_type || this.argv.s;
-  }
+		// if argument list empty (no filenames given)
+		if (argv._.length === 0) {
+			console.log(`node-djiparsetxt: No files given`);
+			CliArguments.print_usage();
+			return true;
+		}
 
-  public get distrib(): boolean {
-    return this.argv.distribution || this.argv.d;
-  }
+		return false;
+	}
 }

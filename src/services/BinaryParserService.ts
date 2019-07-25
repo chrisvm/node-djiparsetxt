@@ -1,10 +1,10 @@
-import BaseService from "./BaseService";
 import { Parser } from "binary-parser";
 import { ILazyLoadingEntry } from "../common/lazy_loading";
+import BaseService from "./BaseService";
 
 import bignum from "bignum";
-import { RecordTypes } from "./RecordTypes";
 import { ServiceTypes } from "../common/ServiceManager";
+import { RecordTypes } from "./RecordTypes";
 
 export enum ParserTypes {
 	Header = "header",
@@ -23,7 +23,7 @@ export enum ParserTypes {
 	AppWarnRecord = "app_warn_record",
 	RecoverRecord = "recover_record",
 	AppGpsRecord = "app_gps_record",
-	FirmwareRecord = "firmware_record"
+	FirmwareRecord = "firmware_record",
 }
 
 export function bignum_convert_buffer(buffer: any): bignum {
@@ -40,7 +40,7 @@ export class BinaryParserService extends BaseService {
 					.uint32le("header_record_size_hi")
 					.buffer("file_version", { length: 4 })
 					.skip(88);
-			}
+			},
 		},
 		base_record: {
 			instance: null,
@@ -49,16 +49,16 @@ export class BinaryParserService extends BaseService {
 					.uint8("type")
 					.uint8("length")
 					.buffer("data", {
-						length: "length"
+						length: "length",
 					})
 					.uint8("marker");
-			}
+			},
 		},
 		start_record: {
 			instance: null,
 			factory: () => {
 				return new Parser().uint8("type").uint8("length");
-			}
+			},
 		},
 		details: {
 			instance: null,
@@ -66,19 +66,19 @@ export class BinaryParserService extends BaseService {
 				return new Parser()
 					.buffer("city_part", {
 						length: 20,
-						formatter: dat => (dat as Buffer).toString("ascii")
+						formatter: (dat) => (dat as Buffer).toString("ascii"),
 					})
 					.buffer("street", {
 						length: 20,
-						formatter: dat => (dat as Buffer).toString("ascii")
+						formatter: (dat) => (dat as Buffer).toString("ascii"),
 					})
 					.buffer("city", {
 						length: 20,
-						formatter: dat => (dat as Buffer).toString("ascii")
+						formatter: (dat) => (dat as Buffer).toString("ascii"),
 					})
 					.buffer("area", {
 						length: 20,
-						formatter: dat => (dat as Buffer).toString("ascii")
+						formatter: (dat) => (dat as Buffer).toString("ascii"),
 					})
 					.uint8("is_favorite")
 					.uint8("is_new")
@@ -90,7 +90,7 @@ export class BinaryParserService extends BaseService {
 					.doublele("latitude")
 					.floatle("total_distance")
 					.floatle("total_time", {
-						formatter: time => (time as number) * 1000
+						formatter: (time) => (time as number) * 1000,
 					})
 					.floatle("max_height")
 					.floatle("max_hor_speed")
@@ -98,7 +98,7 @@ export class BinaryParserService extends BaseService {
 					.uint32le("photo_count")
 					.uint32le("video_time");
 				// todo: finish implementing parser for diff versions
-			}
+			},
 		},
 		osd_record: {
 			instance: null,
@@ -154,7 +154,7 @@ export class BinaryParserService extends BaseService {
 					.uint8("drone_type")
 					.uint8("imu_init_fail_reason");
 				// todo: deal with file versions
-			}
+			},
 		},
 		custom_record: {
 			instance: null,
@@ -174,7 +174,7 @@ export class BinaryParserService extends BaseService {
 				};
 
 				return dummy;
-			}
+			},
 		},
 		rc_record: {
 			instance: null,
@@ -182,19 +182,19 @@ export class BinaryParserService extends BaseService {
 				// todo: implement data transformations
 				return new Parser()
 					.int16le("aileron", {
-						formatter: (val: any) => (val - 1024) / 0.066
+						formatter: (val: any) => (val - 1024) / 0.066,
 					})
 					.int16le("elevator", {
-						formatter: (val: any) => (val - 1024) / 0.066
+						formatter: (val: any) => (val - 1024) / 0.066,
 					})
 					.int16le("throttle", {
-						formatter: (val: any) => (val - 1024) / 0.066
+						formatter: (val: any) => (val - 1024) / 0.066,
 					})
 					.int16le("rudder", {
-						formatter: (val: any) => (val - 1024) / 0.066
+						formatter: (val: any) => (val - 1024) / 0.066,
 					})
 					.int16le("gimbal", {
-						formatter: (val: any) => (val - 1024) / 0.066
+						formatter: (val: any) => (val - 1024) / 0.066,
 					})
 					.bit2("unknown")
 					.bit5("wheel_offset")
@@ -209,7 +209,7 @@ export class BinaryParserService extends BaseService {
 					.bit1("playback")
 					.bit1("shutter")
 					.bit1("record");
-			}
+			},
 		},
 		gimbal_record: {
 			instance: null,
@@ -235,7 +235,7 @@ export class BinaryParserService extends BaseService {
 					.bit1("is_double_click")
 					.bit1("unknown")
 					.bit4("version");
-			}
+			},
 		},
 		home_record: {
 			instance: null,
@@ -257,13 +257,13 @@ export class BinaryParserService extends BaseService {
 					.bit2("compass_cele_status")
 					.uint16le("go_home_height")
 					.int16le("course_lock_angle", {
-						formatter: (val: any) => val / 10
+						formatter: (val: any) => val / 10,
 					})
 					.uint8("data_recorder_status")
 					.uint8("data_recorder_remain_capacity")
 					.uint16le("data_recorder_remain_time")
 					.uint16le("data_recorder_file_index");
-			}
+			},
 		},
 		deform_record: {
 			instance: null,
@@ -273,7 +273,7 @@ export class BinaryParserService extends BaseService {
 					.bit2("deform_mode")
 					.bit3("deform_status")
 					.bit1("is_deform_protected");
-			}
+			},
 		},
 		center_battery_record: {
 			instance: null,
@@ -299,13 +299,13 @@ export class BinaryParserService extends BaseService {
 							return {
 								year: ((val & 0xfe00) >> 9) + 1980,
 								month: (val & 0x01e0) >> 5,
-								day: val & 0x001f
+								day: val & 0x001f,
 							};
-						}
+						},
 					})
 					.uint16le("temperature", { formatter: (val: any) => val / 100 })
 					.uint8("conn_status");
-			}
+			},
 		},
 		smart_battery_record: {
 			instance: null,
@@ -328,19 +328,19 @@ export class BinaryParserService extends BaseService {
 					.bit1("serious_low_warning_landing")
 					.bit7("serious_low_warning")
 					.uint8("voltage_percent");
-			}
+			},
 		},
 		app_tip_record: {
 			instance: null,
 			factory: () => {
 				return new Parser().string("tip", { zeroTerminated: true });
-			}
+			},
 		},
 		app_warn_record: {
 			instance: null,
 			factory: () => {
 				return new Parser().string("warn", { zeroTerminated: true });
-			}
+			},
 		},
 		recover_record: {
 			instance: null,
@@ -356,7 +356,7 @@ export class BinaryParserService extends BaseService {
 					.string("camera_sn", { length: 10 })
 					.string("rc_sn", { length: 10 })
 					.string("battery_sn", { length: 10 });
-			}
+			},
 		},
 		app_gps_record: {
 			instance: null,
@@ -365,7 +365,7 @@ export class BinaryParserService extends BaseService {
 					.doublele("latitude")
 					.doublele("longitude")
 					.floatle("accuracy");
-			}
+			},
 		},
 		firmware_record: {
 			instance: null,
@@ -374,8 +374,8 @@ export class BinaryParserService extends BaseService {
 					.skip(2)
 					.buffer("version", { length: 3 })
 					.skip(109);
-			}
-		}
+			},
+		},
 	};
 
 	public get_parser(type: ParserTypes): any {
@@ -391,22 +391,22 @@ export class BinaryParserService extends BaseService {
 		return this.parser_table[type].instance;
 	}
 
-	public get_record_parser(record_type: RecordTypes): any {
-		const parser_service = this.service_man.get_service(
-			ServiceTypes.Parsers
+	public get_record_parser(recordType: RecordTypes): any {
+		const parserService = this.serviceMan.get_service(
+			ServiceTypes.Parsers,
 		) as BinaryParserService;
 
-		const parser_type = this.parser_record_mapping(record_type);
+		const parserType = this.parser_record_mapping(recordType);
 
-		if (parser_type == null) {
-			throw new Error(`record type '${record_type}' not recognized`);
+		if (parserType === null) {
+			throw new Error(`record type '${recordType}' not recognized`);
 		}
 
-		return parser_service.get_parser(parser_type);
+		return parserService.get_parser(parserType);
 	}
 
-	public parser_record_mapping(record_type: RecordTypes): ParserTypes | null {
-		switch (record_type) {
+	public parser_record_mapping(recordType: RecordTypes): ParserTypes | null {
+		switch (recordType) {
 			case RecordTypes.OSD:
 				return ParserTypes.OsdRecord;
 			case RecordTypes.CUSTOM:

@@ -1,6 +1,5 @@
-import {ServiceManager} from '../common/ServiceManager';
+import {ServiceManager} from "../common/ServiceManager";
 
-export interface ICommand
-{
+export interface ICommand {
   exec(service_man: ServiceManager): void;
 }

@@ -50,7 +50,7 @@ if (require.main === module) {
 	main();
 }
 
-export interface IParsedOutput { files: { [name: string]: any[][] } }
+export interface IParsedOutput { files: { [name: string]: any[][] }; }
 
 export function parse_file(name: string, buf: Buffer): IParsedOutput {
 	const serviceMan = new ServiceManager(CliArguments.CreateEmpty());

@@ -1,5 +1,5 @@
-import BaseService from "./BaseService";
 import * as fs from "fs";
+import BaseService from "./BaseService";
 
 export interface IFile {
 	path: string;
@@ -7,28 +7,26 @@ export interface IFile {
 }
 
 export class FilesService extends BaseService {
-	private files_m: IFile[] = [];
-	private init_files: boolean = true;
 
-	public static type_name: string = "files";
-	public name: string = FilesService.type_name;
-	
-	public files(cb: (file: IFile) => void)
-	{
-		if (this.init_files) {
-			const argv = this.service_man.argv;
-			argv.file_paths.forEach(file_path => {
-				const file_buffer = fs.readFileSync(file_path);
-				this.files_m.push({ path: file_path, buffer: file_buffer });
+	public static typeName: string = "files";
+	public name: string = FilesService.typeName;
+	private filesM: IFile[] = [];
+	private initFiles: boolean = true;
+
+	public files(cb: (file: IFile) => void) {
+		if (this.initFiles) {
+			const argv = this.serviceMan.argv;
+			argv.file_paths.forEach((filePath) => {
+				const fileBuffer = fs.readFileSync(filePath);
+				this.filesM.push({ path: filePath, buffer: fileBuffer });
 			});
-			this.init_files = false;
+			this.initFiles = false;
 		}
 
-		this.files_m.forEach(file => cb(file));
+		this.filesM.forEach((file) => cb(file));
 	}
 
-	public write_file(path: string, buf: Buffer)
-	{
+	public write_file(path: string, buf: Buffer) {
 		fs.writeFileSync(path, buf);
 	}
 }
