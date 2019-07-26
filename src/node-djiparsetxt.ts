@@ -47,9 +47,7 @@ if (require.main === module) {
 }
 
 // public api when used as a module
-export interface IParsedOutput { files: { [name: string]: any[][] }; }
-
-export function parse_file(name: string, buf: Buffer): IParsedOutput {
+export function parse_file(buf: Buffer): any[][] {
 	const serviceMan = new ServiceManager(CliArguments.CreateEmpty());
 
 	const fileParsingService = serviceMan.get_service<FileParsingService>(
@@ -60,13 +58,7 @@ export function parse_file(name: string, buf: Buffer): IParsedOutput {
 		ServiceTypes.CacheTransform,
 	);
 
-	const output: IParsedOutput = {
-		files: {},
-	};
-
 	const recordsCache = fileParsingService.parse_records(buf);
 	const outputBuf = cacheTransService.transform(recordsCache);
-	output.files[name] = outputBuf;
-
-	return output;
+	return outputBuf;
 }

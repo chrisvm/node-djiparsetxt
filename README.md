@@ -42,7 +42,7 @@ const file_path = "path_to_log.txt";
 
 fs.readFile(file_path, (err, data) => {
 	if (err) throw err;
-	console.log(JSON.stringify(djiparsetxt.parse_file(file_path, data), null, 4));
+	console.log(JSON.stringify(djiparsetxt.parse_file(data), null, 4));
 });
 ```
 
@@ -55,9 +55,8 @@ Parse a given buffer and return an object of type `ParsedOutput`.
 
 #### Parameters
 
-- *`name`*: `string`: Name to use on the return object for the buffer given.
 - *`buf`*: `Buffer`: Buffer instance of the file to parse.
 
 #### Returns
 
-An instance of type `ParsedOutput` with the parsed files.
+An array of with the rows extracted from the file.
