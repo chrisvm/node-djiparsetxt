@@ -8,7 +8,7 @@ def rename_files(dir):
     regex = re.compile(f"{base}_([0-9]+)")
     listing = os.listdir(dir)
 
-    print(f"  Processing '{base}'")
+    print(f"  Processing '{dir}'\n")
 
     change_queue = []
     index = -1
@@ -26,7 +26,7 @@ def rename_files(dir):
         if match:
             match_index = int(match.group(1))
             index = max(index, match_index)
-            print(match_index)
+            print(f"    Already renamed {filename} with index {match_index}")
             continue
 
         ext = "".join(Path(src).suffixes)
@@ -38,13 +38,13 @@ def rename_files(dir):
         dst = f"{options['base']}_{index}{options['ext']}"
         print(f"    Renaming '{os.path.basename(src)}' -> '{os.path.basename(dst)}'")
         #os.rename(src, dst)
-    
+    print()
 
 def main():
     # get all the dirs in current dir
     script_folder = os.path.dirname(__file__)
 
-    print(f"Processing subdirs of dir '{script_folder}'")
+    print(f"Processing subdirs of dir '{script_folder}'\n")
 
     # for each folder in directory of script
     for entry in os.listdir(script_folder):
