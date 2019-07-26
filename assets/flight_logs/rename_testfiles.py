@@ -1,13 +1,17 @@
 import os
+import re
 from pathlib import Path
 
 
 def rename_files(dir):
-    index = 0
-    listing = os.listdir(dir)
     base = os.path.basename(dir)
+    regex = re.compile(f"{base}_([0-9]+)")
+    listing = os.listdir(dir)
 
     print(f"  Processing '{base}'")
+
+    change_queue = []
+    index = -1
 
     for filename in listing:
         src = os.path.join(dir, filename)
@@ -17,13 +21,24 @@ def rename_files(dir):
             print(f"    Ignoring subdir {src}")
             continue
         
+        # check if already renamed
+        match = regex.match(filename)
+        if match:
+            match_index = int(match.group(1))
+            index = max(index, match_index)
+            print(match_index)
+            continue
+
         ext = "".join(Path(src).suffixes)
-        dst = os.path.join(dir, f"{base}_{index}{ext}")
+        file_options = { "base": base, "ext": ext }
+        change_queue.append((src, file_options))
 
+    index += 1
+    for src, options in change_queue:
+        dst = f"{options['base']}_{index}{options['ext']}"
         print(f"    Renaming '{os.path.basename(src)}' -> '{os.path.basename(dst)}'")
-
-        os.rename(src, dst)
-        index += 1
+        #os.rename(src, dst)
+    
 
 def main():
     # get all the dirs in current dir
