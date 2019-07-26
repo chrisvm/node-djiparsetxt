@@ -25,8 +25,8 @@ def rename_files(dir):
         match = regex.match(filename)
         if match:
             match_index = int(match.group(1))
-            index = max(index, match_index)
             print(f"    Already renamed {filename} with index {match_index}")
+            index = max(index, match_index)
             continue
 
         ext = "".join(Path(src).suffixes)
@@ -35,9 +35,10 @@ def rename_files(dir):
 
     index += 1
     for src, options in change_queue:
-        dst = f"{options['base']}_{index}{options['ext']}"
+        dst = os.path.join(dir, f"{options['base']}_{index}{options['ext']}")
         print(f"    Renaming '{os.path.basename(src)}' -> '{os.path.basename(dst)}'")
-        #os.rename(src, dst)
+        os.rename(src, dst)
+        index += 1
     print()
 
 def main():
