@@ -7,7 +7,7 @@ function createTestFromDir(filePath: string) {
 	const fileList = fs.readdirSync(filePath);
 
 	for (let fileName of fileList) {
-		it(`should parse file ${fileName}`, () => {
+		it(`should parse file '${fileName}'`, () => {
 			fileName = path.join(filePath, fileName);
 			const buffer = fs.readFileSync(fileName);
 			const rows = parse_file(buffer);
