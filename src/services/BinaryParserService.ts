@@ -30,8 +30,12 @@ export function bignum_convert_buffer(buffer: any): bignum {
 	return bignum.fromBuffer(buffer as Buffer, { endian: "little", size: 8 });
 }
 
+interface IParserLookUpTable {
+	[type: string]: ILazyLoadingEntry;
+}
+
 export class BinaryParserService extends BaseService {
-	private parser_table: { [type: string]: ILazyLoadingEntry<any> } = {
+	private parserTable: IParserLookUpTable = {
 		header: {
 			instance: null,
 			factory: () => {
@@ -378,19 +382,28 @@ export class BinaryParserService extends BaseService {
 		},
 	};
 
+	/**
+	 * Returns an instance of the requested parser by the type of parser.
+	 * @param type Entry in ParserTypes enum for the requested parser.
+	 */
 	public get_parser(type: ParserTypes): any {
-		if (this.parser_table[type] == null) {
+		if (this.parserTable[type] == null) {
 			return undefined;
 		}
 
-		if (this.parser_table[type].instance == null) {
-			const factory = this.parser_table[type].factory;
-			this.parser_table[type].instance = factory();
+		if (this.parserTable[type].instance == null) {
+			const factory = this.parserTable[type].factory;
+			this.parserTable[type].instance = factory();
 		}
 
-		return this.parser_table[type].instance;
+		return this.parserTable[type].instance;
 	}
 
+	/**
+	 * Returns an instance of a parser based on given record type. This
+	 * parser should be able to parse the given record type.
+	 * @param recordType The type of the record parsed by the parser.
+	 */
 	public get_record_parser(recordType: RecordTypes): any {
 		const parserService = this.serviceMan.get_service(
 			ServiceTypes.Parsers,
@@ -405,6 +418,10 @@ export class BinaryParserService extends BaseService {
 		return parserService.get_parser(parserType);
 	}
 
+	/**
+	 * Mapping between record type and the parser that can parse them.
+	 * @param recordType The type of the record to get its corresponding parser type.
+	 */
 	public parser_record_mapping(recordType: RecordTypes): ParserTypes | null {
 		switch (recordType) {
 			case RecordTypes.OSD:

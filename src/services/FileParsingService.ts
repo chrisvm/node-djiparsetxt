@@ -56,31 +56,19 @@ export class FileParsingService extends BaseService {
 	}
 
 	public filter_records(records: IRecordCache, type: RecordTypes): IRecord[] {
-		const newCache: IRecord[] = [];
-		records.records.forEach((val) => {
-			if (val.type === type) {
-				newCache.push(val);
-			}
-		});
-		return newCache;
+		return records.records.filter((val) => val.type === type);
 	}
 
 	public parse_record_by_type(
 		record: IRecord,
 		recordType: RecordTypes,
 	): any {
-		const parserService = this.serviceMan.get_service(
-			ServiceTypes.Parsers,
-		) as BinaryParserService;
-
+		const parserService = this.serviceMan.get_service<BinaryParserService>(ServiceTypes.Parsers);
 		return parserService.get_record_parser(recordType).parse(record.data);
 	}
 
 	private get_record_cache(buffer: Buffer, limit: number, version: Buffer): IRecordCache {
-		const parserService = this.serviceMan.get_service(
-			ServiceTypes.Parsers,
-		) as BinaryParserService;
-
+		const parserService = this.serviceMan.get_service<BinaryParserService>(ServiceTypes.Parsers);
 		const recordParser = parserService.get_parser(ParserTypes.BaseRecord);
 		const recordStartParser = parserService.get_parser(
 			ParserTypes.StartRecord,
@@ -111,28 +99,62 @@ export class FileParsingService extends BaseService {
 					throw Error("No zero watermark while parsing jpeg record");
 				}
 
-				if (!is_jpeg_soi(buffer, start + 4)) {
+				if (is_jpeg_soi(buffer, start + 4)) {
+					// handle jpeg record with jpegs in them
+					const jpegs = [];
+					let startOfJpeg = start + 4;
+					let endOfJpeg = startOfJpeg;
+
+					while (is_jpeg_soi(buffer, startOfJpeg)) {
+						endOfJpeg = this.getJpegEoiIndex(buffer, startOfJpeg + 2);
+
+						if (endOfJpeg === -1) {
+							throw new Error("No JPEG_EOI found after JPEG_SOI");
+						}
+
+						jpegs.push(buffer.slice(startOfJpeg, endOfJpeg));
+						startOfJpeg = endOfJpeg;
+					}
+
+					record = {
+						type: RecordTypes.JPEG,
+						length: recStart.length,
+						data: jpegs,
+					};
+
+					start = endOfJpeg;
+				} else {
+					// handle an empty jpeg record
 					record = {
 						type: RecordTypes.JPEG,
 						length: recStart.length,
 						data: [],
 					};
 					start += 4;
-				} else {
-					// todo: handle jpeg record with jpegs in them
 				}
 			} else {
 				record = recordParser.parse(buffer.slice(start));
 				start += record.length + 3;
 			}
 
-			this.calc_stats(recordCache, record);
+			this.addRecordToCache(recordCache, record);
 		}
 
 		return recordCache;
 	}
 
-	private calc_stats(cache: IRecordCache, record: any) {
+	private getJpegEoiIndex(buffer: Buffer, index: number): number {
+		let iter = index;
+		while (iter < buffer.length - 1) {
+			if (is_jpeg_eoi(buffer, iter)) {
+				return iter + 2;
+			}
+			iter += 1;
+		}
+		return -1;
+	}
+
+	private addRecordToCache(cache: IRecordCache, record: any) {
 		cache.records.push(record);
 		cache.stats.record_count += 1;
 
