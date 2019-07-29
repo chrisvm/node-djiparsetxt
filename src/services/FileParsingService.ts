@@ -64,7 +64,7 @@ export class FileParsingService extends BaseService {
 		recordType: RecordTypes,
 	): any {
 		const parserService = this.serviceMan.get_service<BinaryParserService>(ServiceTypes.Parsers);
-		return parserService.get_record_parser(recordType).parse(record.data);
+		return parserService.get_record_parser(recordType).parse(record.data[0]);
 	}
 
 	private get_record_cache(buffer: Buffer, limit: number, version: Buffer): IRecordCache {
