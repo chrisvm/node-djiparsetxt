@@ -5,22 +5,31 @@ import { FileParsingService } from "../services/FileParsingService";
 import { FilesService } from "../services/FilesService";
 import { RecordTypes } from "../services/RecordTypes";
 import { ScrambleTableService } from "../services/ScrambleTableService";
-import { ICommand } from "./ICommand";
+import { Command } from "./Command";
 
-export class UnscrambleCommand implements ICommand {
-
+export class UnscrambleCommand implements Command {
 	public exec(serviceMan: ServiceManager): void {
-		const filesService = serviceMan.get_service<FilesService>(ServiceTypes.Files);
-		const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
-		const fileParsingService = serviceMan.get_service<FileParsingService>(ServiceTypes.FileParsing);
-		const scrambleTableService = serviceMan.get_service<ScrambleTableService>(ServiceTypes.ScrambleTable);
+		const filesService = serviceMan.get_service<FilesService>(
+			ServiceTypes.Files
+		);
+		const fileInfoService = serviceMan.get_service<FileInfoService>(
+			ServiceTypes.FileInfo
+		);
+		const fileParsingService = serviceMan.get_service<FileParsingService>(
+			ServiceTypes.FileParsing
+		);
+		const scrambleTableService = serviceMan.get_service<ScrambleTableService>(
+			ServiceTypes.ScrambleTable
+		);
 
 		for (const file of filesService.files) {
 			const recordHeader = fileInfoService.get_header_info(file.buffer);
 			const recordsCache = fileParsingService.parse_records(file.buffer);
 
-			recordsCache.records = recordsCache.records.map((val) => {
-				if (val.type === RecordTypes.JPEG) { return val; }
+			recordsCache.records = recordsCache.records.map(val => {
+				if (val.type === RecordTypes.JPEG) {
+					return val;
+				}
 				return scrambleTableService.unscramble_record(val);
 			});
 
@@ -29,7 +38,8 @@ export class UnscrambleCommand implements ICommand {
 
 			let offset = 100;
 			let recordIndex = 0;
-			const recordsHeaderSize = recordHeader.records_size + recordHeader.header_size;
+			const recordsHeaderSize =
+				recordHeader.records_size + recordHeader.header_size;
 
 			while (offset < recordsHeaderSize) {
 				const record = recordsCache.records[recordIndex];
@@ -42,7 +52,7 @@ export class UnscrambleCommand implements ICommand {
 						buff.copy(unscrambledBuf, offset);
 						offset += buff.length;
 					}
-					unscrambledBuf.writeUInt8(0xFF, offset++);
+					unscrambledBuf.writeUInt8(0xff, offset++);
 				} else {
 					unscrambledBuf.writeUInt8(0, offset++);
 					unscrambledBuf.writeUInt8(0, offset++);

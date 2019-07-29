@@ -2,15 +2,14 @@ import { ServiceManager, ServiceTypes } from "../common/ServiceManager";
 import { CacheTransformService } from "../services/CacheTransformService";
 import { FileParsingService } from "../services/FileParsingService";
 import { FilesService } from "../services/FilesService";
-import { ICommand } from "./ICommand";
+import { Command } from "./Command";
 
-export class TransformRecordsCommand implements ICommand {
+export class TransformRecordsCommand implements Command {
 	public exec(serviceMan: ServiceManager): void {
 		const filesService = serviceMan.get_service<FilesService>(ServiceTypes.Files);
 		const fileParsingService = serviceMan.get_service<FileParsingService>(
 			ServiceTypes.FileParsing,
 		);
-
 		const cacheTransService = serviceMan.get_service<CacheTransformService>(
 			ServiceTypes.CacheTransform,
 		);

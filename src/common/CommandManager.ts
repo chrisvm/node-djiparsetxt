@@ -1,4 +1,4 @@
-import { ICommand } from "../commands/ICommand";
+import { Command } from "../commands/Command";
 import { PrintInfoCommand } from "../commands/PrintInfoCommand";
 import { ShowTypeCommand } from "../commands/ShowTypeCommand";
 import { TransformRecordsCommand } from "../commands/TransformRecordsCommand";
@@ -15,7 +15,7 @@ enum CommandTypes {
 
 class CommandManager {
 
-	private commands: { [name: string]: ILazyLoadingEntry<ICommand> };
+	private commands: { [name: string]: ILazyLoadingEntry<Command> };
 	private serviceMan: ServiceManager;
 
 	constructor(serviceMan: ServiceManager) {

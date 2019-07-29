@@ -3,9 +3,9 @@ import { FileInfoService } from "../services/FileInfoService";
 import { FileParsingService } from "../services/FileParsingService";
 import { FilesService } from "../services/FilesService";
 import { RecordTypes } from "../services/RecordTypes";
-import { ICommand } from "./ICommand";
+import { Command } from "./Command";
 
-export class PrintInfoCommand implements ICommand {
+export class PrintInfoCommand implements Command {
 
 	public exec(serviceMan: ServiceManager): void {
 		const filesService = serviceMan.get_service<FilesService>(ServiceTypes.Files);
