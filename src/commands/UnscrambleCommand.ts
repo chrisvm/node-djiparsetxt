@@ -1,3 +1,4 @@
+import path from "path";
 import { ServiceManager, ServiceTypes } from "../common/ServiceManager";
 import { FileInfoService } from "../services/FileInfoService";
 import { FileParsingService } from "../services/FileParsingService";
@@ -12,12 +13,9 @@ export class UnscrambleCommand implements ICommand {
 		const filesService = serviceMan.get_service<FilesService>(ServiceTypes.Files);
 		const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
 		const fileParsingService = serviceMan.get_service<FileParsingService>(ServiceTypes.FileParsing);
+		const scrambleTableService = serviceMan.get_service<ScrambleTableService>(ServiceTypes.ScrambleTable);
 
-		const scrambleTableService = serviceMan.get_service<ScrambleTableService>(
-			ServiceTypes.ScrambleTable,
-		);
-
-		filesService.forEachFile((file) => {
+		for (const file of filesService.files) {
 			const recordHeader = fileInfoService.get_header_info(file.buffer);
 			const recordsCache = fileParsingService.parse_records(file.buffer);
 
@@ -34,20 +32,24 @@ export class UnscrambleCommand implements ICommand {
 			const recordsHeaderSize = recordHeader.records_size + recordHeader.header_size;
 
 			while (offset < recordsHeaderSize) {
-				const record = recordsCache.records[recordIndex++];
+				const record = recordsCache.records[recordIndex];
 				unscrambledBuf.writeUInt8(record.type, offset++);
 				unscrambledBuf.writeUInt8(record.length, offset++);
 
 				// jpeg records dont have scrambling, treat accordingly
 				if (record.type !== RecordTypes.JPEG) {
-					record.data.copy(unscrambledBuf, offset);
-					offset += record.length;
+					for (const buff of record.data) {
+						buff.copy(unscrambledBuf, offset);
+						offset += buff.length;
+					}
 					unscrambledBuf.writeUInt8(0xFF, offset++);
 				} else {
 					unscrambledBuf.writeUInt8(0, offset++);
 					unscrambledBuf.writeUInt8(0, offset++);
+					// for (const buf of record.data)
 					// todo: deal with jpeg images
 				}
+				recordIndex += 1;
 			}
 
 			file.buffer.copy(unscrambledBuf, offset, offset);
@@ -55,10 +57,11 @@ export class UnscrambleCommand implements ICommand {
 			let outFile = file.path + ".unscrambled";
 
 			if (serviceMan.argv.output != null) {
-				outFile = serviceMan.argv.output;
+				const basename = path.basename(outFile);
+				outFile = path.join(serviceMan.argv.output, basename);
 			}
 
-			filesService.write_file(outFile, unscrambledBuf);
-		});
+			filesService.writeFile(outFile, unscrambledBuf);
+		}
 	}
 }

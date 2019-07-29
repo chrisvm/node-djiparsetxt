@@ -24,7 +24,7 @@ export interface IFileInfo {
 export interface IRecord {
 	type: RecordTypes;
 	length: number;
-	data: Buffer;
+	data: Buffer[];
 }
 
 export class FileInfoService extends BaseService {

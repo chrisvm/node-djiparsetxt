@@ -8,7 +8,14 @@
         "indent": [true, "tabs"],
         "no-console": [false],
         "object-literal-sort-keys": false,
-        "no-bitwise": false
+        "no-bitwise": false,
+        "variable-name": {
+            "options": [
+                "ban-keywords",
+                "check-format",
+                "allow-leading-underscore"
+            ]
+        }
     },
     "rulesDirectory": []
 }

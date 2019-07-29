@@ -14,12 +14,12 @@ export class ScrambleTableService extends BaseService {
 	}
 
 	public unscramble_record(record: IRecord): IRecord {
-		let data = this.unscramble_buffer(record.data, record.type);
-		if (data == null) { data = record.data; }
+		let data = this.unscramble_buffer(record.data[0], record.type);
+		if (data == null) { data = record.data[0]; }
 		return {
 			type: record.type,
 			length: record.length,
-			data,
+			data: [data],
 		};
 	}
 

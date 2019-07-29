@@ -43,6 +43,7 @@ if (require.main === module) {
 	} catch (e) {
 		const processName = "node-djiparsetxt";
 		console.log(`${processName}: ${e}`);
+		console.log(e.stack);
 	}
 }
 

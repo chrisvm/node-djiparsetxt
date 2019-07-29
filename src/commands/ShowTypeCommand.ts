@@ -12,7 +12,7 @@ export class ShowTypeCommand implements ICommand {
 		const fileParsingService = serviceMan.get_service<FileParsingService>(ServiceTypes.FileParsing);
 		const scrambleTableService = serviceMan.get_service<ScrambleTableService>(ServiceTypes.ScrambleTable);
 
-		filesService.forEachFile((file) => {
+		for (const file of filesService.files) {
 			const recordsCache = fileParsingService.parse_records(file.buffer);
 			const recordType = serviceMan.argv.show_record as RecordTypes;
 			const recordsOfType = fileParsingService.filter_records(recordsCache, recordType);
@@ -32,6 +32,6 @@ export class ShowTypeCommand implements ICommand {
 			}
 
 			throw new Error(`type '${recordType}' not recognized`);
-		});
+		}
 	}
 }

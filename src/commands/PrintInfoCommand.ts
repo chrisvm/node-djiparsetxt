@@ -13,7 +13,7 @@ export class PrintInfoCommand implements ICommand {
 		const fileParsingService = serviceMan.get_service<FileParsingService>(ServiceTypes.FileParsing);
 
 		if (filesService) {
-			filesService.forEachFile((file) => {
+			for (const file of filesService.files) {
 				// show header details
 				console.log(`file "${file.path}"`);
 				if (serviceMan.argv.print_header) {
@@ -55,7 +55,7 @@ export class PrintInfoCommand implements ICommand {
 					console.log("  Record Distribution:");
 					console.log(records.records.map((val) => val.type));
 				}
-			});
+			}
 		}
 	}
 

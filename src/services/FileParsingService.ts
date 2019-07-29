@@ -25,7 +25,7 @@ export interface IRecordStats {
 }
 
 export interface IRecordCache {
-	records: IRecord[];
+		records: IRecord[];
 	version: Buffer;
 	stats: IRecordStats;
 }
@@ -89,7 +89,7 @@ export class FileParsingService extends BaseService {
 		while (start < limit) {
 			const recStart = recordStartParser.parse(buffer.slice(start));
 
-			let record;
+			let record: IRecord;
 			if (recStart.type === RecordTypes.JPEG) {
 				// check for starting zeros
 				const zeroWatermarkLo = buffer.readUInt8(start + 2);
@@ -128,12 +128,17 @@ export class FileParsingService extends BaseService {
 					record = {
 						type: RecordTypes.JPEG,
 						length: recStart.length,
-						data: [],
+						data: [new Buffer("")],
 					};
 					start += 4;
 				}
 			} else {
-				record = recordParser.parse(buffer.slice(start));
+				const parsedRecord = recordParser.parse(buffer.slice(start));
+				record = {
+					length: parsedRecord.length,
+					type: parsedRecord.type,
+					data: [parsedRecord.data],
+				};
 				start += record.length + 3;
 			}
 

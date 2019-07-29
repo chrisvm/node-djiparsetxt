@@ -19,11 +19,11 @@ export enum ServiceTypes {
 
 export class ServiceManager {
 
-	private argv_m: CliArguments;
+	private _argv: CliArguments;
 	private services: {[name: string]: ILazyLoadingEntry<BaseService>};
 
 	constructor(argv: CliArguments) {
-		this.argv_m = argv;
+		this._argv = argv;
 
 		this.services = {
 			files: {
@@ -67,7 +67,7 @@ export class ServiceManager {
 		return service.instance as T;
 	}
 
-	public get argv() {
-		return this.argv_m;
+	public get argv(): CliArguments {
+		return this._argv;
 	}
 }
