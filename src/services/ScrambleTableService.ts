@@ -14,16 +14,27 @@ export class ScrambleTableService extends BaseService {
 	}
 
 	public unscramble_record(record: IRecord): IRecord {
-		let data = this.unscramble_buffer(record.data[0], record.type);
-		if (data == null) { data = record.data[0]; }
+		let data: Buffer[];
+
+		if (record.type === RecordTypes.JPEG) {
+			data = record.data;
+		} else {
+			const uscrm = this.unscramble_buffer(record.data[0], record.type);
+			if (uscrm == null) {
+				data = record.data;
+			} else {
+				data = uscrm;
+			}
+		}
+
 		return {
 			type: record.type,
 			length: record.length,
-			data: [data],
+			data,
 		};
 	}
 
-	private unscramble_buffer(buf: Buffer, type: RecordTypes): Buffer | null {
+	private unscramble_buffer(buf: Buffer, type: RecordTypes): Buffer[] | null {
 		const firstByte = buf.readUInt8(0);
 		const scrambleKey = ((type - 1) << 8) | firstByte;
 		const scrambleBytes = this.scrambleTable[scrambleKey];
@@ -40,6 +51,6 @@ export class ScrambleTableService extends BaseService {
 			unscrambledBuf.writeUInt8(val, writeOffset - 1);
 		}
 
-		return unscrambledBuf;
+		return [unscrambledBuf];
 	}
 }
