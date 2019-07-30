@@ -128,7 +128,7 @@ export class FileParsingService extends BaseService {
 					record = {
 						type: RecordTypes.JPEG,
 						length: recStart.length,
-						data: [new Buffer("")],
+						data: [Buffer.alloc(0)],
 					};
 					start += 4;
 				}
