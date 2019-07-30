@@ -7,7 +7,6 @@ export interface IFile {
 }
 
 export class FilesService extends BaseService {
-
 	public static typeName: string = "files";
 	public name: string = FilesService.typeName;
 	private _files: IFile[] = [];

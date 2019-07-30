@@ -5,9 +5,10 @@ import { FilesService } from "../services/FilesService";
 import { RecordTypes } from "../services/RecordTypes";
 import { Command } from "./Command";
 
-export class PrintInfoCommand implements Command {
+export class PrintInfoCommand extends Command {
 
-	public exec(serviceMan: ServiceManager): void {
+	public exec(): void {
+		const serviceMan = this.serviceMan;
 		const filesService = serviceMan.get_service<FilesService>(ServiceTypes.Files);
 		const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
 		const fileParsingService = serviceMan.get_service<FileParsingService>(ServiceTypes.FileParsing);

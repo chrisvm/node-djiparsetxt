@@ -4,8 +4,9 @@ import { FileParsingService } from "../services/FileParsingService";
 import { FilesService } from "../services/FilesService";
 import { Command } from "./Command";
 
-export class TransformRecordsCommand implements Command {
-	public exec(serviceMan: ServiceManager): void {
+export class TransformRecordsCommand extends Command {
+	public exec(): void {
+		const serviceMan = this.serviceMan;
 		const filesService = serviceMan.get_service<FilesService>(ServiceTypes.Files);
 		const fileParsingService = serviceMan.get_service<FileParsingService>(
 			ServiceTypes.FileParsing,

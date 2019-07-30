@@ -5,9 +5,10 @@ import { RecordTypes } from "../services/RecordTypes";
 import { ScrambleTableService } from "../services/ScrambleTableService";
 import { Command } from "./Command";
 
-export class ShowTypeCommand implements Command {
+export class ShowTypeCommand extends Command {
 
-	public exec(serviceMan: ServiceManager): void {
+	public exec(): void {
+		const serviceMan = this.serviceMan;
 		const filesService = serviceMan.get_service<FilesService>(ServiceTypes.Files);
 		const fileParsingService = serviceMan.get_service<FileParsingService>(ServiceTypes.FileParsing);
 		const scrambleTableService = serviceMan.get_service<ScrambleTableService>(ServiceTypes.ScrambleTable);

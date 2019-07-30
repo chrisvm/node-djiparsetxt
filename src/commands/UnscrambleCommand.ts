@@ -8,8 +8,9 @@ import { RecordTypes } from "../services/RecordTypes";
 import { ScrambleTableService } from "../services/ScrambleTableService";
 import { Command } from "./Command";
 
-export class UnscrambleCommand implements Command {
-	public exec(serviceMan: ServiceManager): void {
+export class UnscrambleCommand extends Command {
+	public exec(): void {
+		const serviceMan = this.serviceMan;
 		const filesService = serviceMan.get_service<FilesService>(
 			ServiceTypes.Files
 		);
