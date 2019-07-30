@@ -1,7 +1,8 @@
 import bignum = require("bignum");
 import { Parser } from "binary-parser";
 import { ILazyLoadingEntry } from "../common/lazy_loading";
-import { parse } from "path";
+
+const radiants2degree = (val: any) => val * 57.2958;
 
 export interface IParserLookUpTable {
 	[type: string]: ILazyLoadingEntry;
@@ -84,15 +85,29 @@ export const PARSER_TABLE: IParserLookUpTable = {
 		instance: null,
 		factory: () => {
 			return new Parser()
-				.doublele("longitude")
-				.doublele("latitude")
-				.int16le("height")
-				.int16le("x_speed")
-				.int16le("y_speed")
-				.int16le("z_speed")
-				.int16le("pitch")
-				.int16le("roll")
-				.int16le("yaw")
+				.doublele("longitude", { formatter: radiants2degree })
+				.doublele("latitude", { formatter: radiants2degree })
+				.int16le("height", {
+					formatter: (val: any) => val * 0.1,
+				})
+				.int16le("x_speed", {
+					formatter: (val: any) => val * 0.1,
+				})
+				.int16le("y_speed", {
+					formatter: (val: any) => val * 0.1,
+				})
+				.int16le("z_speed", {
+					formatter: (val: any) => val * 0.1,
+				})
+				.int16le("pitch", {
+					formatter: (val: any) => val * 0.1,
+				})
+				.int16le("roll", {
+					formatter: (val: any) => val * 0.1,
+				})
+				.int16le("yaw", {
+					formatter: (val: any) => val * 0.1,
+				})
 				.bit1("rc_state")
 				.bit7("fly_state")
 				.uint8("fly_command")
