@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import path from "path";
 import {
 	IFile,
 	OutputCommand,
@@ -41,7 +42,9 @@ function execute_cli(args: string[]) {
 				printDetails: argv.details,
 				printDistribution: argv.distrib,
 			});
-			console.log(output);
+
+			command = new OutputCommand(serviceMan);
+			command.exec({ file: file.path, buffer: output, output: argv.output });
 			return;
 		}
 
@@ -60,7 +63,8 @@ function execute_cli(args: string[]) {
 			const buffer = command.exec({ file, records });
 
 			command = new OutputCommand(serviceMan);
-			command.exec({ file, buffer, output: argv.output});
+			const output = argv.output === undefined ? path.dirname(file.path) : argv.output;
+			command.exec({ file: file.path + ".unscrambled", buffer, output});
 			return;
 		}
 
