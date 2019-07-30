@@ -1,19 +1,23 @@
-import { Command } from "./Command";
 import fs from "fs";
+import { Command } from "./Command";
 
 export interface IFile {
 	path: string;
-	buffer: Buffer;
+	buffer: Buffer | null;
 }
 
-export class ReadFileCommand extends Command<string[], IFile[]>
-{
-	public exec(file_paths: string[]): IFile[] {
-		let files: IFile[] = [];
+export class ReadFileCommand extends Command<string[], IFile[]> {
+	public exec(filePaths: string[]): IFile[] {
+		const files: IFile[] = [];
 
-		for (const path of file_paths) {
-			const buffer = fs.readFileSync(path);
-			files.push({ path, buffer });
+		for (const path of filePaths) {
+			try {
+				const buffer = fs.readFileSync(path);
+				files.push({ path, buffer });
+			} catch (e) {
+				const buffer = null;
+				files.push({ path, buffer });
+			}
 		}
 
 		return files;

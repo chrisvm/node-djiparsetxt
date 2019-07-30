@@ -50,10 +50,6 @@ export class CliArguments {
 		return this.argv.distribution || this.argv.d;
 	}
 
-	public static CreateEmpty(): CliArguments {
-		return new CliArguments([]);
-	}
-
 	public static print_usage(): void {
 		console.log("Usage: node-djiparsetext FILE [FILE...] [OPTIONS]\n");
 	}

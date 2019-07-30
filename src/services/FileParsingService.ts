@@ -25,9 +25,10 @@ export interface IRecordStats {
 }
 
 export interface IRecordCache {
-		records: IRecord[];
+	records: IRecord[];
 	version: Buffer;
 	stats: IRecordStats;
+	isEmpty?: boolean;
 }
 
 export class FileParsingService extends BaseService {
@@ -57,6 +58,21 @@ export class FileParsingService extends BaseService {
 
 	public filter_records(records: IRecordCache, type: RecordTypes): IRecord[] {
 		return records.records.filter((val) => val.type === type);
+	}
+
+	public createEmptyCache(): IRecordCache {
+		const version = Buffer.alloc(0);
+		return {
+			records: [],
+			version,
+			isEmpty: true,
+			stats: {
+				records_area_size: 0,
+				record_count: 0,
+				type_count: {},
+				invalid_records: 0,
+			},
+		};
 	}
 
 	public parse_record_by_type(

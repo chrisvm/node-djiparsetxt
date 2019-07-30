@@ -51,6 +51,7 @@ export class CacheTransformService extends BaseService {
 				continue;
 			}
 
+			// we create a row for each OSD record type
 			if (record.type !== RecordTypes.OSD) {
 				row[record.type] = record;
 				consumed++;

@@ -1,63 +1,85 @@
 import { ServiceManager, ServiceTypes } from "../common/ServiceManager";
 import { FileInfoService } from "../services/FileInfoService";
-import { FileParsingService } from "../services/FileParsingService";
-import { FilesService } from "../services/FilesService";
+import { FileParsingService, IRecordCache } from "../services/FileParsingService";
 import { RecordTypes } from "../services/RecordTypes";
 import { Command } from "./Command";
+import { IFile } from "./ReadFileCommand";
 
-export class PrintInfoCommand extends Command {
+export interface IPrintInfoOptions {
+	printHeader: boolean;
+	printRecords: boolean;
+	printDetails: boolean;
+	printDistribution: boolean;
+	file: IFile;
+}
 
-	public exec(): void {
+export class PrintInfoCommand extends Command<IPrintInfoOptions, string> {
+
+	private _logs: string[] = [];
+
+	public exec(options: IPrintInfoOptions): string {
 		const serviceMan = this.serviceMan;
-		const filesService = serviceMan.get_service<FilesService>(ServiceTypes.Files);
 		const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
 		const fileParsingService = serviceMan.get_service<FileParsingService>(ServiceTypes.FileParsing);
 
-		if (filesService) {
-			for (const file of filesService.files) {
-				// show header details
-				console.log(`file "${file.path}"`);
-				if (serviceMan.argv.print_header) {
-					const headerInfo = fileInfoService.get_header_info(file.buffer);
-					console.log("  Header Info:");
-					console.log(`    file size = ${headerInfo.file_size} B`);
-					console.log(`    records area size = ${headerInfo.records_size} B`);
-					console.log(`    details area size = ${headerInfo.details_size} B`);
-					console.log("    version:", headerInfo.version.readUInt8(2));
-				}
+		const file = options.file;
 
-				let records = null;
-				if (serviceMan.argv.print_records) {
-					console.log("  Records Info:");
-					records = fileParsingService.parse_records(file.buffer);
-					const stats = records.stats;
-					console.log(`    records area size = ${stats.records_area_size} B`);
-					console.log(`    record count = ${stats.record_count} Records`);
-					console.log(`    invalid records = ${stats.invalid_records}`);
-					console.log(`    Records in File:`);
-					this.print_type_count_table(stats.type_count, "      ");
-				}
+		if (file.buffer === null) {
+			return "";
+		}
 
-				if (serviceMan.argv.details) {
-					console.log("  Details:");
-					const details = fileInfoService.get_details(file.buffer);
+		// show header details
+		this.log(`file "${file.path}"`);
+		if (options.printHeader) {
+			const headerInfo = fileInfoService.get_header_info(file.buffer);
+			this.log("  Header Info:");
+			this.log(`    file size = ${headerInfo.file_size} B`);
+			this.log(`    records area size = ${headerInfo.records_size} B`);
+			this.log(`    details area size = ${headerInfo.details_size} B`);
+			this.log("    version:", headerInfo.version.readUInt8(2));
+		}
 
-					for (const key in details) {
-						if (details.hasOwnProperty(key)) {
-							console.log(`    ${key} = ${details[key]}`);
-						}
-					}
-				}
+		let records: IRecordCache | null = null;
+		if (options.printRecords) {
+			this.log("  Records Info:");
+			records = fileParsingService.parse_records(file.buffer);
+			const stats = records.stats;
+			this.log(`    records area size = ${stats.records_area_size} B`);
+			this.log(`    record count = ${stats.record_count} Records`);
+			this.log(`    invalid records = ${stats.invalid_records}`);
+			this.log(`    Records in File:`);
+			this.print_type_count_table(stats.type_count, "      ");
+		}
 
-				if (serviceMan.argv.distrib) {
-					if (records == null) {
-						records = fileParsingService.parse_records(file.buffer);
-					}
-					console.log("  Record Distribution:");
-					console.log(records.records.map((val) => val.type));
+		if (options.printDetails) {
+			this.log("  Details:");
+			const details = fileInfoService.get_details(file.buffer);
+
+			for (const key in details) {
+				if (details.hasOwnProperty(key)) {
+					this.log(`    ${key} = ${details[key]}`);
 				}
 			}
 		}
+
+		if (options.printDistribution) {
+			if (records == null) {
+				records = fileParsingService.parse_records(file.buffer);
+			}
+			this.log("  Record Distribution:");
+			this.log(records.records.map((val) => val.type));
+		}
+
+		return this.getLog();
+	}
+
+	private log(...args: any[]) {
+		const printed = args.map((val) => val.toString());
+		this._logs.push(printed.join(" "));
+	}
+
+	private getLog(): string {
+		return this._logs.join("\n");
 	}
 
 	private print_type_count_table(typeCount: { [type: number]: number; }, indent: string): void {

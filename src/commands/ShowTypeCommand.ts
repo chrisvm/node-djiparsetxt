@@ -1,38 +1,43 @@
-import { ServiceManager, ServiceTypes } from "../common/ServiceManager";
-import { FileParsingService } from "../services/FileParsingService";
-import { FilesService } from "../services/FilesService";
+import { ServiceTypes } from "../common/ServiceManager";
+import { FileParsingService, IRecordCache } from "../services/FileParsingService";
 import { RecordTypes } from "../services/RecordTypes";
 import { ScrambleTableService } from "../services/ScrambleTableService";
 import { Command } from "./Command";
+import { IFile } from "./ReadFileCommand";
 
-export class ShowTypeCommand extends Command {
+export interface IShowTypeOptions {
+	records: IRecordCache;
+	output: string | null;
+	type: RecordTypes;
+	file: IFile;
+}
 
-	public exec(): void {
+export class ShowTypeCommand extends Command<IShowTypeOptions, void> {
+
+	public exec(options: IShowTypeOptions): void {
 		const serviceMan = this.serviceMan;
-		const filesService = serviceMan.get_service<FilesService>(ServiceTypes.Files);
 		const fileParsingService = serviceMan.get_service<FileParsingService>(ServiceTypes.FileParsing);
 		const scrambleTableService = serviceMan.get_service<ScrambleTableService>(ServiceTypes.ScrambleTable);
 
-		for (const file of filesService.files) {
-			const recordsCache = fileParsingService.parse_records(file.buffer);
-			const recordType = serviceMan.argv.show_record as RecordTypes;
-			const recordsOfType = fileParsingService.filter_records(recordsCache, recordType);
+		const records = options.records;
+		const type = options.type;
+		const recordsOfType = fileParsingService.filter_records(records, type);
+		const file = options.file;
 
-			const typeName = RecordTypes[recordType];
+		const typeName = RecordTypes[type];
 
-			if (typeName) {
-				console.log(`file '${file.path}' and type = ${typeName}:`);
+		if (typeName) {
+			console.log(`file '${file.path}' and type = ${typeName}:`);
 
-				recordsOfType.forEach((record) => {
-					const unscrambledRec = scrambleTableService.unscramble_record(record);
-					const subParsed = fileParsingService.parse_record_by_type(unscrambledRec, recordType);
-					console.log(subParsed);
-				});
+			recordsOfType.forEach((record) => {
+				const unscrambledRec = scrambleTableService.unscramble_record(record);
+				const subParsed = fileParsingService.parse_record_by_type(unscrambledRec, type);
+				console.log(subParsed);
+			});
 
-				return;
-			}
-
-			throw new Error(`type '${recordType}' not recognized`);
+			return;
 		}
+
+		throw new Error(`type '${type}' not recognized`);
 	}
 }

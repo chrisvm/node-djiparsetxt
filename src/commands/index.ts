@@ -3,3 +3,7 @@ export * from "../commands/PrintInfoCommand";
 export * from "../commands/ShowTypeCommand";
 export * from "../commands/TransformRecordsCommand";
 export * from "../commands/UnscrambleCommand";
+export * from "../commands/ReadFileCommand";
+export * from "../commands/ParseRecordsCommand";
+export * from "../commands/SerializeRecordsCommand";
+export * from "../commands/OutputCommand";

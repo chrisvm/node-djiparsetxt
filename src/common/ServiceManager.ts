@@ -3,13 +3,10 @@ import { BinaryParserService } from "../services/BinaryParserService";
 import { CacheTransformService } from "../services/CacheTransformService";
 import { FileInfoService } from "../services/FileInfoService";
 import { FileParsingService } from "../services/FileParsingService";
-import { FilesService } from "../services/FilesService";
 import { ScrambleTableService } from "../services/ScrambleTableService";
-import { CliArguments } from "./CliArguments";
 import { ILazyLoadingEntry } from "./lazy_loading";
 
 export enum ServiceTypes {
-	Files = "files",
 	Parsers = "parsers",
 	FileInfo = "file_info",
 	ScrambleTable = "scramble_table",
@@ -19,17 +16,10 @@ export enum ServiceTypes {
 
 export class ServiceManager {
 
-	private _argv: CliArguments;
-	private services: {[name: string]: ILazyLoadingEntry<BaseService>};
+	protected services: {[name: string]: ILazyLoadingEntry<BaseService>};
 
-	constructor(argv: CliArguments) {
-		this._argv = argv;
-
+	constructor() {
 		this.services = {
-			files: {
-				instance: null,
-				factory: () => new FilesService(this),
-			},
 			parsers: {
 				instance: null,
 				factory: () => new BinaryParserService(this),
@@ -65,9 +55,5 @@ export class ServiceManager {
 		}
 
 		return service.instance as T;
-	}
-
-	public get argv(): CliArguments {
-		return this._argv;
 	}
 }
