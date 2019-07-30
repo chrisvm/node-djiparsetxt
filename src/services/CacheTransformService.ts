@@ -22,10 +22,10 @@ export class CacheTransformService extends BaseService {
 
 		const unscrambledRows = _.map(scrambledRows, (row) => {
 			const newRow: any[] = [];
-			_.forEach(row, (record) => {
+			for (const record of row) {
 				const unscrambled = scrambleTableService.unscramble_record(record);
 				newRow.push(fileParsingService.parse_record_by_type(unscrambled, record.type));
-			});
+			}
 			return newRow;
 		});
 
@@ -33,7 +33,7 @@ export class CacheTransformService extends BaseService {
 	}
 
 	private cache_as_rows(recordsCache: IRecordCache): IRecord[][] {
-		const parserService = this.serviceMan.get_service(ServiceTypes.Parsers) as BinaryParserService;
+		const parserService = this.serviceMan.get_service<BinaryParserService>(ServiceTypes.Parsers);
 
 		const rows: IRecord[][] = [];
 		const records = recordsCache.records;
@@ -58,7 +58,12 @@ export class CacheTransformService extends BaseService {
 			}
 
 			const rowArr: IRecord[] = [];
-			_.forEach(row, (val) => rowArr.push(val));
+
+			for (const val in row) {
+				if (row.hasOwnProperty(val)) {
+					rowArr.push(row[val]);
+				}
+			}
 			rows.push(rowArr);
 
 			row = {};

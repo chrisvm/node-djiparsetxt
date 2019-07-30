@@ -1,10 +1,10 @@
 import { ServiceTypes } from "../common/ServiceManager";
 import BaseService from "./BaseService";
 import {
-	bignum_convert_buffer,
 	BinaryParserService,
 	ParserTypes,
 } from "./BinaryParserService";
+import { bignum_convert_buffer } from "./BinaryParserTable";
 import { FileParsingService, IRecordStats } from "./FileParsingService";
 import { RecordTypes } from "./RecordTypes";
 
