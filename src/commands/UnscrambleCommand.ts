@@ -35,7 +35,7 @@ export class UnscrambleCommand implements Command {
 				unscrambledBuf.writeUInt8(record.type, offset++);
 				unscrambledBuf.writeUInt8(record.length, offset++);
 
-				// jpeg records dont have scrambling, treat accordingly
+				// jpeg records don't have scrambling, treat accordingly
 				if (record.type !== RecordTypes.JPEG) {
 					for (const buff of record.data) {
 						buff.copy(unscrambledBuf, offset);
@@ -58,6 +58,8 @@ export class UnscrambleCommand implements Command {
 			let outFile = file.path + ".unscrambled";
 
 			if (serviceMan.argv.output != null) {
+				// check if output opt is dir or path to file
+				const parsedPath = path.parse(serviceMan.argv.output);
 				const basename = path.basename(outFile);
 				outFile = path.join(serviceMan.argv.output, basename);
 			}

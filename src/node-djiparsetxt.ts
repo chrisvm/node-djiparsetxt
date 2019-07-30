@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { CliArguments } from "./common/CliArguments";
-import { CommandManager, CommandTypes } from "./common/CommandManager";
 import { ServiceManager, ServiceTypes } from "./common/ServiceManager";
 import { CacheTransformService } from "./services/CacheTransformService";
 import { FileParsingService } from "./services/FileParsingService";
+import { PrintInfoCommand, UnscrambleCommand, ShowTypeCommand, TransformRecordsCommand } from "./commands";
 
 function execute_cli(args: string[]) {
 	const argv = new CliArguments(args);
@@ -15,24 +15,27 @@ function execute_cli(args: string[]) {
 
 	// create managers
 	const serviceMan = new ServiceManager(argv);
-	const commandMan = new CommandManager(serviceMan);
 
 	if (argv.print_header || argv.print_records || argv.details || argv.distrib) {
-		commandMan.run(CommandTypes.PrintInfo);
+		let cmd = new PrintInfoCommand();
+		cmd.exec(serviceMan);
 		return;
 	}
 
 	if (argv.unscramble) {
-		commandMan.run(CommandTypes.Unscramble);
+		let cmd = new UnscrambleCommand();
+		cmd.exec(serviceMan)
 		return;
 	}
 
 	if (argv.show_record != null) {
-		commandMan.run(CommandTypes.ShowType);
+		let cmd = new ShowTypeCommand();
+		cmd.exec(serviceMan);
 		return;
 	}
 
-	commandMan.run(CommandTypes.TransformRecords);
+	let cmd = new TransformRecordsCommand();
+	cmd.exec(serviceMan);
 }
 
 // this is what runs when called as a tool
