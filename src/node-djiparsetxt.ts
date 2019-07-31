@@ -28,6 +28,7 @@ function execute_cli(args: string[]) {
 	// create managers
 	const serviceMan = new ServiceManager();
 	let command;
+	let output;
 
 	// read files from arguments
 	const files: IFile[] = new ReadFileCommand(serviceMan).exec(argv.file_paths);
@@ -35,7 +36,7 @@ function execute_cli(args: string[]) {
 	for (const file of files) {
 		if (argv.print_header || argv.print_records || argv.details || argv.distrib) {
 			command = new PrintInfoCommand(serviceMan);
-			const output = command.exec({
+			output = command.exec({
 				file,
 				printHeader: argv.print_header,
 				printRecords: argv.print_records,
@@ -63,7 +64,7 @@ function execute_cli(args: string[]) {
 			const buffer = command.exec({ file, records });
 
 			command = new OutputCommand(serviceMan);
-			const output = argv.output === undefined ? path.dirname(file.path) : argv.output;
+			output = argv.output === undefined ? path.dirname(file.path) : argv.output;
 			command.exec({ file: file.path + ".unscrambled", buffer, output});
 			return;
 		}
@@ -71,12 +72,23 @@ function execute_cli(args: string[]) {
 		if (argv.show_record != null) {
 			const type = argv.show_record as RecordTypes;
 			command = new ShowTypeCommand(serviceMan);
-			command.exec({ type, records, file, output: argv.output });
+			const buffer = command.exec({ type, records, file: file.path, output: argv.output });
+
+			command = new OutputCommand(serviceMan);
+			output = argv.output;
+			command.exec({ file: file.path, buffer, output});
 			return;
 		}
 
 		command = new TransformRecordsCommand(serviceMan);
-		command.exec({ records, output: argv.output, prettyPrint: argv.pretty_print });
+		const jsonString = command.exec({
+			records, output: argv.output,
+			prettyPrint: argv.pretty_print,
+		});
+
+		command = new OutputCommand(serviceMan);
+		output = argv.output ? argv.output : null;
+		command.exec({ file: file.path, buffer: jsonString, output});
 	}
 }
 

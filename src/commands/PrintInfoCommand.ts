@@ -15,8 +15,6 @@ export interface IPrintInfoOptions {
 
 export class PrintInfoCommand extends Command<IPrintInfoOptions, string> {
 
-	private _logs: string[] = [];
-
 	public exec(options: IPrintInfoOptions): string {
 		const serviceMan = this.serviceMan;
 		const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
@@ -71,15 +69,6 @@ export class PrintInfoCommand extends Command<IPrintInfoOptions, string> {
 		}
 
 		return this.getLog();
-	}
-
-	private log(...args: any[]) {
-		const printed = args.map((val) => val.toString());
-		this._logs.push(printed.join(" "));
-	}
-
-	private getLog(): string {
-		return this._logs.join("\n");
 	}
 
 	private print_type_count_table(typeCount: { [type: number]: number; }, indent: string): void {

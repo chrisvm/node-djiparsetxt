@@ -9,8 +9,8 @@ export interface ITransformOptions {
 	records: IRecordCache;
 }
 
-export class TransformRecordsCommand extends Command<ITransformOptions, void> {
-	public exec(options: ITransformOptions): void {
+export class TransformRecordsCommand extends Command<ITransformOptions, string> {
+	public exec(options: ITransformOptions): string {
 		const serviceMan = this.serviceMan;
 
 		const cacheTransService = serviceMan.get_service<CacheTransformService>(
@@ -18,19 +18,15 @@ export class TransformRecordsCommand extends Command<ITransformOptions, void> {
 		);
 
 		const recordsCache = options.records;
-		const outputBuf = cacheTransService.transform(recordsCache);
+		const rows = cacheTransService.transform(recordsCache);
 
 		let output: string;
 		if (options.prettyPrint) {
-			output = JSON.stringify(outputBuf, null, 2);
+			output = JSON.stringify(rows, null, 2);
 		} else {
-			output = JSON.stringify(outputBuf);
+			output = JSON.stringify(rows);
 		}
 
-		if (options.output) {
-			// todo: work with the --output option
-		} else {
-			console.log(output);
-		}
+		return output;
 	}
 }

@@ -9,12 +9,12 @@ export interface IShowTypeOptions {
 	records: IRecordCache;
 	output: string | null;
 	type: RecordTypes;
-	file: IFile;
+	file: string;
 }
 
-export class ShowTypeCommand extends Command<IShowTypeOptions, void> {
+export class ShowTypeCommand extends Command<IShowTypeOptions, string> {
 
-	public exec(options: IShowTypeOptions): void {
+	public exec(options: IShowTypeOptions): string {
 		const serviceMan = this.serviceMan;
 		const fileParsingService = serviceMan.get_service<FileParsingService>(ServiceTypes.FileParsing);
 		const scrambleTableService = serviceMan.get_service<ScrambleTableService>(ServiceTypes.ScrambleTable);
@@ -27,15 +27,15 @@ export class ShowTypeCommand extends Command<IShowTypeOptions, void> {
 		const typeName = RecordTypes[type];
 
 		if (typeName) {
-			console.log(`file '${file.path}' and type = ${typeName}:`);
+			this.log(`file '${file}' and type = ${typeName}:`);
 
 			recordsOfType.forEach((record) => {
 				const unscrambledRec = scrambleTableService.unscramble_record(record);
 				const subParsed = fileParsingService.parse_record_by_type(unscrambledRec, type);
-				console.log(subParsed);
+				this.log(subParsed);
 			});
 
-			return;
+			return this.getLog();
 		}
 
 		throw new Error(`type '${type}' not recognized`);

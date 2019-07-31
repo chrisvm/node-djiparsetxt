@@ -1,14 +1,13 @@
 import BaseService from "./BaseService";
 import { IRecord } from "./FileInfoService";
 import { RecordTypes } from "./RecordTypes";
-import { get_scramble_table } from "./ScrambleTable";
-
+import { scrambleTable } from "./ScrambleTable";
 export class ScrambleTableService extends BaseService {
 	private _scrambleTable: number[][] = [];
 
 	public get scrambleTable() {
 		if (this._scrambleTable.length === 0) {
-			this._scrambleTable = get_scramble_table();
+			this._scrambleTable = scrambleTable;
 		}
 		return this._scrambleTable;
 	}
