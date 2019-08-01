@@ -2,8 +2,8 @@ import _ from "lodash";
 import { ServiceTypes } from "../common/ServiceManager";
 import { CacheTransformService } from "../services/CacheTransformService";
 import { FileParsingService, IRecordCache } from "../services/FileParsingService";
-import { Command } from "./Command";
 import { RecordTypes } from "../services/RecordTypes";
+import { Command } from "./Command";
 
 export interface IRecords2JsonOptions {
 	prettyPrint: boolean;
@@ -24,16 +24,10 @@ export class Records2JsonCommand extends Command<IRecords2JsonOptions, string> {
 		);
 
 		const recordsCache = options.records;
-		let unscrambledRows = cacheTransService.unscramble(recordsCache);
-		unscrambledRows = unscrambledRows.filter((row) => row.length !== 0);
+		cacheTransService.unscramble(recordsCache);
 
-		const parsedRows = unscrambledRows.map((row) => {
-			const newRow: { [type: string]: any; } = {};
-			for (const record of row) {
-				newRow[RecordTypes[record.type]] = fileParsingService.parse_record_by_type(record, record.type);
-			}
-			return newRow;
-		});
+		const unscrambledRows = cacheTransService.cache_as_rows(recordsCache);
+		const parsedRows = cacheTransService.rows_to_json(unscrambledRows);
 
 		let output: string;
 		if (options.prettyPrint) {

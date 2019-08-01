@@ -14,7 +14,7 @@ import {
 } from "./commands";
 import { CliArguments } from "./common/CliArguments";
 import { ServiceManager, ServiceTypes } from "./common/ServiceManager";
-import { CacheTransformService } from "./services/CacheTransformService";
+import { CacheTransformService, IRowObject } from "./services/CacheTransformService";
 import { FileParsingService } from "./services/FileParsingService";
 import { RecordTypes } from "./services/RecordTypes";
 
@@ -96,20 +96,18 @@ function execute_cli(args: string[]) {
 
 // this is what runs when called as a tool
 if (require.main === module) {
-	// try {
-	// 	const args = process.argv.slice(2);
-	// 	execute_cli(args);
-	// } catch (e) {
-	// 	const processName = "node-djiparsetxt";
-	// 	console.log(`${processName}: ${e}`);
-	// 	console.log(e.stack);
-	// }
-	const args = process.argv.slice(2);
-	execute_cli(args);
+	try {
+		const args = process.argv.slice(2);
+		execute_cli(args);
+	} catch (e) {
+		const processName = "node-djiparsetxt";
+		console.log(`${processName}: ${e}`);
+		console.log(e.stack);
+	}
 }
 
 // public api when used as a module
-export function parse_file(buf: Buffer): Array<{ [type: string]: any; }> {
+export function parse_file(buf: Buffer): IRowObject[] {
 	const serviceMan = new ServiceManager();
 
 	const fileParsingService = serviceMan.get_service<FileParsingService>(
@@ -121,15 +119,9 @@ export function parse_file(buf: Buffer): Array<{ [type: string]: any; }> {
 	);
 
 	const recordsCache = fileParsingService.parse_records(buf);
-	const outputBuf = cacheTransService.unscramble(recordsCache);
-
-	const parsedRows = _.map(outputBuf, (row) => {
-		const newRow: { [type: string]: any; } = {};
-		for (const record of row) {
-			newRow[RecordTypes[record.type]] = fileParsingService.parse_record_by_type(record, record.type);
-		}
-		return newRow;
-	});
+	cacheTransService.unscramble(recordsCache);
+	const unscrambledRows = cacheTransService.cache_as_rows(recordsCache);
+	const parsedRows = cacheTransService.rows_to_json(unscrambledRows);
 
 	return parsedRows;
 }

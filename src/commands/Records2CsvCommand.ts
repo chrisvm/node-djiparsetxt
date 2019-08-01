@@ -2,6 +2,7 @@ import _ from "lodash";
 import { ServiceTypes } from "../common/ServiceManager";
 import { CacheTransformService } from "../services/CacheTransformService";
 import { FileParsingService, IRecordCache } from "../services/FileParsingService";
+import { RecordTypes } from "../services/RecordTypes";
 import { Command } from "./Command";
 
 export interface IRecords2CsvOptions {
@@ -22,15 +23,10 @@ export class Records2CsvCommand extends Command<IRecords2CsvOptions, string> {
 		);
 
 		const recordsCache = options.records;
-		const rows = cacheTransService.unscramble(recordsCache);
+		cacheTransService.unscramble(recordsCache);
+		const unscrambledRows = cacheTransService.cache_as_rows(recordsCache);
 
-		const parsedRows = _.map(rows, (row) => {
-			const newRow: any[] = [];
-			for (const record of row) {
-				newRow.push(fileParsingService.parse_record_by_type(record, record.type));
-			}
-			return newRow;
-		});
+		const parsedRows = cacheTransService.rows_to_json(unscrambledRows);
 		return "";
 	}
 }

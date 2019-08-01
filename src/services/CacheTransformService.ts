@@ -1,31 +1,21 @@
-import _ from "lodash";
 import { ServiceTypes } from "../common/ServiceManager";
 import BaseService from "./BaseService";
 import { BinaryParserService } from "./BinaryParserService";
 import { IRecord } from "./FileInfoService";
-import { IRecordCache } from "./FileParsingService";
+import { FileParsingService, IRecordCache } from "./FileParsingService";
 import { RecordTypes } from "./RecordTypes";
 import { ScrambleTableService } from "./ScrambleTableService";
 
+export interface IRowObject { [type: string]: any; }
+
 export class CacheTransformService extends BaseService {
 
-	public unscramble(recordsCache: IRecordCache): IRecord[][] {
+	public unscramble(recordsCache: IRecordCache): void {
 		const scrambleTableService = this.serviceMan.get_service<ScrambleTableService>(
 			ServiceTypes.ScrambleTable,
 		);
 
-		const scrambledRows = this.cache_as_rows(recordsCache);
-
-		const unscrambledRows = _.map(scrambledRows, (row) => {
-			const newRow: IRecord[] = [];
-			for (const record of row) {
-				const unscrambled = scrambleTableService.unscramble_record(record);
-				newRow.push(unscrambled);
-			}
-			return newRow;
-		});
-
-		return unscrambledRows;
+		recordsCache.records = recordsCache.records.map((rec) => scrambleTableService.unscramble_record(rec));
 	}
 
 	public cache_as_rows(recordsCache: IRecordCache): IRecord[][] {
@@ -35,7 +25,7 @@ export class CacheTransformService extends BaseService {
 		const records = recordsCache.records;
 
 		let consumed = 0;
-		let row: {[type: number]: IRecord} = {};
+		let row: IRecord[] = [];
 
 		while (consumed < records.length) {
 
@@ -49,25 +39,35 @@ export class CacheTransformService extends BaseService {
 
 			// we create a row for each OSD record type
 			if (record.type !== RecordTypes.OSD) {
-				row[record.type] = record;
+				row.push(record);
 				consumed++;
 				continue;
 			}
 
-			const rowArr: IRecord[] = [];
-
-			for (const val in row) {
-				if (row.hasOwnProperty(val)) {
-					rowArr.push(row[val]);
-				}
+			if (row.length > 0) {
+				rows.push(row);
 			}
-			rows.push(rowArr);
 
-			row = {};
-			row[record.type] = record;
+			row = [record];
 			consumed++;
 		}
 
 		return rows;
+	}
+
+	public rows_to_json(rows: IRecord[][]): IRowObject[] {
+		const fileParsingService = this.serviceMan.get_service<FileParsingService>(
+			ServiceTypes.FileParsing,
+		);
+
+		const row2json = (row: IRecord[]): IRowObject => {
+			const newRow: IRowObject = {};
+			for (const record of row) {
+				newRow[RecordTypes[record.type]] = fileParsingService.parse_record_by_type(record, record.type);
+			}
+			return newRow;
+		};
+
+		return rows.map(row2json);
 	}
 }
