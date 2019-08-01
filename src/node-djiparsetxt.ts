@@ -11,6 +11,7 @@ import {
 	SerializeRecordsCommand,
 	ShowTypeCommand,
 	UnscrambleCommand,
+	Records2CsvCommand,
 } from "./commands";
 import { CliArguments } from "./common/CliArguments";
 import { ServiceManager, ServiceTypes } from "./common/ServiceManager";
@@ -81,16 +82,22 @@ function execute_cli(args: string[]) {
 			return;
 		}
 
-		command = new Records2JsonCommand(serviceMan);
-		const jsonString = command.exec({
-			records,
-			output: argv.output,
-			prettyPrint: argv.pretty_print,
-		});
+		let outputString: string;
+		if (argv.csv) {
+			command = new Records2CsvCommand(serviceMan);
+			outputString = command.exec({ records, output: argv.output });
+		} else {
+			command = new Records2JsonCommand(serviceMan);
+			outputString = command.exec({
+				records,
+				output: argv.output,
+				prettyPrint: argv.pretty_print,
+			});
+		}
 
 		command = new OutputCommand(serviceMan);
 		output = argv.output ? argv.output : null;
-		command.exec({ file: file.path, buffer: jsonString, output});
+		command.exec({ file: file.path, buffer: outputString, output});
 	}
 }
 

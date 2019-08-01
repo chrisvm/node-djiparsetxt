@@ -50,6 +50,10 @@ export class CliArguments {
 		return this.argv.distribution || this.argv.d;
 	}
 
+	public get csv(): boolean {
+		return this.argv.csv || this.argv.c;
+	}
+
 	public static print_usage(): void {
 		console.log("Usage: node-djiparsetext FILE [FILE...] [OPTIONS]\n");
 	}
@@ -106,6 +110,11 @@ export class CliArguments {
 			short_name: "d",
 			long_name: "distribution",
 			description: "Print the record types as they appear in the file.",
+		},
+		{
+			short_name: "c",
+			long_name: "csv",
+			description: "Output the parsed file in csv form",
 		},
 		{
 			short_name: "p",

@@ -15,10 +15,6 @@ export class Records2JsonCommand extends Command<IRecords2JsonOptions, string> {
 	public exec(options: IRecords2JsonOptions): string {
 		const serviceMan = this.serviceMan;
 
-		const fileParsingService = serviceMan.get_service<FileParsingService>(
-			ServiceTypes.FileParsing,
-		);
-
 		const cacheTransService = serviceMan.get_service<CacheTransformService>(
 			ServiceTypes.CacheTransform,
 		);

@@ -1,4 +1,6 @@
 import { expect } from "chai";
+import fs from "fs";
+import path from "path";
 import { ReadFileCommand } from "../src/commands";
 import { ServiceManagerMock } from "./ServiceManager.mock";
 
@@ -19,5 +21,20 @@ describe("ReadFileCommand", () => {
 
 		expect(files).to.have.lengthOf(1);
 		expect(files[0].buffer).to.equal(null);
+	});
+
+	it("should return an IFile obj when a file is found", () => {
+		const testFile = path.join(__dirname, "../assets/flight_logs/mavic2/mavic2_0.txt");
+		const filepaths: string[] = [ testFile ];
+		const files = cmd.exec(filepaths);
+
+		expect(files).to.have.lengthOf(1);
+		expect(files[0].path).to.equal(testFile);
+		expect(files[0].buffer).to.not.equal(null);
+
+		const stats = fs.statSync(testFile);
+		if (files[0].buffer !== null) {
+			expect(files[0].buffer.length).to.equal(stats.size);
+		}
 	});
 });
