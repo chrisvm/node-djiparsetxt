@@ -51,39 +51,24 @@ export class Records2CsvCommand extends Command<IRecords2CsvOptions, string> {
 		const recordsCache = options.records;
 		cacheTransService.unscramble(recordsCache);
 		const unscrambledRows = cacheTransService.cache_as_rows(recordsCache);
-
 		const parsedRows = cacheTransService.rows_to_json(unscrambledRows);
 
+		// print json object to csv representation
 		const headerDef = this.getRowHeaders(parsedRows);
-		const headerString = this.printHeader(headerDef);
-
-		this.log(headerString);
-		for (const datarow of parsedRows) {
-			const values: string[] = [];
-			for (const header of headerDef) {
-				for (const prop of header.props) {
-					const path = `${header.type}.${prop}`;
-					if (_.has(datarow, path)) {
-						values.push(_.get(datarow, path).toString());
-					} else {
-						values.push("");
-					}
-				}
-			}
-			this.log(values.join(","));
-		}
+		this.printHeader(headerDef);
+		this.printRowValues(parsedRows, headerDef);
 
 		return this.getLog();
 	}
 
-	private printHeader(headerDef: IRowHeader[]): string {
+	private printHeader(headerDef: IRowHeader[]): void {
 		const headers: string[] = [];
 		for (const header of headerDef) {
 			for (const prop of header.props) {
 				headers.push(`${header.type}.${prop}`);
 			}
 		}
-		return headers.join(",");
+		this.log(headers.join(","));
 	}
 
 	private getRowHeaders(rows: IRowObject[]): IRowHeader[] {
@@ -106,5 +91,22 @@ export class Records2CsvCommand extends Command<IRecords2CsvOptions, string> {
 		}
 
 		return headers;
+	}
+
+	private printRowValues(rows: IRowObject[], headerDef: IRowHeader[]): void {
+		for (const datarow of rows) {
+			const values: string[] = [];
+			for (const header of headerDef) {
+				for (const prop of header.props) {
+					const path = `${header.type}.${prop}`;
+					if (_.has(datarow, path)) {
+						values.push(_.get(datarow, path).toString());
+					} else {
+						values.push("");
+					}
+				}
+			}
+			this.log(values.join(","));
+		}
 	}
 }
