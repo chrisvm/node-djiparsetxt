@@ -8,3 +8,4 @@ export * from "./ParseRecordsCommand";
 export * from "./SerializeRecordsCommand";
 export * from "./OutputCommand";
 export * from "./Records2CsvCommand";
+export * from "./JpegExtractCommand";

@@ -36,7 +36,7 @@ const RECORD_ORDER: string[] = [
 	"MC_PARAM",
 	"APP_OPERATION",
 	"APP_SER_WARN",
-	"JPEG",
+	// "JPEG",
 	"OTHER",
 ];
 

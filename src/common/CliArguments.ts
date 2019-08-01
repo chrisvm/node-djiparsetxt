@@ -54,6 +54,10 @@ export class CliArguments {
 		return this.argv.csv || this.argv.c;
 	}
 
+	public get jpeg(): boolean {
+		return this.argv.j || this.argv.jpeg;
+	}
+
 	public static print_usage(): void {
 		console.log("Usage: node-djiparsetext FILE [FILE...] [OPTIONS]\n");
 	}
@@ -120,6 +124,11 @@ export class CliArguments {
 			short_name: "p",
 			long_name: "--pretty",
 			description: "Pretty print the json output.",
+		},
+		{
+			short_name: "j",
+			long_name: "--jpeg",
+			description: "Extract the found jpeg records to the current dir",
 		},
 	];
 

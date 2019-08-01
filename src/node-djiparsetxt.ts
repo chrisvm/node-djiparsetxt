@@ -12,6 +12,7 @@ import {
 	ShowTypeCommand,
 	UnscrambleCommand,
 	Records2CsvCommand,
+	JpegExtractCommand,
 } from "./commands";
 import { CliArguments } from "./common/CliArguments";
 import { ServiceManager, ServiceTypes } from "./common/ServiceManager";
@@ -48,7 +49,7 @@ function execute_cli(args: string[]) {
 
 			command = new OutputCommand(serviceMan);
 			command.exec({ file: file.path, buffer: output, output: argv.output });
-			return;
+			continue;
 		}
 
 		command = new ParseRecordsCommand(serviceMan);
@@ -68,7 +69,7 @@ function execute_cli(args: string[]) {
 			command = new OutputCommand(serviceMan);
 			output = argv.output === undefined ? path.dirname(file.path) : argv.output;
 			command.exec({ file: file.path + ".unscrambled", buffer, output});
-			return;
+			continue;
 		}
 
 		if (argv.show_record != null) {
@@ -79,7 +80,13 @@ function execute_cli(args: string[]) {
 			command = new OutputCommand(serviceMan);
 			output = argv.output;
 			command.exec({ file: file.path, buffer, output});
-			return;
+			continue;
+		}
+
+		if (argv.jpeg) {
+			command = new JpegExtractCommand(serviceMan);
+			command.exec({ records });
+			continue;
 		}
 
 		let outputString: string;

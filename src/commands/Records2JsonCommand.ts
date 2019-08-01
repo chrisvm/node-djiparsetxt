@@ -1,8 +1,7 @@
 import _ from "lodash";
 import { ServiceTypes } from "../common/ServiceManager";
 import { CacheTransformService } from "../services/CacheTransformService";
-import { FileParsingService, IRecordCache } from "../services/FileParsingService";
-import { RecordTypes } from "../services/RecordTypes";
+import { IRecordCache } from "../services/FileParsingService";
 import { Command } from "./Command";
 
 export interface IRecords2JsonOptions {
@@ -21,7 +20,6 @@ export class Records2JsonCommand extends Command<IRecords2JsonOptions, string> {
 
 		const recordsCache = options.records;
 		cacheTransService.unscramble(recordsCache);
-
 		const unscrambledRows = cacheTransService.cache_as_rows(recordsCache);
 		const parsedRows = cacheTransService.rows_to_json(unscrambledRows);
 
