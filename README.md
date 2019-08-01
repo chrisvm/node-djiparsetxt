@@ -27,6 +27,10 @@ Example to create a json file from a text log:
 
 		node-djiparsetxt log1.txt > log1.json
 
+If you want to output csv:
+
+		node-djiparsetext log1.txt --csv > log1.csv
+
 ## From a script
 
 `node-djiparsetxt` supports usage as a library to integrate it to a bigger 
