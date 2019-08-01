@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import _ from "lodash";
 import path from "path";
 import {
 	IFile,
@@ -6,9 +7,9 @@ import {
 	ParseRecordsCommand,
 	PrintInfoCommand,
 	ReadFileCommand,
+	Records2JsonCommand,
 	SerializeRecordsCommand,
 	ShowTypeCommand,
-	TransformRecordsCommand,
 	UnscrambleCommand,
 } from "./commands";
 import { CliArguments } from "./common/CliArguments";
@@ -80,9 +81,10 @@ function execute_cli(args: string[]) {
 			return;
 		}
 
-		command = new TransformRecordsCommand(serviceMan);
+		command = new Records2JsonCommand(serviceMan);
 		const jsonString = command.exec({
-			records, output: argv.output,
+			records,
+			output: argv.output,
 			prettyPrint: argv.pretty_print,
 		});
 
@@ -94,18 +96,20 @@ function execute_cli(args: string[]) {
 
 // this is what runs when called as a tool
 if (require.main === module) {
-	try {
-		const args = process.argv.slice(2);
-		execute_cli(args);
-	} catch (e) {
-		const processName = "node-djiparsetxt";
-		console.log(`${processName}: ${e}`);
-		console.log(e.stack);
-	}
+	// try {
+	// 	const args = process.argv.slice(2);
+	// 	execute_cli(args);
+	// } catch (e) {
+	// 	const processName = "node-djiparsetxt";
+	// 	console.log(`${processName}: ${e}`);
+	// 	console.log(e.stack);
+	// }
+	const args = process.argv.slice(2);
+	execute_cli(args);
 }
 
 // public api when used as a module
-export function parse_file(buf: Buffer): any[][] {
+export function parse_file(buf: Buffer): Array<{ [type: string]: any; }> {
 	const serviceMan = new ServiceManager();
 
 	const fileParsingService = serviceMan.get_service<FileParsingService>(
@@ -117,6 +121,15 @@ export function parse_file(buf: Buffer): any[][] {
 	);
 
 	const recordsCache = fileParsingService.parse_records(buf);
-	const outputBuf = cacheTransService.transform(recordsCache);
-	return outputBuf;
+	const outputBuf = cacheTransService.unscramble(recordsCache);
+
+	const parsedRows = _.map(outputBuf, (row) => {
+		const newRow: { [type: string]: any; } = {};
+		for (const record of row) {
+			newRow[RecordTypes[record.type]] = fileParsingService.parse_record_by_type(record, record.type);
+		}
+		return newRow;
+	});
+
+	return parsedRows;
 }
