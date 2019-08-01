@@ -24,9 +24,10 @@ export class Records2JsonCommand extends Command<IRecords2JsonOptions, string> {
 		);
 
 		const recordsCache = options.records;
-		const unscrambledRows = cacheTransService.unscramble(recordsCache);
+		let unscrambledRows = cacheTransService.unscramble(recordsCache);
+		unscrambledRows = unscrambledRows.filter((row) => row.length !== 0);
 
-		const parsedRows = _.map(unscrambledRows, (row) => {
+		const parsedRows = unscrambledRows.map((row) => {
 			const newRow: { [type: string]: any; } = {};
 			for (const record of row) {
 				newRow[RecordTypes[record.type]] = fileParsingService.parse_record_by_type(record, record.type);
