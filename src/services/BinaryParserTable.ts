@@ -77,8 +77,38 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				.floatle("max_hor_speed")
 				.floatle("max_vert_speed")
 				.uint32le("photo_count")
-				.uint32le("video_time");
-			// todo: finish implementing parser for diff versions
+				.uint32le("video_time")
+				// TODO: finish implementing parser for diff versions
+				.skip(137)
+				.string("aircraft_name", { length: 32,
+					formatter: (aircraft_name: any) => { 
+						return aircraft_name.replace(/\0.*$/g,'');;
+					} })
+				.string("aircraft_sn", { length: 16,
+					formatter: (aircraft_sn: any) => { 
+						return aircraft_sn.replace(/\0.*$/g,'');;
+					} })
+				.string("camera_sn", { length: 16,
+					formatter: (camera_sn: any) => { 
+						return camera_sn.replace(/\0.*$/g,'');;
+					}})
+				.string("rc_sn", { length: 16, 
+					formatter: (rc_sn: any) => { 
+						return rc_sn.replace(/\0.*$/g,'');;
+					} })
+				.string("battery_sn", { length: 16, 
+					formatter: (battery_sn: any) => { 
+						return battery_sn.replace(/\0.*$/g,'');;
+					} })
+				.uint8("app_type", {
+					formatter: (app_type:any) => app_type === 1 ? "IOS" : "Android",
+				})
+				.buffer("app_version", {
+					length: 3, 
+					formatter: (app_version: any) => { 
+						return `${app_version[0]}.${app_version[1]}.${app_version[2]}`;
+					}
+				});
 		},
 	},
 	osd_record: {
