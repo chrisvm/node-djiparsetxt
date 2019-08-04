@@ -82,23 +82,23 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				.skip(137)
 				.string("aircraft_name", { length: 32,
 					formatter: (aircraft_name: any) => { 
-						return aircraft_name.replace(/\0.*$/g,'');;
+						return aircraft_name.replace(/\0.*$/g,'');
 					} })
 				.string("aircraft_sn", { length: 16,
 					formatter: (aircraft_sn: any) => { 
-						return aircraft_sn.replace(/\0.*$/g,'');;
+						return aircraft_sn.replace(/\0.*$/g,'');
 					} })
 				.string("camera_sn", { length: 16,
 					formatter: (camera_sn: any) => { 
-						return camera_sn.replace(/\0.*$/g,'');;
+						return camera_sn.replace(/\0.*$/g,'');
 					}})
 				.string("rc_sn", { length: 16, 
 					formatter: (rc_sn: any) => { 
-						return rc_sn.replace(/\0.*$/g,'');;
+						return rc_sn.replace(/\0.*$/g,'');
 					} })
 				.string("battery_sn", { length: 16, 
 					formatter: (battery_sn: any) => { 
-						return battery_sn.replace(/\0.*$/g,'');;
+						return battery_sn.replace(/\0.*$/g,'');
 					} })
 				.uint8("app_type", {
 					formatter: (app_type:any) => app_type === 1 ? "IOS" : "Android",
