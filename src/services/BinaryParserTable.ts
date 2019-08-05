@@ -44,11 +44,24 @@ export const PARSER_TABLE: IParserLookUpTable = {
 	details: {
 		instance: null,
 		factory: () => {
-			return new Parser()
-				.string("city_part", { length: 20, zeroTerminated: true })
-				.string("street", { length: 20, zeroTerminated: true })
-				.string("city", { length: 20, zeroTerminated: true })
-				.string("area", { length: 20, zeroTerminated: true })
+			const dummy: any = {
+				parser: new Parser()
+				.buffer("city_part", {
+					length: 20,
+					formatter: (dat) => (dat as Buffer).toString("ascii"),
+				})
+				.buffer("street", {
+					length: 20,
+					formatter: (dat) => (dat as Buffer).toString("ascii"),
+				})
+				.buffer("city", {
+					length: 20,
+					formatter: (dat) => (dat as Buffer).toString("ascii"),
+				})
+				.buffer("area", {
+					length: 20,
+					formatter: (dat) => (dat as Buffer).toString("ascii"),
+				})
 				.uint8("is_favorite")
 				.uint8("is_new")
 				.uint8("needs_upload")
@@ -68,11 +81,26 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				.uint32le("video_time")
 				// TODO: finish implementing parser for diff versions
 				.skip(137)
-				.string("aircraft_name", { length: 32, zeroTerminated: true })
-				.string("aircraft_sn", { length: 16, zeroTerminated: true })
-				.string("camera_sn", { length: 16, zeroTerminated: true })
-				.string("rc_sn", { length: 16, zeroTerminated: true })
-				.string("battery_sn", { length: 16, zeroTerminated: true })
+				.string("aircraft_name", { length: 32,
+					formatter: (val: any) => { 
+						return val.replace(/\0.*$/g,'');
+					} })
+				.string("aircraft_sn", { length: 16,
+					formatter: (val: any) => { 
+						return val.replace(/\0.*$/g,'');
+					} })
+				.string("camera_sn", { length: 16,
+					formatter: (val: any) => { 
+						return val.replace(/\0.*$/g,'');
+					}})
+				.string("rc_sn", { length: 16, 
+					formatter: (val: any) => { 
+						return val.replace(/\0.*$/g,'');
+					} })
+				.string("battery_sn", { length: 16, 
+					formatter: (val: any) => { 
+						return val.replace(/\0.*$/g,'');
+					} })
 				.uint8("app_type", {
 					formatter: (appType: any) => appType === 1 ? "IOS" : "Android",
 				})
@@ -81,7 +109,15 @@ export const PARSER_TABLE: IParserLookUpTable = {
 					formatter: (appVersion: any) => {
 						return `${appVersion[0]}.${appVersion[1]}.${appVersion[2]}`;
 					},
-				});
+				})
+			};
+			dummy.parse = (buf: Buffer): any => {
+				const parsed = dummy.parser.parse(buf);
+				const timestamp = bignum_convert_buffer(parsed.timestamp);
+				parsed.timestamp = timestamp.toString();
+				return parsed;
+			};
+			return dummy		
 		},
 	},
 	osd_record: {
