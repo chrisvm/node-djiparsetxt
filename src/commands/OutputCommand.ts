@@ -14,7 +14,7 @@ export class OutputCommand extends Command<IOutputOptions, void> {
 		const buffer = options.buffer;
 
 		// use -o option to output to file or dir
-		if (options.output !== null) {
+		if (options.output !== null && options.output !== undefined) {
 			// check if output opt is dir or path to file
 			const basename = path.basename(file);
 			file = path.join(options.output, basename);

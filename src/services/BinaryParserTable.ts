@@ -45,22 +45,10 @@ export const PARSER_TABLE: IParserLookUpTable = {
 		instance: null,
 		factory: () => {
 			return new Parser()
-				.buffer("city_part", {
-					length: 20,
-					formatter: (dat) => (dat as Buffer).toString("ascii"),
-				})
-				.buffer("street", {
-					length: 20,
-					formatter: (dat) => (dat as Buffer).toString("ascii"),
-				})
-				.buffer("city", {
-					length: 20,
-					formatter: (dat) => (dat as Buffer).toString("ascii"),
-				})
-				.buffer("area", {
-					length: 20,
-					formatter: (dat) => (dat as Buffer).toString("ascii"),
-				})
+				.string("city_part", { length: 20, zeroTerminated: true })
+				.string("street", { length: 20, zeroTerminated: true })
+				.string("city", { length: 20, zeroTerminated: true })
+				.string("area", { length: 20, zeroTerminated: true })
 				.uint8("is_favorite")
 				.uint8("is_new")
 				.uint8("needs_upload")
@@ -80,34 +68,19 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				.uint32le("video_time")
 				// TODO: finish implementing parser for diff versions
 				.skip(137)
-				.string("aircraft_name", { length: 32,
-					formatter: (aircraft_name: any) => { 
-						return aircraft_name.replace(/\0.*$/g,'');
-					} })
-				.string("aircraft_sn", { length: 16,
-					formatter: (aircraft_sn: any) => { 
-						return aircraft_sn.replace(/\0.*$/g,'');
-					} })
-				.string("camera_sn", { length: 16,
-					formatter: (camera_sn: any) => { 
-						return camera_sn.replace(/\0.*$/g,'');
-					}})
-				.string("rc_sn", { length: 16, 
-					formatter: (rc_sn: any) => { 
-						return rc_sn.replace(/\0.*$/g,'');
-					} })
-				.string("battery_sn", { length: 16, 
-					formatter: (battery_sn: any) => { 
-						return battery_sn.replace(/\0.*$/g,'');
-					} })
+				.string("aircraft_name", { length: 32, zeroTerminated: true })
+				.string("aircraft_sn", { length: 16, zeroTerminated: true })
+				.string("camera_sn", { length: 16, zeroTerminated: true })
+				.string("rc_sn", { length: 16, zeroTerminated: true })
+				.string("battery_sn", { length: 16, zeroTerminated: true })
 				.uint8("app_type", {
-					formatter: (app_type:any) => app_type === 1 ? "IOS" : "Android",
+					formatter: (appType: any) => appType === 1 ? "IOS" : "Android",
 				})
 				.buffer("app_version", {
-					length: 3, 
-					formatter: (app_version: any) => { 
-						return `${app_version[0]}.${app_version[1]}.${app_version[2]}`;
-					}
+					length: 3,
+					formatter: (appVersion: any) => {
+						return `${appVersion[0]}.${appVersion[1]}.${appVersion[2]}`;
+					},
 				});
 		},
 	},

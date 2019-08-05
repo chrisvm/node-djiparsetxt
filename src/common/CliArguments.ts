@@ -47,7 +47,7 @@ export class CliArguments {
 	}
 
 	public get distrib(): boolean {
-		return this.argv.distribution || this.argv.d;
+		return this.argv.distribution || this.argv.D;
 	}
 
 	public get csv(): boolean {
@@ -111,7 +111,7 @@ export class CliArguments {
 			param_name: "type",
 		},
 		{
-			short_name: "d",
+			short_name: "D",
 			long_name: "distribution",
 			description: "Print the record types as they appear in the file.",
 		},
@@ -122,12 +122,12 @@ export class CliArguments {
 		},
 		{
 			short_name: "p",
-			long_name: "--pretty",
+			long_name: "pretty",
 			description: "Pretty print the json output.",
 		},
 		{
 			short_name: "j",
-			long_name: "--jpeg",
+			long_name: "jpeg",
 			description: "Extract the found jpeg records to the current dir",
 		},
 	];
