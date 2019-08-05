@@ -82,24 +82,24 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				// TODO: finish implementing parser for diff versions
 				.skip(137)
 				.string("aircraft_name", { length: 32,
-					formatter: (val: any) => { 
-						return val.replace(/\0.*$/g,'');
+					formatter: (val: any) => {
+						return val.replace(/\0.*$/g, "");
 					} })
 				.string("aircraft_sn", { length: 16,
-					formatter: (val: any) => { 
-						return val.replace(/\0.*$/g,'');
+					formatter: (val: any) => {
+						return val.replace(/\0.*$/g, "");
 					} })
 				.string("camera_sn", { length: 16,
-					formatter: (val: any) => { 
-						return val.replace(/\0.*$/g,'');
+					formatter: (val: any) => {
+						return val.replace(/\0.*$/g, "");
 					}})
-				.string("rc_sn", { length: 16, 
-					formatter: (val: any) => { 
-						return val.replace(/\0.*$/g,'');
+				.string("rc_sn", { length: 16,
+					formatter: (val: any) => {
+						return val.replace(/\0.*$/g, "");
 					} })
-				.string("battery_sn", { length: 16, 
-					formatter: (val: any) => { 
-						return val.replace(/\0.*$/g,'');
+				.string("battery_sn", { length: 16,
+					formatter: (val: any) => {
+						return val.replace(/\0.*$/g, "");
 					} })
 				.uint8("app_type", {
 					formatter: (appType: any) => appType === 1 ? "IOS" : "Android",
@@ -109,7 +109,7 @@ export const PARSER_TABLE: IParserLookUpTable = {
 					formatter: (appVersion: any) => {
 						return `${appVersion[0]}.${appVersion[1]}.${appVersion[2]}`;
 					},
-				})
+				}),
 			};
 			dummy.parse = (buf: Buffer): any => {
 				const parsed = dummy.parser.parse(buf);
@@ -117,7 +117,7 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				parsed.timestamp = timestamp.toString();
 				return parsed;
 			};
-			return dummy		
+			return dummy;
 		},
 	},
 	osd_record: {
