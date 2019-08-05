@@ -53,7 +53,7 @@ fs.readFile(file_path, (err, data) => {
 `node-djiparsetxt` Module
 =========================
 
-`parse_file(name: string, buf: Buffer): ParsedOutput`
+`parse_file(buf: Buffer): ParsedOutput`
 
 Parse a given buffer and return an object of type `ParsedOutput`.
 
@@ -64,3 +64,17 @@ Parse a given buffer and return an object of type `ParsedOutput`.
 #### Returns
 
 An array of with the rows extracted from the file.
+
+----
+
+`get_details(buf: Buffer): object`
+
+Get the details section of the given file.
+
+#### Parameters
+
+- *`buf`*: `Buffer`: Buffer instance of the file to parse.
+
+#### Returns 
+
+An object with properties and values from the details area.

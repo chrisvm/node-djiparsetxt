@@ -1,6 +1,6 @@
 {
 	"name": "node-djiparsetxt",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "command-line application that reads a DJI '.txt' file and outputs a json.",
 	"main": "dist/node-djiparsetxt.js",
 	"types": "dist/node-djiparsetxt.d.ts",
