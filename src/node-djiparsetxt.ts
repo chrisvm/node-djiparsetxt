@@ -3,23 +3,23 @@ import _ from "lodash";
 import path from "path";
 import {
 	IFile,
+	JpegExtractCommand,
 	OutputCommand,
 	ParseRecordsCommand,
 	PrintInfoCommand,
 	ReadFileCommand,
+	Records2CsvCommand,
 	Records2JsonCommand,
 	SerializeRecordsCommand,
 	ShowTypeCommand,
 	UnscrambleCommand,
-	Records2CsvCommand,
-	JpegExtractCommand,
 } from "./commands";
 import { CliArguments } from "./common/CliArguments";
 import { ServiceManager, ServiceTypes } from "./common/ServiceManager";
 import { CacheTransformService, IRowObject } from "./services/CacheTransformService";
+import { FileInfoService } from "./services/FileInfoService";
 import { FileParsingService } from "./services/FileParsingService";
 import { RecordTypes } from "./services/RecordTypes";
-import { FileInfoService } from "./services/FileInfoService";
 
 function execute_cli(args: string[]) {
 	const argv = new CliArguments(args);
@@ -133,14 +133,15 @@ export function parse_file(buf: Buffer): IRowObject[] {
 		ServiceTypes.CacheTransform,
 	);
 
-	const fileInfoService = serviceMan.get_service(
-		ServiceTypes.FileInfo,
-	) as FileInfoService;
-	const details = fileInfoService.get_details(buf)
 	const recordsCache = fileParsingService.parse_records(buf);
 	cacheTransService.unscramble(recordsCache);
 	const unscrambledRows = cacheTransService.cache_as_rows(recordsCache);
 	const parsedRows = cacheTransService.rows_to_json(unscrambledRows);
-	parsedRows.push( {'Details': details});
 	return parsedRows;
+}
+
+export function get_details(buf: Buffer) {
+	const serviceMan = new ServiceManager();
+	const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
+	return fileInfoService.get_details(buf);
 }
