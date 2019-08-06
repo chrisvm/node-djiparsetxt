@@ -480,8 +480,8 @@ export const PARSER_TABLE: IParserLookUpTable = {
 			};
 			dummy.parse = (buf: Buffer): any => {
 				const parsed = dummy.parser.parse(buf);
-				const appVer = parsed.version;
-				parsed.version = `${appVer[2]}.${appVer[1]}.${appVer[0]}`;
+				const version = parsed.version;
+				parsed.version = `${version[2]}.${version[1]}.${version[0]}`;
 				return parsed;
 			};
 			return dummy;
