@@ -69,19 +69,19 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				parser: new Parser()
 				.buffer("city_part", {
 					length: 20,
-					formatter: (dat) => (dat as Buffer).toString("ascii"),
+					formatter: (dat) => (dat as Buffer).toString("ascii").replace(/\0.*$/g, ""),
 				})
 				.buffer("street", {
 					length: 20,
-					formatter: (dat) => (dat as Buffer).toString("ascii"),
+					formatter: (dat) => (dat as Buffer).toString("ascii").replace(/\0.*$/g, ""),
 				})
 				.buffer("city", {
 					length: 20,
-					formatter: (dat) => (dat as Buffer).toString("ascii"),
+					formatter: (dat) => (dat as Buffer).toString("ascii").replace(/\0.*$/g, ""),
 				})
 				.buffer("area", {
 					length: 20,
-					formatter: (dat) => (dat as Buffer).toString("ascii"),
+					formatter: (dat) => (dat as Buffer).toString("ascii").replace(/\0.*$/g, ""),
 				})
 				.uint8("is_favorite")
 				.uint8("is_new")
