@@ -79,8 +79,8 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				.doublele("longitude", { formatter: radiants2degree })
 				.doublele("latitude", { formatter: radiants2degree })
 				.floatle("total_distance")
-				.floatle("total_time", {
-					formatter: (time) => (time as number) * 1000,
+				.uint32le("total_time", {
+					formatter: (time) => (time as number) / 1000,
 				})
 				.floatle("max_height")
 				.floatle("max_hor_speed")
