@@ -9,6 +9,7 @@
 		"strict": true,
 		"esModuleInterop": true,
     "moduleResolution": "node",
+    "suppressImplicitAnyIndexErrors": true
   },
   "files": [
     "src/node-djiparsetxt.ts"
