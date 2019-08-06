@@ -1,7 +1,28 @@
 import bignum = require("bignum");
 import { Parser } from "binary-parser";
 import { ILazyLoadingEntry } from "../common/lazy_loading";
-
+import {
+	DEFORM_MODE,
+	DEFORM_STATUS,
+	DETAILS_APP_TYPE,
+	GIMBAL_MODE,
+	HOME_IOC_MODE,
+	NO_MATCH,
+	OSD_RECORD_BATTERY_TYPE,
+	OSD_RECORD_DRONE_TYPE,
+	OSD_RECORD_FLIGHT_ACTION,
+	OSD_RECORD_FLYCCOMMAND,
+	OSD_RECORD_FLYCSTATE,
+	OSD_RECORD_GO_HOME_STATUS,
+	OSD_RECORD_GROUND_OR_SKY,
+	OSD_RECORD_IMU_INIT_FAIL_REASON,
+	OSD_RECORD_MOTOR_START_FAILED_CAUSE,
+	OSD_RECORD_NON_GPS_CAUSE,
+	RECOVERY_APP_TYPE,
+	RECOVERY_DRONE_TYPE,
+	SMART_BATTERY_GO_HOME_STATUS,
+	SMART_BATTERY_STATUS,
+	} from "./InterpretationTable";
 const radiants2degree = (val: any) => val * 57.2958;
 
 export interface IParserLookUpTable {
@@ -48,19 +69,19 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				parser: new Parser()
 				.buffer("city_part", {
 					length: 20,
-					formatter: (dat) => (dat as Buffer).toString("ascii"),
+					formatter: (dat) => (dat as Buffer).toString("ascii").replace(/\0.*$/g, ""),
 				})
 				.buffer("street", {
 					length: 20,
-					formatter: (dat) => (dat as Buffer).toString("ascii"),
+					formatter: (dat) => (dat as Buffer).toString("ascii").replace(/\0.*$/g, ""),
 				})
 				.buffer("city", {
 					length: 20,
-					formatter: (dat) => (dat as Buffer).toString("ascii"),
+					formatter: (dat) => (dat as Buffer).toString("ascii").replace(/\0.*$/g, ""),
 				})
 				.buffer("area", {
 					length: 20,
-					formatter: (dat) => (dat as Buffer).toString("ascii"),
+					formatter: (dat) => (dat as Buffer).toString("ascii").replace(/\0.*$/g, ""),
 				})
 				.uint8("is_favorite")
 				.uint8("is_new")
@@ -101,9 +122,7 @@ export const PARSER_TABLE: IParserLookUpTable = {
 					formatter: (val: any) => {
 						return val.replace(/\0.*$/g, "");
 					} })
-				.uint8("app_type", {
-					formatter: (appType: any) => appType === 1 ? "IOS" : "Android",
-				})
+				.uint8("app_type")
 				.buffer("app_version", {
 					length: 3,
 					formatter: (appVersion: any) => {
@@ -113,17 +132,21 @@ export const PARSER_TABLE: IParserLookUpTable = {
 			};
 			dummy.parse = (buf: Buffer): any => {
 				const parsed = dummy.parser.parse(buf);
+				parsed.app_type = DETAILS_APP_TYPE[parsed.app_type] || NO_MATCH;
 				const timestamp = bignum_convert_buffer(parsed.timestamp);
 				parsed.timestamp = timestamp.toString();
 				return parsed;
 			};
 			return dummy;
+
 		},
 	},
 	osd_record: {
+		// todo: deal with file versions
 		instance: null,
 		factory: () => {
-			return new Parser()
+			const dummy: any = {
+				parser: new Parser()
 				.doublele("longitude", { formatter: radiants2degree })
 				.doublele("latitude", { formatter: radiants2degree })
 				.int16le("height", {
@@ -186,8 +209,23 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				.skip(2)
 				.uint8("flyc_version")
 				.uint8("drone_type")
-				.uint8("imu_init_fail_reason");
-			// todo: deal with file versions
+				.uint8("imu_init_fail_reason"),
+			};
+			dummy.parse = (buf: Buffer): any => {
+					const parsed = dummy.parser.parse(buf);
+					parsed.fly_state = OSD_RECORD_FLYCSTATE[parsed.fly_state] || NO_MATCH;
+					parsed.fly_command = OSD_RECORD_FLYCCOMMAND[parsed.fly_command] || NO_MATCH;
+					parsed.ground_or_sky = OSD_RECORD_GROUND_OR_SKY[parsed.ground_or_sky] || NO_MATCH;
+					parsed.go_home_status = OSD_RECORD_GO_HOME_STATUS[parsed.go_home_status] || NO_MATCH;
+					parsed.battery_type = OSD_RECORD_BATTERY_TYPE[parsed.battery_type] || NO_MATCH;
+					parsed.flight_action = OSD_RECORD_FLIGHT_ACTION[parsed.flight_action] || NO_MATCH;
+					parsed.motor_start_failed_cause = OSD_RECORD_MOTOR_START_FAILED_CAUSE[parsed.motor_start_failed_cause] || NO_MATCH;
+					parsed.non_gps_cause = OSD_RECORD_NON_GPS_CAUSE[parsed.non_gps_cause] || NO_MATCH;
+					parsed.imu_init_fail_reason = OSD_RECORD_IMU_INIT_FAIL_REASON[parsed.imu_init_fail_reason] || NO_MATCH;
+					parsed.drone_type = OSD_RECORD_DRONE_TYPE[parsed.drone_type] || NO_MATCH;
+					return parsed;
+			};
+			return dummy;
 		},
 	},
 	custom_record: {
@@ -251,7 +289,8 @@ export const PARSER_TABLE: IParserLookUpTable = {
 	gimbal_record: {
 		instance: null,
 		factory: () => {
-			return new Parser()
+			const dummy: any = {
+				parser: new Parser()
 				.int16le("pitch", { formatter: (val: any) => val / 10 })
 				.int16le("roll", { formatter: (val: any) => val / 10 })
 				.int16le("yaw", { formatter: (val: any) => val / 10 })
@@ -271,13 +310,23 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				.bit1("is_triple_click")
 				.bit1("is_double_click")
 				.bit1("unknown")
-				.bit4("version");
+				.bit4("version"),
+			};
+			dummy.parse = (buf: Buffer): any => {
+				const parsed = dummy.parser.parse(buf);
+				parsed.mode = GIMBAL_MODE[parsed.mode] || NO_MATCH;
+				return parsed;
+			};
+
+			return dummy;
+
 		},
 	},
 	home_record: {
 		instance: null,
 		factory: () => {
-			return new Parser()
+			const dummy: any = {
+				parser: new Parser()
 				.doublele("longitude")
 				.doublele("latitude")
 				.int16le("height", { formatter: (val: any) => val / 10 })
@@ -299,17 +348,37 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				.uint8("data_recorder_status")
 				.uint8("data_recorder_remain_capacity")
 				.uint16le("data_recorder_remain_time")
-				.uint16le("data_recorder_file_index");
+				.uint16le("data_recorder_file_index"),
+			};
+			dummy.parse = (buf: Buffer): any => {
+				const parsed = dummy.parser.parse(buf);
+				parsed.ioc_mode = HOME_IOC_MODE[parsed.ioc_mode] || NO_MATCH;
+				return parsed;
+			};
+
+			return dummy;
+
 		},
 	},
 	deform_record: {
 		instance: null,
 		factory: () => {
-			return new Parser()
+			const dummy: any = {
+				parser: new Parser()
 				.bit2("unknown")
 				.bit2("deform_mode")
 				.bit3("deform_status")
-				.bit1("is_deform_protected");
+				.bit1("is_deform_protected"),
+			};
+			dummy.parse = (buf: Buffer): any => {
+				const parsed = dummy.parser.parse(buf);
+				parsed.deform_status = DEFORM_STATUS[parsed.deform_status] || NO_MATCH;
+				parsed.deform_mode = DEFORM_MODE[parsed.deform_mode] || NO_MATCH;
+				return parsed;
+			};
+
+			return dummy;
+
 		},
 	},
 	center_battery_record: {
@@ -347,7 +416,8 @@ export const PARSER_TABLE: IParserLookUpTable = {
 	smart_battery_record: {
 		instance: null,
 		factory: () => {
-			return new Parser()
+			const dummy: any = {
+				parser: new Parser()
 				.uint16le("useful_time")
 				.uint16le("go_home_time")
 				.uint16le("land_time")
@@ -364,7 +434,17 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				.bit7("low_warning")
 				.bit1("serious_low_warning_landing")
 				.bit7("serious_low_warning")
-				.uint8("voltage_percent");
+				.uint8("voltage_percent"),
+			};
+			dummy.parse = (buf: Buffer): any => {
+				const parsed = dummy.parser.parse(buf);
+				parsed.status = SMART_BATTERY_STATUS[parsed.status] || NO_MATCH;
+				parsed.go_home_status = SMART_BATTERY_GO_HOME_STATUS[parsed.go_home_status] || NO_MATCH;
+				return parsed;
+			};
+
+			return dummy;
+
 		},
 	},
 	app_tip_record: {
@@ -398,6 +478,8 @@ export const PARSER_TABLE: IParserLookUpTable = {
 
 			dummy.parse = (buf: Buffer): any => {
 				const parsed = dummy.parser.parse(buf);
+				parsed.app_type = RECOVERY_APP_TYPE[parsed.app_type] || NO_MATCH;
+				parsed.drone_type = RECOVERY_DRONE_TYPE[parsed.drone_type] || NO_MATCH;
 				const appVer = parsed.app_version;
 				parsed.app_version = `${appVer[2]}.${appVer[1]}.${appVer[0]}`;
 				return parsed;
