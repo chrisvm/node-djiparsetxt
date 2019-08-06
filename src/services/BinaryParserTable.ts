@@ -1,6 +1,7 @@
 import bignum = require("bignum");
 import { Parser } from "binary-parser";
 import { ILazyLoadingEntry } from "../common/lazy_loading";
+import { Version } from "../common/Version";
 import {
 	DEFORM_MODE,
 	DEFORM_STATUS,
@@ -23,6 +24,7 @@ import {
 	SMART_BATTERY_GO_HOME_STATUS,
 	SMART_BATTERY_STATUS,
 	} from "./InterpretationTable";
+
 const radiants2degree = (val: any) => val * 57.2958;
 
 export interface IParserLookUpTable {
@@ -95,12 +97,7 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				.string("rc_sn", { length: 16, formatter: (val) => (val as string).replace(/\0/g, "") })
 				.string("battery_sn", { length: 16, formatter: (val) => (val as string).replace(/\0/g, "") })
 				.uint8("app_type")
-				.buffer("app_version", {
-					length: 3,
-					formatter: (appVersion: any) => {
-						return `${appVersion[0]}.${appVersion[1]}.${appVersion[2]}`;
-					},
-				});
+				.buffer("app_version", { length: 3 });
 
 			const dummy: any = { parser };
 			dummy.parse = (buf: Buffer): any => {
@@ -108,6 +105,7 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				parsed.app_type = DETAILS_APP_TYPE[parsed.app_type] || NO_MATCH;
 				const timestamp = bignum_convert_buffer(parsed.timestamp);
 				parsed.timestamp = new Date(parseInt(timestamp.toString())).toISOString();
+				parsed.app_version = new Version(parsed.app_version);
 				return parsed;
 			};
 			return dummy;
