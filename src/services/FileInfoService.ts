@@ -83,7 +83,6 @@ export class FileInfoService extends BaseService {
 		) as BinaryParserService;
 		const detailsParser = parserService.get_parser(ParserTypes.Details);
 		const details = detailsParser.parse(detailsBuf);
-		details.timestamp = bignum_convert_buffer(details.timestamp);
 		return details;
 	}
 }

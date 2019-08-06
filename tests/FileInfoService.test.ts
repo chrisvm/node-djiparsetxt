@@ -26,7 +26,7 @@ describe("FileInfoService", () => {
 			const deets = fileInfoService.get_details(fileBuff);
 
 			expect(deets).to.not.equal(null);
-			console.log(deets);
+			// console.log(deets);
 			for (const prop of stringProps) {
 				const val = deets[prop];
 				expect(val).to.be.a("string");
