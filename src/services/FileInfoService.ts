@@ -13,7 +13,7 @@ export interface IHeaderInfo {
 	header_size: number;
 	records_size: number;
 	details_size: number;
-	version: Buffer;
+	version: string;
 }
 
 export interface IFileInfo {
@@ -47,12 +47,15 @@ export class FileInfoService extends BaseService {
 		const recordsAreaSize = headerRecordsAreaSize - 100;
 		const detailsAreaSize = fileSize - headerRecordsAreaSize;
 
+		// create version string
+		const ver = header.file_version;
+		const version = `${ver[0]}.${ver[1]}.${ver[2]}.${ver[3]}`;
 		return {
 			file_size: fileSize,
 			header_size: 100,
 			records_size: recordsAreaSize,
 			details_size: detailsAreaSize,
-			version: header.file_version,
+			version,
 		};
 	}
 

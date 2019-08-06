@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import fs from "fs";
 import path from "path";
-import { parse_file } from "../src/node-djiparsetxt";
+import { parse_file, get_details, get_header } from "../src/node-djiparsetxt";
 
 function createTestFromDir(filePath: string) {
 	const fileList = fs.readdirSync(filePath);
@@ -10,6 +10,8 @@ function createTestFromDir(filePath: string) {
 		it(`should parse file '${fileName}'`, () => {
 			fileName = path.join(filePath, fileName);
 			const buffer = fs.readFileSync(fileName);
+			const header = get_header(buffer);
+			console.log(`    version = ${header.version}`);
 			const rows = parse_file(buffer);
 
 			expect(rows).to.be.an("array");

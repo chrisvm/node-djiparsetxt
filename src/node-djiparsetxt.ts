@@ -17,7 +17,7 @@ import {
 import { CliArguments } from "./common/CliArguments";
 import { ServiceManager, ServiceTypes } from "./common/ServiceManager";
 import { CacheTransformService, IRowObject } from "./services/CacheTransformService";
-import { FileInfoService } from "./services/FileInfoService";
+import { FileInfoService, IHeaderInfo } from "./services/FileInfoService";
 import { FileParsingService } from "./services/FileParsingService";
 import { RecordTypes } from "./services/RecordTypes";
 
@@ -140,8 +140,14 @@ export function parse_file(buf: Buffer): IRowObject[] {
 	return parsedRows;
 }
 
-export function get_details(buf: Buffer) {
+export function get_details(buf: Buffer): any {
 	const serviceMan = new ServiceManager();
 	const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
 	return fileInfoService.get_details(buf);
+}
+
+export function get_header(buf: Buffer): IHeaderInfo {
+	const serviceMan = new ServiceManager();
+	const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
+	return fileInfoService.get_header_info(buf);
 }

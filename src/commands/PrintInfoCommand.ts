@@ -34,7 +34,7 @@ export class PrintInfoCommand extends Command<IPrintInfoOptions, string> {
 			this.log(`    file size = ${headerInfo.file_size} B`);
 			this.log(`    records area size = ${headerInfo.records_size} B`);
 			this.log(`    details area size = ${headerInfo.details_size} B`);
-			this.log("    version:", headerInfo.version.readUInt8(2));
+			this.log("    version:", headerInfo.version);
 		}
 
 		let records: IRecordCache | null = null;

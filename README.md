@@ -67,7 +67,7 @@ An array of with the rows extracted from the file.
 
 ----
 
-`get_details(buf: Buffer): object`
+`get_details(buf: Buffer): any`
 
 Get the details section of the given file.
 
@@ -78,3 +78,17 @@ Get the details section of the given file.
 #### Returns 
 
 An object with properties and values from the details area.
+
+----
+
+`get_header(buf: Buffer): IHeaderInfo`
+
+Get the header of the given file.
+
+#### Parameters
+
+- *`buf`*: `Buffer`: Buffer instance of the file to parse.
+
+#### Returns 
+
+`IHeaderInfo` structure from the file.

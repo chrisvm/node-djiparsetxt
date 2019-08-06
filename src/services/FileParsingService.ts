@@ -26,7 +26,7 @@ export interface IRecordStats {
 
 export interface IRecordCache {
 	records: IRecord[];
-	version: Buffer;
+	version: string;
 	stats: IRecordStats;
 	isEmpty?: boolean;
 }
@@ -61,7 +61,7 @@ export class FileParsingService extends BaseService {
 	}
 
 	public createEmptyCache(): IRecordCache {
-		const version = Buffer.alloc(0);
+		const version = "";
 		return {
 			records: [],
 			version,
@@ -88,7 +88,7 @@ export class FileParsingService extends BaseService {
 		}
 	}
 
-	private get_record_cache(buffer: Buffer, limit: number, version: Buffer): IRecordCache {
+	private get_record_cache(buffer: Buffer, limit: number, version: string): IRecordCache {
 		const parserService = this.serviceMan.get_service<BinaryParserService>(ServiceTypes.Parsers);
 		const recordParser = parserService.get_parser(ParserTypes.BaseRecord);
 		const recordStartParser = parserService.get_parser(
