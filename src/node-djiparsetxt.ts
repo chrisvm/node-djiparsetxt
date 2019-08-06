@@ -121,7 +121,14 @@ if (require.main === module) {
 	}
 }
 
-// public api when used as a module
+//#region Public API
+
+/**
+ * Parse the record from the given file.
+ * @param buf File buffer of a log.
+ * @returns Array of rows with each row being
+ * an object where the keys are the record type.
+ */
 export function parse_file(buf: Buffer): IRowObject[] {
 	const serviceMan = new ServiceManager();
 
@@ -140,14 +147,26 @@ export function parse_file(buf: Buffer): IRowObject[] {
 	return parsedRows;
 }
 
+/**
+ * Get details section of the given file.
+ * @param buf File buffer of a log.
+ * @returns Object with the parsed details section.
+ */
 export function get_details(buf: Buffer): any {
 	const serviceMan = new ServiceManager();
 	const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
 	return fileInfoService.get_details(buf);
 }
 
+/**
+ * Get header section of the given file.
+ * @param buf File buffer of a log.
+ * @returns Object with the parsed header section.
+ */
 export function get_header(buf: Buffer): IHeaderInfo {
 	const serviceMan = new ServiceManager();
 	const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
 	return fileInfoService.get_header_info(buf);
 }
+
+//#endregion
