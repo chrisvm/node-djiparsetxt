@@ -76,8 +76,8 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				.uint32le("record_line_count")
 				.skip(4)
 				.buffer("timestamp", { length: 8 })
-				.doublele("longitude")
-				.doublele("latitude")
+				.doublele("longitude", { formatter: radiants2degree })
+				.doublele("latitude", { formatter: radiants2degree })
 				.floatle("total_distance")
 				.floatle("total_time", {
 					formatter: (time) => (time as number) * 1000,
@@ -94,9 +94,7 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				.string("camera_sn", { length: 16, formatter: (val) => (val as string).replace(/\0/g, "") })
 				.string("rc_sn", { length: 16, formatter: (val) => (val as string).replace(/\0/g, "") })
 				.string("battery_sn", { length: 16, formatter: (val) => (val as string).replace(/\0/g, "") })
-				.uint8("app_type", {
-					formatter: (appType: any) => appType === 1 ? "IOS" : "Android",
-				})
+				.uint8("app_type")
 				.buffer("app_version", {
 					length: 3,
 					formatter: (appVersion: any) => {
@@ -109,7 +107,7 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				const parsed = dummy.parser.parse(buf);
 				parsed.app_type = DETAILS_APP_TYPE[parsed.app_type] || NO_MATCH;
 				const timestamp = bignum_convert_buffer(parsed.timestamp);
-				parsed.timestamp = timestamp.toString();
+				parsed.timestamp = new Date(parseInt(timestamp.toString())).toISOString();
 				return parsed;
 			};
 			return dummy;
@@ -218,7 +216,7 @@ export const PARSER_TABLE: IParserLookUpTable = {
 			dummy.parse = (buf: Buffer): any => {
 				const parsed = dummy.parser.parse(buf);
 				const updateTime = bignum_convert_buffer(parsed.updateTime);
-				parsed.updateTime = updateTime.toString();
+				parsed.updateTime =new Date(parseInt(updateTime.toString())).toISOString();
 				return parsed;
 			};
 
@@ -301,8 +299,8 @@ export const PARSER_TABLE: IParserLookUpTable = {
 		factory: () => {
 			const dummy: any = {
 				parser: new Parser()
-				.doublele("longitude")
-				.doublele("latitude")
+				.doublele("longitude", { formatter: radiants2degree })
+				.doublele("latitude", { formatter: radiants2degree })
 				.int16le("height", { formatter: (val: any) => val / 10 })
 				.bit1("has_go_home")
 				.bit3("go_home_status")
@@ -466,18 +464,28 @@ export const PARSER_TABLE: IParserLookUpTable = {
 		instance: null,
 		factory: () => {
 			return new Parser()
-				.doublele("latitude")
-				.doublele("longitude")
+				.doublele("latitude", { formatter: radiants2degree })
+				.doublele("longitude", { formatter: radiants2degree })
 				.floatle("accuracy");
 		},
 	},
 	firmware_record: {
 		instance: null,
 		factory: () => {
-			return new Parser()
+			const dummy: any = {
+				parser: new Parser()
 				.skip(2)
 				.buffer("version", { length: 3 })
-				.skip(109);
+				.skip(109)
+			};
+			dummy.parse = (buf: Buffer): any => {
+				const parsed = dummy.parser.parse(buf);
+				const appVer = parsed.version;
+				parsed.version = `${appVer[2]}.${appVer[1]}.${appVer[0]}`;
+				return parsed;
+			};
+			return dummy;
+			
 		},
 	},
 };
