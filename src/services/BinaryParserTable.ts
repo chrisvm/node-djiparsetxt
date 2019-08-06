@@ -216,7 +216,7 @@ export const PARSER_TABLE: IParserLookUpTable = {
 			dummy.parse = (buf: Buffer): any => {
 				const parsed = dummy.parser.parse(buf);
 				const updateTime = bignum_convert_buffer(parsed.updateTime);
-				parsed.updateTime =new Date(parseInt(updateTime.toString())).toISOString();
+				parsed.updateTime = new Date(parseInt(updateTime.toString())).toISOString();
 				return parsed;
 			};
 
