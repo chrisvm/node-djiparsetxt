@@ -4,7 +4,7 @@ import {
 	BinaryParserService,
 	ParserTypes,
 } from "./BinaryParserService";
-import { bignum_convert_buffer } from "./BinaryParserTable";
+import { Version } from "../common/Version";
 import { FileParsingService, IRecordStats } from "./FileParsingService";
 import { RecordTypes } from "./RecordTypes";
 
@@ -13,7 +13,7 @@ export interface IHeaderInfo {
 	header_size: number;
 	records_size: number;
 	details_size: number;
-	version: string;
+	version: Version;
 }
 
 export interface IFileInfo {
@@ -48,8 +48,7 @@ export class FileInfoService extends BaseService {
 		const detailsAreaSize = fileSize - headerRecordsAreaSize;
 
 		// create version string
-		const ver = header.file_version;
-		const version = `${ver[0]}.${ver[1]}.${ver[2]}.${ver[3]}`;
+		const version = new Version(header.file_version);
 		return {
 			file_size: fileSize,
 			header_size: 100,

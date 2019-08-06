@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import { ServiceTypes } from "../common/ServiceManager";
+import { Version } from "../common/Version";
 import BaseService from "./BaseService";
 import { BinaryParserService, ParserTypes } from "./BinaryParserService";
 import { FileInfoService, IHeaderInfo, IRecord } from "./FileInfoService";
@@ -26,7 +27,7 @@ export interface IRecordStats {
 
 export interface IRecordCache {
 	records: IRecord[];
-	version: string;
+	version: Version;
 	stats: IRecordStats;
 	isEmpty?: boolean;
 }
@@ -61,7 +62,8 @@ export class FileParsingService extends BaseService {
 	}
 
 	public createEmptyCache(): IRecordCache {
-		const version = "";
+		const version = Version.CreateEmpty();
+
 		return {
 			records: [],
 			version,
@@ -88,7 +90,7 @@ export class FileParsingService extends BaseService {
 		}
 	}
 
-	private get_record_cache(buffer: Buffer, limit: number, version: string): IRecordCache {
+	private get_record_cache(buffer: Buffer, limit: number, version: Version): IRecordCache {
 		const parserService = this.serviceMan.get_service<BinaryParserService>(ServiceTypes.Parsers);
 		const recordParser = parserService.get_parser(ParserTypes.BaseRecord);
 		const recordStartParser = parserService.get_parser(
