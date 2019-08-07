@@ -27,6 +27,9 @@ export interface IRecord {
 	data: Buffer[];
 }
 
+const newHeaderSize = 100;
+const oldHeaderSize = 12;
+
 export class FileInfoService extends BaseService {
 
 	public name: string = "file_info";
@@ -38,20 +41,25 @@ export class FileInfoService extends BaseService {
 		const headerParser = parserService.get_parser(ParserTypes.Header);
 
 		// get first 100 bytes and parse them.
-		const headerBuff = buffer.slice(0, 100);
-		const header = headerParser.parse(headerBuff);
+		const header = headerParser.parse(buffer);
+		let headerSize;
+		if (header.file_version.ver[2] < 6) {
+			headerSize = oldHeaderSize;
+		} else {
+			headerSize = newHeaderSize;
+		}
 
 		// calculate details
 		const fileSize = buffer.length;
 		const headerRecordsAreaSize = header.header_record_size_lo;
-		const recordsAreaSize = headerRecordsAreaSize - 100;
+		const recordsAreaSize = headerRecordsAreaSize - headerSize;
 		const detailsAreaSize = fileSize - headerRecordsAreaSize;
 
 		// create version string
-		const version = new Version(header.file_version);
+		const version = header.file_version;
 		return {
 			file_size: fileSize,
-			header_size: 100,
+			header_size: headerSize,
 			records_size: recordsAreaSize,
 			details_size: detailsAreaSize,
 			version,

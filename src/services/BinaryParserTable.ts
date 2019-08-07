@@ -23,7 +23,7 @@ import {
 	RECOVERY_DRONE_TYPE,
 	SMART_BATTERY_GO_HOME_STATUS,
 	SMART_BATTERY_STATUS,
-	} from "./InterpretationTable";
+} from "./InterpretationTable";
 
 const radiants2degree = (val: any) => val * 57.2958;
 
@@ -39,11 +39,18 @@ export const PARSER_TABLE: IParserLookUpTable = {
 	header: {
 		instance: null,
 		factory: () => {
-			return new Parser()
+			const parser = new Parser()
 				.uint32le("header_record_size_lo")
 				.uint32le("header_record_size_hi")
-				.buffer("file_version", { length: 4 })
-				.skip(88);
+				.uint32be("file_version");
+
+			const dummy: any = { parser };
+			dummy.parse = (buf: Buffer) => {
+				const parsed = dummy.parser.parse(buf);
+				parsed.file_version = new Version(parsed.file_version);
+				return parsed;
+			};
+			return dummy;
 		},
 	},
 	base_record: {
@@ -483,7 +490,6 @@ export const PARSER_TABLE: IParserLookUpTable = {
 				return parsed;
 			};
 			return dummy;
-			
 		},
 	},
 };
