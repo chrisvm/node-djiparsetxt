@@ -169,4 +169,29 @@ export function get_header(buf: Buffer): IHeaderInfo {
 	return fileInfoService.get_header_info(buf);
 }
 
+/**
+ * Get the jpegs in file.
+ * @param buf File buffer of a log
+ * @returns Array of jpeg buffers.
+ */
+export function get_jpegs(buf: Buffer): Buffer[] {
+	let jpegs: Buffer[] = [];
+	const serviceMan = new ServiceManager();
+
+	const fileParsingService = serviceMan.get_service<FileParsingService>(
+		ServiceTypes.FileParsing,
+	);
+
+	const cacheTransService = serviceMan.get_service<CacheTransformService>(
+		ServiceTypes.CacheTransform,
+	);
+
+	const cache = fileParsingService.parse_records(buf);
+	cacheTransService.unscramble(cache);
+	const jpegRecords = cache.records.filter((rec) => rec.type === RecordTypes.JPEG);
+	for (const record of jpegRecords) {
+		jpegs = jpegs.concat(record.data);
+	}
+	return jpegs;
+}
 //#endregion

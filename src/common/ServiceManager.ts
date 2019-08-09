@@ -1,6 +1,7 @@
 import BaseService from "../services/BaseService";
 import { BinaryParserService } from "../services/BinaryParserService";
 import { CacheTransformService } from "../services/CacheTransformService";
+import { CsvService } from "../services/CsvService";
 import { FileInfoService } from "../services/FileInfoService";
 import { FileParsingService } from "../services/FileParsingService";
 import { ScrambleTableService } from "../services/ScrambleTableService";
@@ -12,6 +13,7 @@ export enum ServiceTypes {
 	ScrambleTable = "scramble_table",
 	FileParsing = "file_parsing",
 	CacheTransform = "cache_transform",
+	CsvService = "csv",
 }
 
 export class ServiceManager {
@@ -39,6 +41,10 @@ export class ServiceManager {
 			cache_transform: {
 				instance: null,
 				factory: () => new CacheTransformService(this),
+			},
+			csv: {
+				instance: null,
+				factory: () => new CsvService(this),
 			},
 		};
 	}
