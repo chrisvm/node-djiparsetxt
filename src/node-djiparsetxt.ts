@@ -1,6 +1,9 @@
 #!/usr/bin/env node
+import ejs from "ejs";
+import fs from "fs-extra";
 import _ from "lodash";
 import path from "path";
+const DEFAULT_IMAGE: string = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
 import {
 	IFile,
 	JpegExtractCommand,
@@ -167,6 +170,55 @@ export function get_header(buf: Buffer): IHeaderInfo {
 	const serviceMan = new ServiceManager();
 	const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
 	return fileInfoService.get_header_info(buf);
+}
+/**
+ * Returns a KML string.
+ * @param buf File buffer of a log
+ * @param image Optional image param for the kml
+ * @returns Array of jpeg buffers.
+ */
+export async function get_kml(buf: Buffer, image?: string): Promise<string> {
+	const serviceMan = new ServiceManager();
+
+	const fileParsingService = serviceMan.get_service<FileParsingService>(
+		ServiceTypes.FileParsing,
+	);
+
+	const cacheTransService = serviceMan.get_service<CacheTransformService>(
+		ServiceTypes.CacheTransform,
+	);
+
+	const recordsCache = fileParsingService.parse_records(buf);
+	cacheTransService.unscramble(recordsCache);
+	const unscrambledRows = cacheTransService.cache_as_rows(recordsCache);
+	const parsedRows = cacheTransService.rows_to_json(unscrambledRows);
+
+	let results: string = "";
+	let homeCoordinates: string = "";
+	let imageURL: string = "";
+	if (!image) {
+		imageURL = DEFAULT_IMAGE;
+	} else {
+		imageURL = image;
+	}
+
+	parsedRows.filter((rec, index) => {
+		const long: number = rec.OSD.longitude;
+		const lat: number = rec.OSD.latitude;
+		results += long + "," + lat + " ";
+		if (index === 0) {
+			homeCoordinates = long + "," + lat + " ";
+		}
+	});
+	const tempalteFilePath = path.join(__dirname, "/template/kml-template.ejs");
+	const kmlTemplate = await fs.readFile(tempalteFilePath, "utf8");
+	const kml: string = await ejs.render(kmlTemplate, {
+		imageurl: imageURL,
+		homeCoordinates,
+		coordinates: results,
+	});
+
+	return kml;
 }
 
 /**
