@@ -210,8 +210,8 @@ export async function get_kml(buf: Buffer, image?: string): Promise<string> {
 			homeCoordinates = long + "," + lat + " ";
 		}
 	});
-	const tempalteFilePath = path.join(__dirname, "/template/kml-template.ejs");
-	const kmlTemplate = await fs.readFile(tempalteFilePath, "utf8");
+	const templateFilePath = path.join(__dirname, "/template/kml-template.ejs");
+	const kmlTemplate = await fs.readFile(templateFilePath, "utf8");
 	const kml: string = await ejs.render(kmlTemplate, {
 		imageurl: imageURL,
 		homeCoordinates,
