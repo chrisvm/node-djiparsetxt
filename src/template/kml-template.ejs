@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+    <Document>
+        <Style id="copterLineStyle">
+            <LineStyle>
+            <color> cc00cc </color>
+                                <width>2</width>
+                                                    </LineStyle>
+        </Style>
+        <Style id="home">
+            <IconStyle>
+            <Icon>
+                <href><%=imageurl%></href>
+              </Icon>
+                <hotSpot x="0"  y="0" xunits="fraction" yunits="fraction"/>
+            </IconStyle>
+             
+        </Style>
+        <Placemark>
+  <name>Home</name>
+  <styleUrl> #home </styleUrl>
+
+  <Point>
+    <altitudeMode>absolute</altitudeMode>
+    <coordinates><%=homeCoordinates%></coordinates>
+  </Point>
+</Placemark>
+        <Placemark>
+            <styleUrl> #copterLineStyle </styleUrl>
+            <LineString>
+                <altitudeMode>absolute</altitudeMode>
+                <coordinates><%=coordinates%></coordinates>
+            </LineString>
+        </Placemark>
+    </Document>
+</kml>
