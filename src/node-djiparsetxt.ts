@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import ejs from "ejs";
-import fs from "fs-extra";
+import fs from "fs";
 import _ from "lodash";
 import path from "path";
 const DEFAULT_IMAGE: string = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
@@ -211,7 +211,7 @@ export async function get_kml(buf: Buffer, image?: string): Promise<string> {
 		}
 	});
 	const templateFilePath = path.join(__dirname, "/template/kml-template.ejs");
-	const kmlTemplate = await fs.readFile(templateFilePath, "utf8");
+	const kmlTemplate = fs.readFileSync(templateFilePath, "utf8");
 	const kml: string = await ejs.render(kmlTemplate, {
 		imageurl: imageURL,
 		homeCoordinates,
