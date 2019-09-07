@@ -4,6 +4,7 @@ import fs from "fs";
 import _ from "lodash";
 import path from "path";
 const DEFAULT_IMAGE: string = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
+
 import {
 	IFile,
 	JpegExtractCommand,
@@ -23,6 +24,11 @@ import { CacheTransformService, IRowObject } from "./services/CacheTransformServ
 import { FileInfoService, IHeaderInfo } from "./services/FileInfoService";
 import { FileParsingService } from "./services/FileParsingService";
 import { RecordTypes } from "./services/RecordTypes";
+
+export {
+	IRowObject,
+	IHeaderInfo,
+};
 
 function execute_cli(args: string[]) {
 	const argv = new CliArguments(args);
