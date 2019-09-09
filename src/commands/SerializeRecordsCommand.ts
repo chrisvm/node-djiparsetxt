@@ -1,7 +1,6 @@
-import { IRecordCache } from "../services/FileParsingService";
 import { RecordTypes } from "../services/RecordTypes";
 import { Command } from "./Command";
-import { IFile } from "./ReadFileCommand";
+import { IFile, IRecordCache } from "../shared/interfaces";
 
 export interface ISerializeRecordsOptions {
 	file: IFile;

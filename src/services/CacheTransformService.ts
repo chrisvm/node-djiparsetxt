@@ -1,12 +1,10 @@
 import { ServiceTypes } from "../common/ServiceManager";
 import BaseService from "./BaseService";
 import { BinaryParserService } from "./BinaryParserService";
-import { IRecord } from "./FileInfoService";
-import { FileParsingService, IRecordCache } from "./FileParsingService";
+import { IRecord, IRecordCache, IRowObject } from "../shared/interfaces";
+import { FileParsingService } from "./FileParsingService";
 import { RecordTypes } from "./RecordTypes";
 import { ScrambleTableService } from "./ScrambleTableService";
-
-export interface IRowObject { [type: string]: any; }
 
 export class CacheTransformService extends BaseService {
 

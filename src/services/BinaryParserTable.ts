@@ -1,6 +1,6 @@
 import bignum = require("bignum");
 import { Parser } from "binary-parser";
-import { ILazyLoadingEntry } from "../common/lazy_loading";
+import { ILazyLoadingEntry } from "../shared/interfaces";
 import { Version } from "../common/Version";
 import {
 	DEFORM_MODE,

@@ -1,9 +1,9 @@
 import { ServiceManager, ServiceTypes } from "../common/ServiceManager";
 import { FileInfoService } from "../services/FileInfoService";
-import { FileParsingService, IRecordCache } from "../services/FileParsingService";
+import { FileParsingService } from "../services/FileParsingService";
 import { RecordTypes } from "../services/RecordTypes";
 import { Command } from "./Command";
-import { IFile } from "./ReadFileCommand";
+import { IFile, IRecordCache } from "../shared/interfaces";
 
 export interface IPrintInfoOptions {
 	printHeader: boolean;
@@ -41,12 +41,14 @@ export class PrintInfoCommand extends Command<IPrintInfoOptions, string> {
 		if (options.printRecords) {
 			this.log("  Records Info:");
 			records = fileParsingService.parse_records(file.buffer);
-			const stats = records.stats;
-			this.log(`    records area size = ${stats.records_area_size} B`);
-			this.log(`    record count = ${stats.record_count} Records`);
-			this.log(`    invalid records = ${stats.invalid_records}`);
-			this.log(`    Records in File:`);
-			this.print_type_count_table(stats.type_count, "      ");
+			if (records !== null) {
+				const stats = records.stats;
+				this.log(`    records area size = ${stats.records_area_size} B`);
+				this.log(`    record count = ${stats.record_count} Records`);
+				this.log(`    invalid records = ${stats.invalid_records}`);
+				this.log(`    Records in File:`);
+				this.print_type_count_table(stats.type_count, "      ");
+			}
 		}
 
 		if (options.printDetails) {
@@ -61,11 +63,13 @@ export class PrintInfoCommand extends Command<IPrintInfoOptions, string> {
 		}
 
 		if (options.printDistribution) {
-			if (records == null) {
+			if (records === null) {
 				records = fileParsingService.parse_records(file.buffer);
 			}
-			this.log("  Record Distribution:");
-			this.log(records.records.map((val) => val.type));
+			if (records !== null) {
+				this.log("  Record Distribution:");
+				this.log(records.records.map((val) => val.type));
+			}
 		}
 
 		return this.getLog();

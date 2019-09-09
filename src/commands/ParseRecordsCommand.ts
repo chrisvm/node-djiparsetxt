@@ -1,7 +1,7 @@
 import { ServiceTypes } from "../common/ServiceManager";
-import { FileParsingService, IRecordCache } from "../services/FileParsingService";
+import { FileParsingService } from "../services/FileParsingService";
 import { Command } from "./Command";
-import { IFile } from "./ReadFileCommand";
+import { IFile, IRecordCache } from "../shared/interfaces";
 
 export interface IParseRecordsOptions {
 	file: IFile;

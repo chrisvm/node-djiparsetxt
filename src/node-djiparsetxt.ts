@@ -20,15 +20,11 @@ import {
 } from "./commands";
 import { CliArguments } from "./common/CliArguments";
 import { ServiceManager, ServiceTypes } from "./common/ServiceManager";
-import { CacheTransformService, IRowObject } from "./services/CacheTransformService";
-import { FileInfoService, IHeaderInfo } from "./services/FileInfoService";
+import { CacheTransformService } from "./services/CacheTransformService";
+import { FileInfoService } from "./services/FileInfoService";
 import { FileParsingService } from "./services/FileParsingService";
 import { RecordTypes } from "./services/RecordTypes";
-
-export {
-	IRowObject,
-	IHeaderInfo,
-};
+import { IRowObject, IHeaderInfo } from "./shared/interfaces";
 
 function execute_cli(args: string[]) {
 	const argv = new CliArguments(args);
@@ -252,4 +248,6 @@ export function get_jpegs(buf: Buffer): Buffer[] {
 	}
 	return jpegs;
 }
+
+export * from "./shared/interfaces";
 //#endregion

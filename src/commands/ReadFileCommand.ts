@@ -1,10 +1,6 @@
 import fs from "fs";
+import { IFile } from "../shared/interfaces";
 import { Command } from "./Command";
-
-export interface IFile {
-	path: string;
-	buffer: Buffer | null;
-}
 
 export class ReadFileCommand extends Command<string[], IFile[]> {
 	public exec(filePaths: string[]): IFile[] {
@@ -23,3 +19,5 @@ export class ReadFileCommand extends Command<string[], IFile[]> {
 		return files;
 	}
 }
+
+export { IFile };

@@ -2,7 +2,7 @@ import _ from "lodash";
 import { ServiceTypes } from "../common/ServiceManager";
 import { CacheTransformService } from "../services/CacheTransformService";
 import { CsvService } from "../services/CsvService";
-import { IRecordCache } from "../services/FileParsingService";
+import { IRecordCache } from "../shared/interfaces";
 import { Command } from "./Command";
 
 export interface IRecords2CsvOptions {

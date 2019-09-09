@@ -1,5 +1,5 @@
 import { ServiceTypes } from "../common/ServiceManager";
-import { IRecordCache } from "../services/FileParsingService";
+import { IRecordCache } from "../shared/interfaces";
 import { ScrambleTableService } from "../services/ScrambleTableService";
 import { Command } from "./Command";
 

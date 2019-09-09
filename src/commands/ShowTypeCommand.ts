@@ -1,9 +1,9 @@
 import { ServiceTypes } from "../common/ServiceManager";
-import { FileParsingService, IRecordCache } from "../services/FileParsingService";
+import { FileParsingService } from "../services/FileParsingService";
 import { RecordTypes } from "../services/RecordTypes";
 import { ScrambleTableService } from "../services/ScrambleTableService";
 import { Command } from "./Command";
-import { IFile } from "./ReadFileCommand";
+import { IRecordCache } from "../shared/interfaces";
 
 export interface IShowTypeOptions {
 	records: IRecordCache;

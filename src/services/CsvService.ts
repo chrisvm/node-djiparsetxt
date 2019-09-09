@@ -1,11 +1,6 @@
 import _ from "lodash";
-import { IRowObject } from "../services/CacheTransformService";
+import { IRowObject, IRowHeader } from "../shared/interfaces";
 import BaseService from "./BaseService";
-
-export interface IRowHeader {
-	type: string;
-	props: string[];
-}
 
 export const RECORD_ORDER: string[] = [
 	"CUSTOM",

@@ -5,7 +5,7 @@ import { CsvService } from "../services/CsvService";
 import { FileInfoService } from "../services/FileInfoService";
 import { FileParsingService } from "../services/FileParsingService";
 import { ScrambleTableService } from "../services/ScrambleTableService";
-import { ILazyLoadingEntry } from "./lazy_loading";
+import { ILazyLoadingEntry } from "../shared/interfaces";
 
 export enum ServiceTypes {
 	Parsers = "parsers",

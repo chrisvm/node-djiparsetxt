@@ -1,5 +1,5 @@
 import BaseService from "./BaseService";
-import { IRecord } from "./FileInfoService";
+import { IRecord } from "../shared/interfaces";
 import { RecordTypes } from "./RecordTypes";
 import { scrambleTable } from "./ScrambleTable";
 export class ScrambleTableService extends BaseService {

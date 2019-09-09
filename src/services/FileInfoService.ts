@@ -4,28 +4,9 @@ import {
 	BinaryParserService,
 	ParserTypes,
 } from "./BinaryParserService";
-import { Version } from "../common/Version";
-import { FileParsingService, IRecordStats } from "./FileParsingService";
-import { RecordTypes } from "./RecordTypes";
-
-export interface IHeaderInfo {
-	file_size: number;
-	header_size: number;
-	records_size: number;
-	details_size: number;
-	version: Version;
-}
-
-export interface IFileInfo {
-	header_info: IHeaderInfo;
-	records_info: IRecordStats;
-}
-
-export interface IRecord {
-	type: RecordTypes;
-	length: number;
-	data: Buffer[];
-}
+import { FileParsingService } from "./FileParsingService";
+import { IHeaderInfo, IRecordStats, IFileInfo
+ } from "../shared/interfaces";
 
 const newHeaderSize = 100;
 const oldHeaderSize = 12;

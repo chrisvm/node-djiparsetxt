@@ -1,5 +1,5 @@
 import fs from "fs";
-import { IRecordCache } from "../services/FileParsingService";
+import { IRecordCache } from "../shared/interfaces";
 import { RecordTypes } from "../services/RecordTypes";
 import { Command } from "./Command";
 

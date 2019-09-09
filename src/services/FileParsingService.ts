@@ -3,8 +3,11 @@ import { ServiceTypes } from "../common/ServiceManager";
 import { Version } from "../common/Version";
 import BaseService from "./BaseService";
 import { BinaryParserService, ParserTypes } from "./BinaryParserService";
-import { FileInfoService, IHeaderInfo, IRecord } from "./FileInfoService";
+import { FileInfoService } from "./FileInfoService";
 import { RecordTypes } from "./RecordTypes";
+import { IHeaderInfo, IRecord, IRecordCache } from "../shared/interfaces";
+
+
 
 function is_jpeg_soi(buffer: Buffer, offset: number): boolean {
 	return (
@@ -16,20 +19,6 @@ function is_jpeg_eoi(buffer: Buffer, offset: number): boolean {
 	return (
 		buffer.readUInt8(offset) === 0xff && buffer.readUInt8(offset + 1) === 0xd9
 	);
-}
-
-export interface IRecordStats {
-	records_area_size: number;
-	record_count: number;
-	type_count: { [type: number]: number };
-	invalid_records: number;
-}
-
-export interface IRecordCache {
-	records: IRecord[];
-	version: Version;
-	stats: IRecordStats;
-	isEmpty?: boolean;
 }
 
 export class FileParsingService extends BaseService {
