@@ -1,7 +1,8 @@
-import { expect } from "chai";
 import fs from "fs";
 import path from "path";
 import { get_header, parse_file } from "../src/node-djiparsetxt";
+
+const junk = (item: string) => !(/(^|\/)\.[^\/\.]/g).test(item);
 
 describe("Mavic 2 Log Tests", () => {
 	const filesDir = path.join(__dirname, "../assets/flight_logs/mavic2");
@@ -24,20 +25,18 @@ describe("Spark Log Tests", () => {
 });
 
 function createTestFromDir(filePath: string) {
-	const fileList = fs.readdirSync(filePath);
+	const fileList = fs.readdirSync(filePath).filter(junk);
 
 	for (let fileName of fileList) {
 		it(`should parse file '${fileName}'`, () => {
 			fileName = path.join(filePath, fileName);
 			const buffer = fs.readFileSync(fileName);
-			const header = get_header(buffer);
-			console.log(`    version = ${header.version}`);
 			const rows = parse_file(buffer);
 
-			expect(rows).to.be.an("array");
-			expect(rows.length).to.be.greaterThan(0);
+			expect(Array.isArray(rows)).toBe(true);
+			expect(rows.length).toBeGreaterThan(0);
 			for (const row of rows) {
-				expect(row).to.have.property("OSD");
+				expect(row).toHaveProperty("OSD");
 			}
 		});
 	}

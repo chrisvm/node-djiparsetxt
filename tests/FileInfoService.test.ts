@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import fs from "fs";
 import path from "path";
 import { FileInfoService } from "../src/services/FileInfoService";
@@ -25,12 +24,12 @@ describe("FileInfoService", () => {
 		it("should correctly parse strings without null char", () => {
 			const deets = fileInfoService.get_details(fileBuff);
 
-			expect(deets).to.not.equal(null);
-			// console.log(deets);
+			expect(deets).not.toEqual(null);
+
 			for (const prop of stringProps) {
 				const val = deets[prop];
-				expect(val).to.be.a("string");
-				expect(val).to.not.have.string("\u0000");
+				expect(typeof val).toBe("string");
+				expect(val).not.toEqual("\u0000");
 			}
 		});
 	});
