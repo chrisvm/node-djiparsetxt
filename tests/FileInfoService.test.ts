@@ -10,18 +10,19 @@ describe("FileInfoService", () => {
 	const fileInfoService = new FileInfoService(serviceMan);
 
 	describe("File Details", () => {
-		const stringProps: string[] = [
-			"city_part",
-			"street",
-			"city",
-			"area",
-			"aircraft_name",
-			"aircraft_sn",
-			"camera_sn",
-			"rc_sn",
-			"battery_sn",
-		];
 		it("should correctly parse strings without null char", () => {
+			const stringProps: string[] = [
+				"city_part",
+				"street",
+				"city",
+				"area",
+				"aircraft_name",
+				"aircraft_sn",
+				"camera_sn",
+				"rc_sn",
+				"battery_sn",
+			];
+			
 			const deets = fileInfoService.get_details(fileBuff);
 
 			expect(deets).not.toEqual(null);
