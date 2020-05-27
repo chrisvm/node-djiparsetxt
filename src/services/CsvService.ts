@@ -30,7 +30,6 @@ export const RECORD_ORDER: string[] = [
 ];
 
 export class CsvService extends BaseService {
-
 	/**
 	 * Create header rows data for csv production. Each row object contains properties
 	 * that are stored to be able to create a header of the form 'row.property'.

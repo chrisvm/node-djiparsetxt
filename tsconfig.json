@@ -9,7 +9,11 @@
 		"strict": true,
 		"esModuleInterop": true,
     "moduleResolution": "node",
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "baseUrl": "./",
+    "paths": {
+      "@tests/*": ["tests/*"]
+    }
   },
   "files": [
     "src/node-djiparsetxt.ts"
@@ -22,6 +26,7 @@
   ],
   "exclude": [
     "tests/*",
+    "*.spec.ts",
 		"node_modules",
 		"dist"
 	]
