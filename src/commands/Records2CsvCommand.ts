@@ -10,8 +10,10 @@ export interface IRecords2CsvOptions {
 	records: IRecordCache;
 }
 
+/**
+ * Prints a csv representation of a IRecordCache object.
+ */
 export class Records2CsvCommand extends Command<IRecords2CsvOptions, string> {
-
 	public exec(options: IRecords2CsvOptions): string {
 		const serviceMan = this.serviceMan;
 

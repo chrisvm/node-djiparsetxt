@@ -8,7 +8,7 @@
 		"dist/**/*"
 	],
 	"scripts": {
-		"test": "jest tests/*.test.ts",
+		"test": "jest",
 		"build": "tsc && copyfiles --flat src/template/* dist/template"
 	},
 	"author": "cvelez <christian.velez55@gmail.com>",
