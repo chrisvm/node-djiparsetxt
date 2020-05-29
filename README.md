@@ -53,13 +53,17 @@ fs.readFile(file_path, (err, data) => {
 `node-djiparsetxt` Module
 =========================
 
-`parse_file(buf: Buffer): ParsedOutput`
+`parse_file(buf: Buffer, filter: (IRowObject) => boolean): IRowObject[]`
 
-Parse a given buffer and return an object of type `ParsedOutput`.
+Parse a given buffer and return an array of `IRowObject` instances.
+
+If a `filter` parameter is given, then only the rows that return `filter(row)` true
+is returned in the array.
 
 #### Parameters
 
 - *`buf`*: `Buffer`: Buffer instance of the file to parse.
+- *`filter`*: `(IRowObject) => boolean`: Filter function to specify what rows to include.
 
 #### Returns
 
@@ -92,3 +96,19 @@ Get the header of the given file.
 #### Returns 
 
 `IHeaderInfo` structure from the file.
+
+----
+
+`get_kml(buf: Buffer, image?: string, removeNoSignalRecords: boolean = false): Promise<string>`
+
+Returns a kml string from a given file buffer.
+
+#### Parameters
+
+- *`buf`*: `Buffer`: Buffer instance of the file to parse.
+- *`image?`*: `string`: Image to use as background for the kml.
+- *`removeNoSignalRecords`*: `boolean`: If to remove rows where there was no GPS signal.
+
+#### Returns
+
+A `string` with the kml file.
