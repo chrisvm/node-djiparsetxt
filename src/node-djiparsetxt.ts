@@ -24,7 +24,7 @@ import { CacheTransformService } from "./services/CacheTransformService";
 import { FileInfoService } from "./services/FileInfoService";
 import { FileParsingService } from "./services/FileParsingService";
 import { RecordTypes } from "./services/RecordTypes";
-import { IRowObject, IHeaderInfo } from "./shared/interfaces";
+import { IRowObject, IHeaderInfo, IRecord } from "./shared/interfaces";
 
 function execute_cli(args: string[]) {
 	const argv = new CliArguments(args);
@@ -131,10 +131,11 @@ if (require.main === module) {
 /**
  * Parse the record from the given file.
  * @param buf File buffer of a log.
+ * @param filter Function to use as a filter for the rows, only IRecord's that return true are returned.
  * @returns Array of rows with each row being
  * an object where the keys are the record type.
  */
-export function parse_file(buf: Buffer): IRowObject[] {
+export function parse_file(buf: Buffer, filter?: (row: IRowObject) => boolean): IRowObject[] {
 	const serviceMan = new ServiceManager();
 
 	const fileParsingService = serviceMan.get_service<FileParsingService>(
@@ -148,7 +149,13 @@ export function parse_file(buf: Buffer): IRowObject[] {
 	const recordsCache = fileParsingService.parse_records(buf);
 	cacheTransService.unscramble(recordsCache);
 	const unscrambledRows = cacheTransService.cache_as_rows(recordsCache);
-	const parsedRows = cacheTransService.rows_to_json(unscrambledRows);
+	let parsedRows = cacheTransService.rows_to_json(unscrambledRows);
+
+	// if a filter is given, apply it to the rows
+	if (filter !== undefined && filter !== null) {
+		parsedRows = parsedRows.filter((val) => filter(val));
+	}
+
 	return parsedRows;
 }
 
@@ -173,27 +180,22 @@ export function get_header(buf: Buffer): IHeaderInfo {
 	const fileInfoService = serviceMan.get_service<FileInfoService>(ServiceTypes.FileInfo);
 	return fileInfoService.get_header_info(buf);
 }
+
 /**
  * Returns a KML string.
  * @param buf File buffer of a log
  * @param image Optional image param for the kml
  * @returns Array of jpeg buffers.
  */
-export async function get_kml(buf: Buffer, image?: string): Promise<string> {
-	const serviceMan = new ServiceManager();
+export async function get_kml(buf: Buffer, image?: string, removeNoSignalRecords: boolean = false): Promise<string> {
+	let filter = (row: IRowObject) => true;
+	
+	// if removeNoSignalRecords is set, we remove the frames with OSD.gps_level on zero.
+	if (removeNoSignalRecords) {
+		filter = (row: IRowObject) => row.OSD.gps_level !== 0;
+	}
 
-	const fileParsingService = serviceMan.get_service<FileParsingService>(
-		ServiceTypes.FileParsing,
-	);
-
-	const cacheTransService = serviceMan.get_service<CacheTransformService>(
-		ServiceTypes.CacheTransform,
-	);
-
-	const recordsCache = fileParsingService.parse_records(buf);
-	cacheTransService.unscramble(recordsCache);
-	const unscrambledRows = cacheTransService.cache_as_rows(recordsCache);
-	const parsedRows = cacheTransService.rows_to_json(unscrambledRows);
+	const parsedRows = parse_file(buf, filter);
 
 	let results: string = "";
 	let homeCoordinates: string = "";
@@ -204,14 +206,19 @@ export async function get_kml(buf: Buffer, image?: string): Promise<string> {
 		imageURL = image;
 	}
 
-	parsedRows.filter((rec, index) => {
+	for (let index = 0; index < parsedRows.length; index += 1) {
+		const rec = parsedRows[index];
 		const long: number = rec.OSD.longitude;
 		const lat: number = rec.OSD.latitude;
-		results += long + "," + lat + " ";
+		const location: string = long + "," + lat + " ";
+		results += location;
+
+		// if first coord, set home to it
 		if (index === 0) {
-			homeCoordinates = long + "," + lat + " ";
+			homeCoordinates = location;
 		}
-	});
+	}
+ 
 	const templateFilePath = path.join(__dirname, "/template/kml-template.ejs");
 	const kmlTemplate = fs.readFileSync(templateFilePath, "utf8");
 	const kml: string = await ejs.render(kmlTemplate, {

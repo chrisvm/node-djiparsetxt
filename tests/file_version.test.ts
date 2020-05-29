@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { parse_file, IRowObject, get_jpegs } from "../src/node-djiparsetxt";
+import { parse_file, IRowObject, get_jpegs, IRecord } from "../src/node-djiparsetxt";
+import { RecordTypes } from "../src/services/RecordTypes";
 
 const junk = (item: string) => !(/(^|\/)\.[^\/\.]/g).test(item);
 
@@ -68,16 +69,18 @@ function createTestFromDir(filePath: string) {
 				}
 			});
 
-			// it('should not have values for gps that are exactly 0 in OSD record',  () => {
-			// 	for (let row of rows) {
-			// 		const key = 'OSD';
-			// 		if (key in row) {
-			// 			const gps = row[key];
-			// 			expect(Math.abs(gps.latitude)).toBeGreaterThan(0.0);
-			// 			expect(Math.abs(gps.longitude)).toBeGreaterThan(0.0);
-			// 		}
-			// 	}
-			// });
+			it('should not have values for gps that are exactly 0 in OSD record if filter provided',  () => {
+				const filter = (val: IRowObject) => val['OSD'].longitude > 0.0 && val['OSD'].latitude > 0.0;
+				const parsedRows = parse_file(buffer, filter);
+				for (let row of parsedRows) {
+					const key = 'OSD';
+					if (key in row) {
+						const gps = row[key];
+						expect(Math.abs(gps.latitude)).toBeGreaterThan(0.0);
+						expect(Math.abs(gps.longitude)).toBeGreaterThan(0.0);
+					}
+				}
+			});
 
 			it('should not parse zero byte images', () => {
 				const jpegs = get_jpegs(buffer);
