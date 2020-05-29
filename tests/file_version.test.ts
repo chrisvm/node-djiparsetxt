@@ -81,7 +81,6 @@ function createTestFromDir(filePath: string) {
 
 			it('should not parse zero byte images', () => {
 				const jpegs = get_jpegs(buffer);
-				console.log(jpegs);
 				for (let jpeg of jpegs) {
 					expect(jpeg.length).toBeGreaterThan(0);
 				}
