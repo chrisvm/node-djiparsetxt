@@ -244,6 +244,8 @@ export function get_jpegs(buf: Buffer): Buffer[] {
 	cacheTransService.unscramble(cache);
 	const jpegRecords = cache.records.filter((rec) => rec.type === RecordTypes.JPEG);
 	for (const record of jpegRecords) {
+		// ignore zero bytes images
+		if (record.data[0].length === 0) continue;
 		jpegs = jpegs.concat(record.data);
 	}
 	return jpegs;

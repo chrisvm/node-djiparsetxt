@@ -101,7 +101,7 @@ export class FileParsingService extends BaseService {
 		while (start < limit) {
 			const recStart = recordStartParser.parse(buffer.slice(start));
 
-			let record: IRecord;
+			let record: IRecord | null;
 			if (recStart.type === RecordTypes.JPEG) {
 				// check for starting zeros
 				const zeroWatermarkLo = buffer.readUInt8(start + 2);
@@ -154,7 +154,9 @@ export class FileParsingService extends BaseService {
 				start += record.length + 3;
 			}
 
-			this.addRecordToCache(recordCache, record);
+			if (record !== null) {
+				this.addRecordToCache(recordCache, record);	
+			}
 		}
 
 		return recordCache;

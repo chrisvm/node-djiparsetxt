@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { parse_file, IRowObject } from "../src/node-djiparsetxt";
+import { parse_file, IRowObject, get_jpegs } from "../src/node-djiparsetxt";
 
 const junk = (item: string) => !(/(^|\/)\.[^\/\.]/g).test(item);
 
@@ -68,14 +68,22 @@ function createTestFromDir(filePath: string) {
 				}
 			});
 
-			it('should not have values for gps that are exactly 0 in OSD record',  () => {
-				for (let row of rows) {
-					const key = 'OSD';
-					if (key in row) {
-						const gps = row[key];
-						expect(Math.abs(gps.latitude)).toBeGreaterThan(0.0);
-						expect(Math.abs(gps.longitude)).toBeGreaterThan(0.0);
-					}
+			// it('should not have values for gps that are exactly 0 in OSD record',  () => {
+			// 	for (let row of rows) {
+			// 		const key = 'OSD';
+			// 		if (key in row) {
+			// 			const gps = row[key];
+			// 			expect(Math.abs(gps.latitude)).toBeGreaterThan(0.0);
+			// 			expect(Math.abs(gps.longitude)).toBeGreaterThan(0.0);
+			// 		}
+			// 	}
+			// });
+
+			it('should not parse zero byte images', () => {
+				const jpegs = get_jpegs(buffer);
+				console.log(jpegs);
+				for (let jpeg of jpegs) {
+					expect(jpeg.length).toBeGreaterThan(0);
 				}
 			});
 		});
