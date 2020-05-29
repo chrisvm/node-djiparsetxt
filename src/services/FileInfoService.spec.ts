@@ -1,27 +1,28 @@
 import fs from "fs";
 import path from "path";
-import { FileInfoService } from "../src/services/FileInfoService";
-import { ServiceManagerMock } from "./ServiceManager.mock";
+import { FileInfoService } from "./FileInfoService";
+import { ServiceManagerMock } from "@tests/ServiceManager.mock";
 
 describe("FileInfoService", () => {
-	const filePath = path.join(__dirname, "../assets/flight_logs/mavic2/mavic2_0.txt");
+	const filePath = path.join(__dirname, "../../assets/flight_logs/mavic2/mavic2_0.txt");
 	const fileBuff = fs.readFileSync(filePath);
 	const serviceMan = new ServiceManagerMock();
 	const fileInfoService = new FileInfoService(serviceMan);
 
 	describe("File Details", () => {
-		const stringProps: string[] = [
-			"city_part",
-			"street",
-			"city",
-			"area",
-			"aircraft_name",
-			"aircraft_sn",
-			"camera_sn",
-			"rc_sn",
-			"battery_sn",
-		];
 		it("should correctly parse strings without null char", () => {
+			const stringProps: string[] = [
+				"city_part",
+				"street",
+				"city",
+				"area",
+				"aircraft_name",
+				"aircraft_sn",
+				"camera_sn",
+				"rc_sn",
+				"battery_sn",
+			];
+			
 			const deets = fileInfoService.get_details(fileBuff);
 
 			expect(deets).not.toEqual(null);

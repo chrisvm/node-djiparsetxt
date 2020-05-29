@@ -2,6 +2,7 @@ import _ from "lodash";
 import { IRowObject, IRowHeader } from "../shared/interfaces";
 import BaseService from "./BaseService";
 
+
 export const RECORD_ORDER: string[] = [
 	"CUSTOM",
 	"OSD",
@@ -29,6 +30,11 @@ export const RECORD_ORDER: string[] = [
 ];
 
 export class CsvService extends BaseService {
+	/**
+	 * Create header rows data for csv production. Each row object contains properties
+	 * that are stored to be able to create a header of the form 'row.property'.
+	 * @param rows Array of rows to extract the header info from. 
+	 */
 	public getRowHeaders(rows: IRowObject[]): IRowHeader[] {
 		const presentTypes = new Set<string>();
 		const typeProps: { [type: string]: string[] } = {};
@@ -46,11 +52,16 @@ export class CsvService extends BaseService {
 				const props = typeProps[type];
 				headers.push({ type, props });
 			}
-		}
+		} 
 
 		return headers;
 	}
 
+	/**
+	 * Prints the given rows in `rows` in csv format.
+	 * @param rows Array of rows to print the values of.
+	 * @param headerDef The header definition already extracted from the rows.
+	 */
 	public printRowValues(rows: IRowObject[], headerDef: IRowHeader[]): string {
 		const lines: string[] = [];
 		for (const datarow of rows) {
@@ -70,6 +81,10 @@ export class CsvService extends BaseService {
 		return lines.join("\n");
 	}
 
+	/**
+	 * Prints the header for the first line of the csv file.
+	 * @param headerDef The header definiton to print.
+	 */
 	public createHeader(headerDef: IRowHeader[]): string {
 		const headers: string[] = [];
 		for (const header of headerDef) {
