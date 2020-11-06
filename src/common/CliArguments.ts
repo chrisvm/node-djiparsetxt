@@ -59,7 +59,7 @@ export class CliArguments {
 	}
 
 	public static print_usage(): void {
-		console.log("Usage: node-djiparsetext FILE [FILE...] [OPTIONS]\n");
+		console.log("Usage: node-djiparsetxt FILE [FILE...] [OPTIONS]\n");
 	}
 
 	public static print_help(): void {

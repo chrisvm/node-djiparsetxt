@@ -29,7 +29,7 @@ Example to create a json file from a text log:
 
 If you want to output csv:
 
-		node-djiparsetext log1.txt --csv > log1.csv
+		node-djiparsetxt log1.txt --csv > log1.csv
 
 ## From a script
 
